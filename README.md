@@ -16,14 +16,14 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 - Auto update modules silently supported.
 - Screenshot modules images prievew.
 - Mutli-language support included.
-- Multi-client support (*AdiIRC* + *mIRC*)
+- Multi-client support *(AdiIRC + mIRC)*
 - Full customizable settings and options.
 
 ### Installation:
 
 - Extract the downloaded file into any random direction.
-- Disable the **Initalization Warning** and **Monitor File Changes** options from your client Script Editor (*ALT+R* -> *Options*) menu (*if are enabled*).
-- Load the **WESTOR Module Manager.mrc** file from your Script Editor (*ALT +R* -> *File* -> *Load* -> *Select the file*) or via command from editbox ``/load -rs "FOLDER_DIRECTION\WMM\WESTOR Module Manager.mrc``
+- Disable the **Initalization Warning** and **Monitor File Changes** options from your client Script Editor *(ALT+R -> Options)* menu *(if are enabled)*.
+- Load the **WESTOR Module Manager.mrc** file from your Script Editor *(ALT +R -> File -> Load -> Select the file)* or via command from editbox ``/load -rs "FOLDER_DIRECTION\WMM\WESTOR Module Manager.mrc``
 
 ### Images:
 
