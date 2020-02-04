@@ -4,11 +4,11 @@
 [![Donate-btc](https://img.shields.io/badge/Donate-BTC-yellow.svg)](https://paypal.me/westor)
 [![Contact](https://img.shields.io/badge/Contact-IRC-red.svg)](https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL)
 
-![](https://github.com/westor7/wmm/blob/master/images/wmm_2.jpg)
-
 ### Description:
 
 This is a project written on mSL *(mIRC Scripting Language)* that allows you to download and install all the available and currently supported modules from this git repo.
+
+![](https://github.com/westor7/wmm/blob/master/images/wmm_2.jpg)
 
 ### Features:
 
