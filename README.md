@@ -20,11 +20,11 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 - Mutli-language support included.
 - Multi-client support *(AdiIRC + mIRC)*
 - Full customizable settings and options.
-- Working and tested only under Windows 10 version.
+- Working and tested only under Windows 10 operating system.
 
 ### Installation:
 
-> **ATTENTION:** If you are using **AdiIRC 64bits** client then you have to install [tsc.dll](https://tablacus.github.io/scriptcontrol_en.html) to work!!!
+> **ATTENTION:** If you are using **AdiIRC 64bits** client then you have to install [tsc64.dll](https://tablacus.github.io/scriptcontrol_en.html) to work!!!
 
 - Extract the downloaded file into any random direction.
 - Disable the **Initalization Warning** and **Monitor File Changes** options from your client Script Editor *(ALT+R ☛ Options)* menu *(if are enabled)*.
