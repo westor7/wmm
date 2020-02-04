@@ -31,8 +31,12 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 
 ------------
 
-### Thanks to:
+### Especially Thanks:
 
 - **SReject** for [JSONFormIRC](https://github.com/SReject/JSON-For-Mirc "") code and other stuff.
 - **rockcavera** for [HTML2ASCII](http://hawkee.com/snippet/17963 "") code.
 - **Ouims** for general help especially on regex.
+
+------------
+
+Copyright &copy 2002-2020 westor.
