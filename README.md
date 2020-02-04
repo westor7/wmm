@@ -29,6 +29,8 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 
 ??
 
+------------
+
 ### Thanks to:
 
 - **SReject** for [JSONFormIRC](https://github.com/SReject/JSON-For-Mirc "") code and other stuff.
