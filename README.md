@@ -1,6 +1,7 @@
 ![](https://github.com/westor7/wmm/blob/master/images/wmm_180x180.png)
 
-[![Donate](https://img.shields.io/badge/Link-Donate-yellow.svg)](https://paypal.me/westor) 
+[![Donate-paypal](https://img.shields.io/badge/Donate-PayPal-yellow.svg)](https://paypal.me/westor)
+[![Donate-btc](https://img.shields.io/badge/Donate-BTC-yellow.svg)](https://paypal.me/westor)
 
 ### Description:
 
