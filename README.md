@@ -2,7 +2,7 @@
 
 [![Donate-paypal](https://img.shields.io/badge/Donate-PayPal-yellow.svg)](https://paypal.me/westor)
 [![Donate-btc](https://img.shields.io/badge/Donate-BTC-yellow.svg)](https://paypal.me/westor)
-[![Contact](https://img.shields.io/badge/Contact-IRC-red.svg)](ircs://real.chatnet.gr:+6697/#msl)
+[![Contact](https://img.shields.io/badge/Contact-IRC-red.svg)](https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL)
 
 ### Description:
 
