@@ -1,8 +1,8 @@
 ![](https://github.com/westor7/wmm/blob/master/images/wmm_180x180.png)
 
 [![Donate-paypal](https://img.shields.io/badge/Donate-PayPal-yellow.svg)](https://paypal.me/westor)
-
 [![Donate-btc](https://img.shields.io/badge/Donate-BTC-yellow.svg)](https://paypal.me/westor)
+[![Contact](https://img.shields.io/badge/Contact-IRC-red.svg)](https://paypal.me/westor)
 
 ### Description:
 
@@ -26,10 +26,6 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 - Load the **WESTOR Module Manager.mrc** file from your Script Editor (*ALT +R* -> *File* -> *Load* -> *Select the file*) or via command from editbox ``/load -rs "FOLDER_DIRECTION\WMM\WESTOR Module Manager.mrc``
 
 ### Images:
-
-??
-
-### Contact:
 
 ??
 
