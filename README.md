@@ -6,7 +6,7 @@
 
 ### Description:
 
-This is a project written on mSL *(mIRC Scripting Language)* that allows you to manage all the available and currently supported modules from this git.
+This is a project written on mSL *(mIRC Scripting Language)* that allows you to download and install all the available and currently supported modules from this git repo.
 
 ### Features:
 
