@@ -4,6 +4,8 @@
 [![Donate-btc](https://img.shields.io/badge/Donate-BTC-yellow.svg)](https://paypal.me/westor)
 [![Contact](https://img.shields.io/badge/Contact-IRC-red.svg)](https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL)
 
+![](https://github.com/westor7/wmm/blob/master/images/wmm_2.jpg)
+
 ### Description:
 
 This is a project written on mSL *(mIRC Scripting Language)* that allows you to download and install all the available and currently supported modules from this git repo.
@@ -24,10 +26,6 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 - Extract the downloaded file into any random direction.
 - Disable the **Initalization Warning** and **Monitor File Changes** options from your client Script Editor *(ALT+R ☛ Options)* menu *(if are enabled)*.
 - Load the **WESTOR Module Manager.mrc** file from your Script Editor *(ALT +R ☛ File ☛ Load ☛ Select the file)* or via command from editbox ``/load -rs "FOLDER_DIRECTION\WMM\WESTOR Module Manager.mrc``
-
-### Images:
-
-![](https://github.com/westor7/wmm/blob/master/images/wmm_2.jpg)
 
 ------------
 
