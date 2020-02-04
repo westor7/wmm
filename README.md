@@ -1,7 +1,7 @@
 ![](https://github.com/westor7/wmm/blob/master/images/wmm_180x180.png)
 
 [![Donate-paypal](https://img.shields.io/badge/Donate-PayPal-yellow.svg)](https://paypal.me/westor)
-[![Donate-btc](https://img.shields.io/badge/Donate-BTC-yellow.svg)](https://paypal.me/westor)
+[![Donate-btc](https://img.shields.io/badge/Donate-BTC-yellow.svg)](bitcoin:3KzPiUK3AG4nKQz4yfSX6DxSALdW6JNZtP)
 [![Contact](https://img.shields.io/badge/Contact-IRC-red.svg)](https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL)
 
 ### Description:
