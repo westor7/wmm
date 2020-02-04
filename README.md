@@ -37,4 +37,4 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 
 ------------
 
-#### Copyright (c) 2002-2020 westor.
+##### Copyright (c) 2002-2020 westor.
