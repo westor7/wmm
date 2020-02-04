@@ -1,6 +1,6 @@
 ![](https://github.com/westor7/wmm/blob/master/images/wmm_180x180.png)
 
-#Description:
+###Description:
 
 This is a project written on mSL *(mIRC Scripting Language)* that allows you to manage all the available and currently supported modules from this git.
 
