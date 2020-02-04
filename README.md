@@ -20,6 +20,7 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 - Mutli-language support included.
 - Multi-client support *(AdiIRC + mIRC)*
 - Full customizable settings and options.
+- Working and tested only under Windows 10 version.
 
 ### Installation:
 
