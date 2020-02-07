@@ -350,50 +350,6 @@ ON *:SOCKREAD:wmm_clone: {
 }
 
 ON *:DOWNLOAD:*: {
-  if ($download == wmm_mod_silent_update) {
-    if ($downloaderr) || ($dialog(wmm_module)) || ($dialog(wmm_module_sets)) { return }
-
-    var %f = $download($download).file
-    var %mod = $mid($nopath(%f),0,-4)
-    var %pos = $wmm_getpos(%mod)
-    var %path = $wmm_getpath(%mod)
-
-    if (!$file(%f)) || (!%mod) || (!%pos) { return }
-
-    var %new = $wmm_dir $+ modules\ $+ $nopath(%f)
-
-    if (!$isdir($nofile(%new))) { mkdir $qt($nofile(%new)) }
-
-    .unload -nrs $qt(%path)
-    .copy -of $qt(%f) $qt(%new)
-    .load -rs $+ %pos $qt(%new)
-    .remove $qt(%f)
-
-    var %alias = $wmm_rsconf(%mod,Alias)
-
-    var %menus_old_on = $wmm_rconf(Other,%mod $+ _Menus_On)
-    var %menus_old_off = $wmm_rconf(Other,%mod $+ _Menus_Off)
-
-    if (%menus_old_on) { wmm_wconf Other %mod $+ _Menus_On }
-    if (%menus_old_off) { wmm_wconf Other %mod $+ _Menus_Off }
-
-    var %i = 1
-    while (%i <= $numtok(%menus_old_on,32)) {
-      var %menu = $gettok(%menus_old_on,%i,32)
-      var %state = $group($chr(35) $+ %alias $+ _menu_ $+ %menu)
-      if (%state == off) { .enable $chr(35) $+ %alias $+ _menu_ $+ %menu }
-      inc %i
-    }
-
-    var %i = 1
-    while (%i <= $numtok(%menus_old_off,32)) {
-      var %menu = $gettok(%menus_old_off,%i,32)
-      var %state = $group($chr(35) $+ %alias $+ _menu_ $+ %menu)
-      if (%state == on) { .disable $chr(35) $+ %alias $+ _menu_ $+ %menu }
-      inc %i
-    }
-
-  }
   if ($download == wmm_check_update_install) {
     if ($downloaderr) { $iif($wmm_rconf(Settings,Update) !== 3,wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) DOWNLOAD_ERROR_DUE_UPDATE) | wmm_wconf Settings Update | return }
 
@@ -1573,6 +1529,36 @@ alias wmm_mod_update {
   wmm_input ok 60 $wmm_lang(37)
 }
 
+alias -l wmm_mod_silent_update {
+  if (!$1) { return }
+
+  var %d = wmm_module
+  var %ds = wmm_module_sets
+  var %s = $urlget($1).state
+  var %f = $urlget($1).target
+  var %n = $lower($file(%f).name)
+  var %p = $wmm_getpos(%n)
+  var %of = $wmm_getpath(%n)
+  var %nd = $wmm_dir $+ modules\ $+ %n $+ \
+  var %nf = %nd $+ source.mrc
+
+  if ($dialog(%d)) || ($dialog(%ds)) { return }
+
+  if (%s !== ok) { return }
+  if (!$file(%f)) { return }
+
+  if (!$isdir(%nd)) { mkdir $qt(%nd) }
+
+  set -eu0 %wmm_signal_noclose 1
+
+  .unload -nrs $qt(%of)
+  .copy -of $qt(%f) $qt(%nf)
+  .load -rs $+ %p $qt(%nf)
+  .remove $qt(%f)
+
+  wmm_mod_menus_check_and_set_after %n
+}
+
 alias -l wmm_mod_menus_check_and_set_before {
   if (!$1) { return }
 
@@ -1648,6 +1634,37 @@ alias -l wmm_mod_menus_check_and_set_after {
 }
 
 alias -l wmm_check_update_install {
+  if (!$1) { return }
+
+  var %s = $urlget($1).state
+  var %fo = $urlget($1).target
+  var %fn = $wmm_dir $+ $nopath(%fo)
+
+  if ($wmm_rconf(Settings,Update) == 3) { var %silent = 1 }
+
+  if (%s !== ok) {
+    if (!%silent) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) DOWNLOADING_ERROR_DUE_UPDATE }
+
+    return
+  }
+  if (!$file(%fo)) {
+    if (!%silent) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) EMPTY_FILE_WHILE_DOWNLOADING_DUE_UPDATE }
+
+    return 
+  }
+
+  echo -s .timer[WMM_*] off
+
+  echo -s .timer -ho 1 1000 .copy -of $qt(%fo) $qt(%fn)
+  echo -s .timer -ho 1 2000 .load -rs1 $qt(%fn)
+  echo -s .timer -ho 1 3000 .remove $qt(%fo)
+
+  echo -s wmm_tool -c
+
+  echo -s .unload -nrs $qt($script)
+}
+
+alias -l wmm_check_update_install_OLD {
   if ($2 !== S_OK) || ($isid) || ($wmm_error) || (!$file($4-)) { $iif($wmm_rconf(Settings,Update) !== 3,wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) DOWNLOADING_ERROR_DUE_UPDATE) | wmm_wconf Settings Update | return }
 
   var %old = $wmm_temp $+ $nopath($4-)
@@ -1704,36 +1721,6 @@ alias -l wmm_modules_silent_update {
 
   return
   :error | wmm_werror $scriptline $error | reseterror
-}
-
-alias -l wmm_mod_silent_update {
-  if (!$1) { return }
-
-  var %d = wmm_module
-  var %ds = wmm_module_sets
-  var %s = $urlget($1).state
-  var %f = $urlget($1).target
-  var %n = $lower($file(%f).name)
-  var %p = $wmm_getpos(%n)
-  var %of = $wmm_getpath(%n)
-  var %nd = $wmm_dir $+ modules\ $+ %n $+ \
-  var %nf = %nd $+ source.mrc
-
-  if ($dialog(%d)) || ($dialog(%ds)) { return }
-
-  if (%s !== ok) { return }
-  if (!$file(%f)) { return }
-
-  if (!$isdir(%nd)) { mkdir $qt(%nd) }
-
-  set -eu0 %wmm_signal_noclose 1
-
-  .unload -nrs $qt(%of)
-  .copy -of $qt(%f) $qt(%nf)
-  .load -rs $+ %p $qt(%nf)
-  .remove $qt(%f)
-
-  wmm_mod_menus_check_and_set_after %n
 }
 
 alias -l wmm_modules_list {
@@ -2185,7 +2172,6 @@ alias wmm_check_update {
   else { var %client = AdiIRC | var %client_ver = $wmm_rsconf(General,Compatitable_ $+ %client $+ _Version) }
 
   if (%client_ver) && (%client_ver > $version) {
-
     if (!%silent) { wmm_input error 60 $wmm_lang(41) %client $wmm_lang(42) }
 
     url https:// $+ %client $+ .com
@@ -2199,7 +2185,6 @@ alias wmm_check_update {
       var %ask = $input($wmm_lang(23) $iif(%chan,$v1,N/A) $wmm_lang(24) %ver ( $+ $iif(%date,$v1,N/A) $+ ) $wmm_lang(25) $+ . $crlf $crlf $+ $+ $wmm_lang(66) $crlf $crlf $+ $+ $wmm_lang(26),yuidbk90,$upper($wmm_owner) $wmm_lang(16) $wmm_bel $wmm_lang(22))
 
       if (!%ask) {
-
         if ($1) && ($1 == -m) { dialog -md %d %d }
         if ($1) && ($1 == -n) { dialog -md %d2 %d2 }
 
@@ -2214,12 +2199,18 @@ alias wmm_check_update {
 
       if ($1) && ($1 == -m) { wmm_wconf Settings Update 1 }
       if ($1) && ($1 == -n) { wmm_wconf Settings Update 2 }
+
       if (%silent) { wmm_wconf Settings Update 3 }
 
       wmm_tool -b
 
-      if ($wmm_isadi) { download -o wmm_check_update_install %url $qt($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc) }
-      else { wmm_download $qt(wmm_check_update_install) %url $qt($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc) }
+      if ($isfile($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc)) { .remove $qt($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc) }
+      ;TODO na bro kalytero tropo na to prosarmoso auto
+
+      noop $urlget(%url,gif,$qt($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc),wmm_check_update_install)
+
+      ;   if ($wmm_isadi) { download -o wmm_check_update_install %url $qt($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc) }
+      ;   else { wmm_download $qt(wmm_check_update_install) %url $qt($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc) }
     }
 
   }
