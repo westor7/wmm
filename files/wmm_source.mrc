@@ -349,32 +349,6 @@ ON *:SOCKREAD:wmm_clone: {
   :error | reseterror
 }
 
-ON *:DOWNLOAD:*: {
-  if ($download == wmm_check_update_install) {
-    if ($downloaderr) { $iif($wmm_rconf(Settings,Update) !== 3,wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) DOWNLOAD_ERROR_DUE_UPDATE) | wmm_wconf Settings Update | return }
-
-    var %f = $download($download).file
-
-    if (!$file(%f)) { $iif($wmm_rconf(Settings,Update) !== 3,wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) EMPTY_FILE_AFTER_DOWNLOAD_DUE_UPDATE) | wmm_wconf Settings Update | return }
-
-    var %old = $wmm_temp $+ $nopath(%f)
-    var %new = $wmm_dir $+ $nopath(%f)
-
-    .timer[WMM_*] off
-
-    .timer -ho 1 1000 .copy -of $qt(%old) $qt(%new)
-    .timer -ho 1 2000 .load -rs1 $qt(%new)
-    .timer -ho 1 3000 .remove $qt(%old)
-
-    wmm_tool -c
-
-    .unload -nrs $qt($script)
-
-  }
-  return
-  :error | wmm_werror $scriptline $error | reseterror
-}
-
 ON *:DIALOG:wmm_module_sets:*:*: {
   if ($devent == init) {
     dialog -t $dname $upper($wmm_owner) $wmm_lang(16) $wmm_lang(69) v $+ $wmm_ver $wmm_bel (/wmm_sets)
@@ -1653,15 +1627,15 @@ alias -l wmm_check_update_install {
     return 
   }
 
-  echo -s .timer[WMM_*] off
+  .timer[WMM_*] off
 
-  echo -s .timer -ho 1 1000 .copy -of $qt(%fo) $qt(%fn)
-  echo -s .timer -ho 1 2000 .load -rs1 $qt(%fn)
-  echo -s .timer -ho 1 3000 .remove $qt(%fo)
+  .timer -ho 1 1000 .copy -of $qt(%fo) $qt(%fn)
+  .timer -ho 1 2000 .load -rs1 $qt(%fn)
+  .timer -ho 1 3000 .remove $qt(%fo)
 
-  echo -s wmm_tool -c
+  wmm_tool -c
 
-  echo -s .unload -nrs $qt($script)
+  .unload -nrs $qt($script)
 }
 
 alias -l wmm_check_update_install_OLD {
@@ -2208,9 +2182,6 @@ alias wmm_check_update {
       ;TODO na bro kalytero tropo na to prosarmoso auto
 
       noop $urlget(%url,gif,$qt($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc),wmm_check_update_install)
-
-      ;   if ($wmm_isadi) { download -o wmm_check_update_install %url $qt($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc) }
-      ;   else { wmm_download $qt(wmm_check_update_install) %url $qt($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc) }
     }
 
   }
