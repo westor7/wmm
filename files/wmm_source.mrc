@@ -3,7 +3,7 @@
 ######################################
 
 	# WESTOR Module Manager #
-	 # v5.0 - (07/02/2020) #
+	 # v5.0 - (08/02/2020) #
 	  # Thanks Supporters #
 
 ######################################
@@ -139,7 +139,9 @@ ON *:START: {
     else { .disable #wmm_adiirc_menus | .enable #wmm_mirc_menus }
 
     hfree -w WMM_LANG_*
+
     url $wmm_donate_page
+
     wmm_fix_extra_modules_installed
 
     var %lng = $wmm_dir $+ wmm_lang.ini
@@ -1610,6 +1612,10 @@ alias -l wmm_mod_menus_check_and_set_after {
 alias -l wmm_check_update_install {
   if (!$1) { return }
 
+  var %l = $wmm_dir $+ wmm_lang.ini
+  var %i = $wmm_dir $+ main.ico
+  var %p = $wmm_dir $+ no_preview.png
+  var %d = $wmm_dir $+ donate.png
   var %s = $urlget($1).state
   var %fo = $urlget($1).target
   var %fn = $wmm_dir $+ $nopath(%fo)
@@ -1628,6 +1634,11 @@ alias -l wmm_check_update_install {
   }
 
   .timer[WMM_*] off
+
+  if ($isfile(%l)) { .remove $qt(%l) }
+  if ($isfile(%i)) { .remove $qt(%i) }
+  if ($isfile(%p)) { .remove $qt(%p) }
+  if ($isfile(%d)) { .remove $qt(%d) }
 
   .timer -ho 1 1000 .copy -of $qt(%fo) $qt(%fn)
   .timer -ho 1 2000 .load -rs1 $qt(%fn)
