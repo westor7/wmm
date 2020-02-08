@@ -3,7 +3,7 @@
 #########################################
 
 	 #      Bing-Search      #
-	  # v2.6 - (14/10/2018) #
+	  # v2.7 - (09/02/2020) #
 	   # Thanks Supporters #
 
 #########################################
@@ -338,9 +338,12 @@ ON *:LOAD: {
   if (!$manager) { noop $input(You must first download and install the $qt($upper($wmm_owner) Module Manager) and install that module from the manager in order to work that module!,houdbk60,Error) | .unload -nrs $qt($script) | return }
   if ($wmm_error) { noop $input(There was an error due installing that module because there are missing some several functions from the $qt($upper($wmm_owner) Module Manager) project source code!!! $+ $+ $crlf $crlf Error Code: $wmm_error,houdbk60,WMM -> Error) | .unload -nrs $qt($script) | return }
   if ($group(# [ $+ [ $lower($addon) ] ] ).fname !== $script) { wmm_input error 60 This module cannot work more than one time into this client because you already have this module installed! | .unload -nrs $qt($script) | return }
+
   wmm_dl $main_ico_url $qt($scriptdir $+ $mod $+ _main.ico)
   wmm_dl $lang_url $qt($scriptdir $+ $mod $+ _lang.ini)
+
   .enable $chr(35) $+ $mod $+ _menu_menubar
+
   if (% [ $+ [ $mod ] $+ ] _status == $null) { set % $+ $mod $+ _status 1 }
   if (% [ $+ [ $mod ] $+ ] _tiny == $null) { set % $+ $mod $+ _tiny 1 }
   if (% [ $+ [ $mod ] $+ ] _strip == $null) { set % $+ $mod $+ _strip 0 }
@@ -352,22 +355,31 @@ ON *:LOAD: {
   if (% [ $+ [ $mod ] $+ ] _title_chars_max == $null) { set % $+ $mod $+ _title_chars_max 100 }
   if (% [ $+ [ $mod ] $+ ] _desc_chars_max == $null) { set % $+ $mod $+ _desc_chars_max 50 }
   if (% [ $+ [ $mod ] $+ ] _show == $null) { set % $+ $mod $+ _show title description link }
+
   hfree -w $mod $+ _*
+
   .signal -n wmm_close
+
   return
   :error | wmm_werror $addon $scriptline $error | reseterror
 }
 
 ON *:UNLOAD: {
   if ($dialog( [ $+ [ $mod ] $+ ] _sets)) { dialog -x $v1 }
-  var %1 = $scriptdir $+ $mod $+ _main.ico
-  var %2 = $scriptdir $+ $mod $+ _lang.ini
-  if ($isfile(%1)) { .remove $qt(%1) }
-  if ($isfile(%2)) { .remove $qt(%2) }
-  .timer[ $+ $mod $+ _*] off
-  unset % $+ $mod $+ _*
-  hfree -w $mod $+ _*
+  var %d = $nofile($script)
+
   .signal -n wmm_close
+
+  .timer[ $+ $mod $+ _*] off
+
+  unset % $+ $mod $+ _*
+
+  hfree -w $mod $+ _*
+
+  noop $findfile(%d,*,0,.remove $qt($1-))
+
+  if ($isdir(%d)) { rmdir $qt(%d) }
+
   return
   :error | wmm_werror $addon $scriptline $error | reseterror
 }

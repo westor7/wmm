@@ -3,7 +3,7 @@
 #########################################
 
 	 #      Google-Search    #
-	  # v2.6 - (14/10/2018) #
+	  # v2.7 - (09/02/2020) #
 	   # Thanks Supporters #
 
 #########################################
@@ -364,14 +364,20 @@ ON *:LOAD: {
 
 ON *:UNLOAD: {
   if ($dialog( [ $+ [ $mod ] $+ ] _sets)) { dialog -x $v1 }
-  var %1 = $scriptdir $+ $mod $+ _main.ico
-  var %2 = $scriptdir $+ $mod $+ _lang.ini
-  if ($isfile(%1)) { .remove $qt(%1) }
-  if ($isfile(%2)) { .remove $qt(%2) }
-  .timer[ $+ $mod $+ _*] off
-  unset % $+ $mod $+ _*
-  hfree -w $mod $+ _*
+  var %d = $nofile($script)
+
   .signal -n wmm_close
+
+  .timer[ $+ $mod $+ _*] off
+
+  unset % $+ $mod $+ _*
+
+  hfree -w $mod $+ _*
+
+  noop $findfile(%d,*,0,.remove $qt($1-))
+
+  if ($isdir(%d)) { rmdir $qt(%d) }
+
   return
   :error | wmm_werror $addon $scriptline $error | reseterror
 }
