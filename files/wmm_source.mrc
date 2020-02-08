@@ -1649,26 +1649,6 @@ alias -l wmm_check_update_install {
   .unload -nrs $qt($script)
 }
 
-alias -l wmm_check_update_install_OLD {
-  if ($2 !== S_OK) || ($isid) || ($wmm_error) || (!$file($4-)) { $iif($wmm_rconf(Settings,Update) !== 3,wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) DOWNLOADING_ERROR_DUE_UPDATE) | wmm_wconf Settings Update | return }
-
-  var %old = $wmm_temp $+ $nopath($4-)
-  var %new = $wmm_dir $+ $nopath($4-)
-
-  .timer[WMM_*] off
-
-  .timer -ho 1 1000 .copy -of $qt(%old) $qt(%new)
-  .timer -ho 1 2000 .load -rs1 $qt(%new)
-  .timer -ho 1 3000 .remove $qt(%old)
-
-  wmm_tool -c
-
-  .unload -nrs $qt($script)
-
-  return
-  :error | wmm_werror $scriptline $error | reseterror
-}
-
 alias -l wmm_modules_silent_update {
   var %t = $ini($wmm_sets_file,0)
   var %am = $wmm_rconf(Settings,Auto_Update_Modules)
@@ -2565,6 +2545,7 @@ alias wmm_temp {
   if ($right(%d,1) !== $chr(92)) { var %d = %d $+ \ }
 
   var %d = %d $+ wmm\
+
   if (!$isdir(%d)) { mkdir $qt(%d) }
 
   return %d
@@ -2576,37 +2557,12 @@ alias wmm_temp {
 alias wmm_dl {
   if (!$1) || (!$2) || ($isid) || (!$wmm_internet) { return }
 
-  :st
-  var %n = dl_ $+ $wmm_random
+  var %f = $noqt($2-)
+  var %d = $nofile(%f)
 
-  if ($wmm_isadi) { download -o %n $1 $qt($2-) | return }
+  if (!$isdir(%d)) { mkdir $qt(%d) }
 
-  var %f = $wmm_temp $+ %n $+ .vbs
-  if ($file(%f)) { goto st }
-
-  .fopen -ox %n $qt(%f)
-
-  .fwrite -n %n On Error Resume Next
-  .fwrite -n %n Set args = WScript.Arguments
-  .fwrite -n %n Url = $qt($1 $+ ?nocache= $+ $ticks)
-  .fwrite -n %n Dim xHttp: Set xHttp = CreateObject("MSXML2.SERVERXMLHTTP.6.0")
-  .fwrite -n %n Dim bStrm: Set bStrm = CreateObject("Adodb.Stream")
-  .fwrite -n %n xHttp.Open "GET", Url, False
-  .fwrite -n %n xHttp.Send
-  .fwrite -n %n with bStrm
-  .fwrite -n %n    .Type = 1
-  .fwrite -n %n    .Mode = 3
-  .fwrite -n %n    .Open
-  .fwrite -n %n    .Write xHttp.ResponseBody
-  .fwrite -n %n    .SavetoFile $2- $+ , 2
-  .fwrite -n %n    .Close
-  .fwrite -n %n End with
-  .fwrite -n %n Err.Clear
-  .fwrite -n %n Set oFso = CreateObject("Scripting.FileSystemObject") : oFso.DeleteFile Wscript.ScriptFullName, True
-
-  .fclose %n
-
-  if ($isfile(%f)) && ($lines(%f) == 17) { run -h $qt(%f) }
+  noop $urlget($1,gif,$qt(%f),noop)
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -2618,7 +2574,9 @@ alias wmm_internet {
   var %v = wmm_internet_ $+ $wmm_random
 
   jsonopen -U %v https://google.com
+
   if ($jsonerror) || ($json(%v).httpstatus !== 200) { jsonclose %v | return 0 }
+
   jsonclose %v
 
   return 1
@@ -2632,7 +2590,9 @@ alias wmm_getsite {
   var %v = wmm_getsite_ $+ $wmm_random
 
   jsonopen -dU %v $1
+
   if ($jsonerror) || ($json(%v).httpstatus !== 200) { return 0 }
+
   var %r = $wmm_fixtab($json(%v).httpbody)
 
   return $iif(%r,%r,0)
@@ -2654,6 +2614,7 @@ alias wmm_ignore_cn_list {
   var %nn = % [ $+ [ %dd ] $+ ] _ignore_nicks_networks
 
   if (!%cn) && (!%nn) { did -b %d 4,8,15,18 | return }
+
   if (!%cn) { did -b %d 4,8 }
   if (!%nn) { did -b %d 15,18 }
 
@@ -2667,7 +2628,9 @@ alias wmm_ignore_cn_list {
     var %i = 1
     while (%i <= $numtok(%chans,32)) {
       var %c = $gettok(%chans,%i,32)
+
       if (%c) { did -a %d 4 %net $wmm_bel %c }
+
       inc %i
     }
 
@@ -2688,7 +2651,9 @@ alias wmm_ignore_cn_list {
     var %ii = 1
     while (%ii <= $numtok(%nicks,32)) {
       var %n = $gettok(%nicks,%ii,32)
+
       if (%n) { did -a %d 15 %net $wmm_bel %n }
+
       inc %ii
     }
 
@@ -3452,7 +3417,7 @@ alias wmm_convertdate {
 
     var %t = $calc($ctime(%m %d $regml(1) $regml(4) $+ : $+ $regml(5) $+ : $+ $regml(6)) - %o)
 
-    if ($asctime(zz) !== 0 && $regex($v1, /^([+-])(\d\d)(\d+)$/)) { var %o = $regml(1) $+ $calc($regml(2) * 3600 + $regml(3)) | var %t = $calc(%t + %o ) }
+    if ($regex($v1, /^([+-])(\d\d)(\d+)$/))) && ($asctime(zz) !== 0) { var %o = $regml(1) $+ $calc($regml(2) * 3600 + $regml(3)) | var %t = $calc(%t + %o ) }
 
     return %t
   }
@@ -3460,68 +3425,6 @@ alias wmm_convertdate {
 
   return
   :error | wmm_werror $scriptline $error | reseterror
-}
-
-; ---
-
-/*
-	# Download alias coded by SReject - (thanks for support) #
-
-	## Official Code Link: http://hawkee.com/snippet/9318 ##
-*/
-
-alias wmm_download {
-  if ($isid) || (!$1) || (!$2) || (!$3) { return }
-
-  if ($1 == -c) {
-    var %callback = $gettok($1-,2,34)
-    var %url = $gettok($gettok($1-,3,34),1,32)
-    var %file = $gettok($1-,4,34)
-    var %com = $gettok($gettok($1-,5,34),1,32)
-    var %r = $iif($comerr,1,$com(%com).result)
-
-    if ($com(%com)) { .comclose %com }
-    if (%r == -1) { %callback 1 S_OK %url $qt(%file) }
-  }
-  elseif ($1 !== -c) {
-    var %callback = $gettok($1-,1,34)
-    var %url = $gettok($gettok($1-,2,34),1,32) $+ ?nocache= $+ $ticks
-    var %file = $gettok($1-,3-,34)
-    var %com = wmm_download $+ $wmm_random $+ .vbs
-    var %s = $wmm_temp $+ %com
-    var %n = $left(%com,-4)
-
-    .fopen -ox %n $qt(%s)
-
-    .fwrite -n %n On Error Resume Next
-    .fwrite -n %n Set args = WScript.Arguments
-    .fwrite -n %n Url = $qt(%url)
-    .fwrite -n %n Dim xHttp: Set xHttp = CreateObject("MSXML2.SERVERXMLHTTP.6.0")
-    .fwrite -n %n Dim bStrm: Set bStrm = CreateObject("Adodb.Stream")
-    .fwrite -n %n xHttp.Open "GET", Url, False
-    .fwrite -n %n xHttp.Send
-    .fwrite -n %n with bStrm
-    .fwrite -n %n    .Type = 1
-    .fwrite -n %n    .Mode = 3
-    .fwrite -n %n    .Open
-    .fwrite -n %n    .Write xHttp.ResponseBody
-    .fwrite -n %n    .SavetoFile $qt(%file) $+ , 2
-    .fwrite -n %n    .Close
-    .fwrite -n %n End with
-    .fwrite -n %n Err.Clear
-    .fwrite -n %n Set oFso = CreateObject("Scripting.FileSystemObject") : oFso.DeleteFile WScript.ScriptFullName, True
-    .fwrite -n %n WScript.Quit(-1)
-
-    .fclose %n
-
-    .comopen %com WScript.Shell
-    if ($lines(%s) !== 18 || $comerr || !$comcall(%com,wmm_download -c $qt(%callback) %url $qt(%file),run,1,bstr*,$qt(%s),uint,1,bool,true)) { goto error }
-    return
-  }
-
-  :error
-  if ($error) { wmm_werror $scriptline $error | reseterror }
-  if ($com(%com)) { .comclose %com }
 }
 
 ; ---
