@@ -3,7 +3,7 @@
 ######################################
 
 	# WESTOR Module Manager #
-	 # v5.0 - (08/02/2020) #
+	 # v5.0 - (09/02/2020) #
 	  # Thanks Supporters #
 
 ######################################
@@ -215,21 +215,24 @@ ON *:START: {
 }
 
 ON *:UNLOAD: {
-  if ($wmm_error) { goto end }
+  var %l = $scriptdir $+ wmm_lang.ini
+  var %i = $scriptdir $+ main.ico
+  var %p = $scriptdir $+ no_preview.png
+  var %d = $scriptdir $+ donate.png
 
-  url $wmm_page
+  if ($wmm_langs) { var %m = $wmm_lang(38) $upper($wmm_owner) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) $wmm_owner $wmm_lang(40) }
+  else { var %m = The $upper($wmm_owner) Module Manager v $+ $wmm_ver ( $+ $wmm_crdate $+ ) by $wmm_owner has been uninstalled successfully. }
 
-  wmm_d_close wmm_module
-  wmm_d_close wmm_module_sets
+  if (!$wmm_error) { 
+    url $wmm_page
 
-  wmm_tool -c
+    wmm_d_close wmm_module
+    wmm_d_close wmm_module_sets
 
-  jsonshutdown
+    wmm_tool -c
 
-  if ($wmm_langs) { wmm_input ok 60 $wmm_lang(38) $upper($wmm_owner) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) $wmm_owner $wmm_lang(40) }
-  else { wmm_input ok 60 The $upper($wmm_owner) Module Manager v $+ $wmm_ver ( $+ $wmm_crdate $+ ) by $wmm_owner has been uninstalled successfully. }
-
-  :end
+    jsonshutdown
+  }
 
   if ($dialog(wmm_module)) { dialog -x $v1 }
   if ($dialog(wmm_module_sets)) { dialog -x $v1 }
@@ -240,24 +243,24 @@ ON *:UNLOAD: {
   if ($com(SReject/JSONForMirc/JSONEngine)) { .comclose $v1 }
   if ($hget(SReject/JSONForMirc)) { hfree $v1 }
 
-  var %lng = $scriptdir $+ wmm_lang.ini
-  var %ico = $scriptdir $+ main.ico
-  var %png = $scriptdir $+ no_preview.png
-  var %don = $scriptdir $+ donate.png
-
-  if ($isfile(%lng)) { .remove $qt(%lng) }
-  if ($isfile(%ico)) { .remove $qt(%ico) }
-  if ($isfile(%png)) { .remove $qt(%png) }
-  if ($isfile(%don)) { .remove $qt(%don) }
+  if ($isfile(%l)) { .remove $qt(%l) }
+  if ($isfile(%i)) { .remove $qt(%i) }
+  if ($isfile(%p)) { .remove $qt(%p) }
+  if ($isfile(%d)) { .remove $qt(%d) }
 
   if ($isfile($wmm_sets_file)) { .remove $qt($wmm_sets_file) }
   if ($isfile($wmm_conf)) { .remove $qt($wmm_conf) }
 
   .timer[WMM_*] off
+
   unset %wmm_*
 
   hfree -w WMM_*
   hfree -w W*_KEYS
+
+  .remove $qt($script)
+
+  wmm_input ok 60 %m
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -617,15 +620,16 @@ ON *:DIALOG:wmm_module_sets:*:*: {
           var %m = $gettok(%t,%i,32)
           var %p = $wmm_getpath(%m)
 
-          if (%m) && (%p) { .unload -rs $qt(%p) | .remove $qt(%p) }
+          if (%m) && (%p) { .unload -rs $qt(%p) }
 
           inc %i
         }
         var %tf = $findfile($wmm_dir $+ modules,*,0)
-        if (!%tf) { rmdir $qt($wmm_dir $+ modules) }
+        var %td = $finddir($wmm_dir $+ modules,*,0)
 
+        if (!%tf) && (!%td) { rmdir $qt($wmm_dir $+ modules) }
       }
-      .remove $qt($script)
+
       .unload -rs $qt($script)
     }
   }
@@ -1322,7 +1326,7 @@ alias wmm_lang {
   var %f = $wmm_dir $+ wmm_lang.ini
   var %lng = $wmm_rconf(Settings,Language)
 
-  if (!%lng) { wmm_wconf Settings Language English | var %lng = English }
+  if (!%lng) { var %lng = English }
 
   if (!$file(%f)) || (!$isid) || (!$1) || ($1 !isnum) { return 0 }
 
@@ -1351,7 +1355,9 @@ alias wmm_langs {
   var %i = 1
   while (%i <= %t) {
     var %lng = $ini(%f,%i)
+    
     if (%lng) { var %langs = $addtok(%langs,%lng,44) }
+    
     inc %i
   }
 
