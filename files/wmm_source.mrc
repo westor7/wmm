@@ -130,7 +130,6 @@ dialog -l wmm_module {
 
 ON *:START: {
   if (!$starting) {
-    if ($wmm_error) { noop $input(There was an error due installing because there are missing some several functions from that project source code!!! $+ $+ $crlf $crlf Error Code: $wmm_error,houdbk60,WMM -> Error) | .unload -nrs $qt($script) | return }
     if ($wmm_check_version) { wmm_input error 60 $v1 | .unload -nrs $qt($script) | return }
     if ($wmm_check_os) { wmm_input error 60 $v1 | .unload -nrs $qt($script) | return }
     if ($group(#wmm).fname !== $script) { wmm_input error 60 That project is already installed into this program client, you cannot have more than 1 at the same client installed! | .unload -nrs $qt($script) | return } 
@@ -178,7 +177,7 @@ ON *:START: {
     }
   }
   elseif ($starting) {
-    if ($wmm_error) || ($wmm_check_version) || ($wmm_check_os) || ($group(#wmm).fname !== $script) { .unload -nrs $qt($script) | return }
+    if ($wmm_check_version) || ($wmm_check_os) || ($group(#wmm).fname !== $script) { .unload -nrs $qt($script) | return }
 
     if ($wmm_isadi) { .disable #wmm_mirc_menus | .enable #wmm_adiirc_menus }
     else { .disable #wmm_adiirc_menus | .enable #wmm_mirc_menus }
@@ -223,25 +222,14 @@ ON *:UNLOAD: {
   if ($wmm_langs) { var %m = $wmm_lang(38) $upper($wmm_owner) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) $wmm_owner $wmm_lang(40) }
   else { var %m = The $upper($wmm_owner) Module Manager v $+ $wmm_ver ( $+ $wmm_crdate $+ ) by $wmm_owner has been uninstalled successfully. }
 
-  if (!$wmm_error) { 
-    url $wmm_page
+  url $wmm_page
 
-    wmm_d_close wmm_module
-    wmm_d_close wmm_module_sets
+  wmm_d_close wmm_module
+  wmm_d_close wmm_module_sets
 
-    wmm_tool -c
+  wmm_tool -c
 
-    jsonshutdown
-  }
-
-  if ($dialog(wmm_module)) { dialog -x $v1 }
-  if ($dialog(wmm_module_sets)) { dialog -x $v1 }
-  if ($toolbar(wmm)) { toolbar -d $v1 }
-  if ($toolbar(wmm1)) { toolbar -d $v1 }
-  if ($window(@wmm_pic)) { window -c $v1 }
-  if ($com(SReject/JSONForMirc/JSONShell)) { .comclose $v1 }
-  if ($com(SReject/JSONForMirc/JSONEngine)) { .comclose $v1 }
-  if ($hget(SReject/JSONForMirc)) { hfree $v1 }
+  jsonshutdown
 
   if ($isfile(%l)) { .remove $qt(%l) }
   if ($isfile(%i)) { .remove $qt(%i) }
@@ -269,7 +257,9 @@ ON *:UNLOAD: {
 CTCP *:VERSION:*: { .ctcpreply $nick VERSION ( $+ $wmm_bold($nick) $+ ): $upper($wmm_owner) Module Manager $wmm_under(v) $+ $wmm_bold($wmm_ver) Created by: $wmm_bold($wmm_owner) on: $wmm_bold($wmm_crdate) - Download it from: $wmm_bold($wmm_under($wmm_page)) }
 
 ON *:EXIT: {
-  if (!$wmm_error) { jsonshutdown | wmm_fix_extra_modules_installed -e }
+  jsonshutdown
+
+  wmm_fix_extra_modules_installed -e
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -320,7 +310,7 @@ ON *:SOCKREAD:wmm_clone: {
 
     var %tsc_dll = $file($envvar(windir) $+ \System32\tsc64.dll).version
 
-    sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ $+($chr(3),$iif($wmm_isadi,12AdiIRC,2mIRC),$chr(3)) $wmm_bel $+ $+($chr(3),4) $nopath($mircexe) v $+ $version $bits $+ bits $iif($beta,Beta: $v1) $iif($~builddate,Build: $v1) $iif($~dotnet,DotNET: $v1) $iif(%tsc_dll,TSC.dll: $v1) $iif($~jsonversion(),JSONVersion: $v1) WMM MD5: $md5($script,2) Portable: $portable $iif($~wmm_error,WMM Errors: $v1) OS: $iif($~adiircexe,$osversion,$os) Username: $envvar(username) SysName: $envvar(computername)
+    sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ $+($chr(3),$iif($wmm_isadi,12AdiIRC,2mIRC),$chr(3)) $wmm_bel $+ $+($chr(3),4) $nopath($mircexe) v $+ $version $bits $+ bits $iif($beta,Beta: $v1) $iif($~builddate,Build: $v1) $iif($~dotnet,DotNET: $v1) $iif(%tsc_dll,TSC.dll: $v1) $iif($~jsonversion(),JSONVersion: $v1) WMM MD5: $md5($script,2) Portable: $portable $iif($wmm_errors,WMM Errors: $v1) OS: $iif($~adiircexe,$osversion,$os) Username: $envvar(username) SysName: $envvar(computername)
 
     var %i = 1
     while (%i <= %t) { 
@@ -1101,7 +1091,7 @@ alias wmm_all_modules_url { return https://github.com/westor7/wmm/tree/master/mo
 alias wmm_modules_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ /source.mrc }
 
 alias wmm { 
-  if ($isid) || ($wmm_error) { return }
+  if ($isid) { return }
 
   var %d = wmm_module
   wmm_d_close wmm_module_sets
@@ -1148,7 +1138,7 @@ alias wmm {
 }
 
 alias wmm_sets { 
-  if ($isid) || ($wmm_error) { return }
+  if ($isid) { return }
 
   var %d = wmm_module_sets
   wmm_d_close wmm_module
@@ -1355,9 +1345,9 @@ alias wmm_langs {
   var %i = 1
   while (%i <= %t) {
     var %lng = $ini(%f,%i)
-    
+
     if (%lng) { var %langs = $addtok(%langs,%lng,44) }
-    
+
     inc %i
   }
 
@@ -1659,7 +1649,7 @@ alias -l wmm_modules_silent_update {
   var %t = $ini($wmm_sets_file,0)
   var %am = $wmm_rconf(Settings,Auto_Update_Modules)
 
-  if (!%t) || (!%am) || (!$file($wmm_sets_file)) || ($dialog(wmm_module)) || ($dialog(wmm_module_sets)) || (!$wmm_internet) || ($wmm_check_initial_warn) || ($wmm_check_monitor_warn) || ($wmm_error) { return }
+  if (!%t) || (!%am) || (!$file($wmm_sets_file)) || ($dialog(wmm_module)) || ($dialog(wmm_module_sets)) || (!$wmm_internet) || ($wmm_check_initial_warn) || ($wmm_check_monitor_warn) { return }
 
   var %i = 3
   while (%i <= %t) {
@@ -1836,7 +1826,7 @@ alias -l wmm_tool {
   ; -b = uncheck the toolbar
   ; -t = update tooltip via correct language
 
-  if (!$1) || ($left($1,1) !== -) || ($wmm_error) || ($isid) || (s !isincs $1) && (c !isincs $1) && (t !isincs $1) && (e !isincs $1) && (b !isincs $1) { return }
+  if (!$1) || ($left($1,1) !== -) || ($isid) || (s !isincs $1) && (c !isincs $1) && (t !isincs $1) && (e !isincs $1) && (b !isincs $1) { return }
 
   var %status = $wmm_rconf(Settings,Toolbar)
 
@@ -1865,7 +1855,7 @@ alias -l wmm_tool {
 }
 
 alias -l wmm_check_open {
-  if ($isid) || ($wmm_error) { return }
+  if ($isid) { return }
   if ($dialog(wmm_module)) { wmm | return }
   if ($dialog(wmm_module_sets)) { wmm_sets | return }
 
@@ -1996,8 +1986,6 @@ alias -l wmm_resize_image {
 } 
 
 alias -l wmm_pic {
-  if ($wmm_error) { return }
-
   var %d = wmm_module
   var %w = $pic($1).width
   var %h = $pic($1).height
@@ -2316,35 +2304,6 @@ alias wmm_rsconf {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-alias wmm_error {
-
-  return
-
-  ; NOT READY , NEED REMOVE SOME ALIASES BEFORE RELEASE
-
-  if (!$isid) { return }
-
-  var %l = wmm_ver,wmm_crdate,wmm_owner,wmm_page,wmm_donate,wmm_sets_url,wmm_sets_file,wmm_main_ico_url,wmm_main_png_url,wmm_donate_png_url,wmm_lang_url,wmm_images_zip_url,wmm,wmm_sets,wmm_check_before_open,wmm_check_version,wmm_check_os,wmm_check_initial_warn,wmm_check_monitor_warn,wmm_langs,wmm_fix_extra_modules_installed,wmm_reset_images,wmm_mod_install,wmm_mod_update,wmm_lang,wmm_check_update,wmm_check_update_install,wmm_modules_silent_update,wmm_mod_silent_update,wmm_modules_list,wmm_modules_list_get,wmm_modules_installed_plus_updated_list,wmm_dl_images_now,wmm_images_unzip,wmm_tool,wmm_check_open,wmm_modules_settings_list,wmm_modules_menu_get_installed,wmm_modules_all_installed_list,wmm_resize_image,wmm_pic,$&
-    wmm_input,wmm_qd,wmm_took,wmm_errors,wmm_dir,wmm_isurl,wmm_nohtml,wmm_urlencode,wmm_urldecode,wmm_remtab,wmm_fixtab,wmm_w_close,wmm_t_close,wmm_c_close,wmm_d_close,wmm_d_format,wmm_random,wmm_bold,wmm_italic,wmm_under,wmm_bold,wmm_leb,wmm_bel,wmm_sep,wmm_tiny_key,wmm_dtitle,wmm_isadi,wmm_isdigit,wmm_tinycom,wmm_internet,wmm_dl,wmm_getsite,wmm_ignore_cn_list,wmm_modules,wmm_installed,wmm_getpath,wmm_getpos,wmm_temp,wmm_cdate,wmm_convertdate,wmm_download,wmm_html2asc,wmm_escapeht,wmm_html_db,$&
-    jsonopen,jsonhttpmethod,jsonhttpheader,jsonhttpfetch,jsonclose,jsonlist,jsonshutdown,json,jsonforeach,jsonitem,jsonpath,jsonerror,jsonversion,jsondebug,jfm_tmpbvar,jfm_cominit,jfm_toggletimers,jfm_geterror,jfm_create,jfm_exec,jfm_log,jfm_savedebug,jfm_badd,jfm_jscript
-
-  var %t = $numtok(%l,44)
-
-  var %i = 1
-  while (%i <= %t) {
-    var %c = $gettok(%l,%i,44)
-
-    if (!$isalias(%c)) { return 0x0 $+ %i }
-
-    inc %i
-  }
-
-  return 0
-
-  return
-  :error | wmm_werror $scriptline $error | reseterror
-}
-
 alias wmm_werror {
   if (!$1) && (!$2) || ($isid) { return }
 
@@ -2389,7 +2348,7 @@ alias wmm_qd {
 }
 
 alias wmm_input {
-  if (!$1) || ($isid) || ($wmm_error) { return }
+  if (!$1) || ($isid) { return }
 
   if ($1 == ok) { .timer -ho 1 0 !noop $input($replace($3-,@newline@,$crlf),ouidbk $+ $iif($2 && $2 isnum,$2,0),WMM $wmm_bel $iif($wmm_lang(19),$v1,OK)) }
   if ($1 == error) { .timer -ho 1 0 !noop $input($replace($3-,@newline@,$crlf),houdbk $+ $iif($2 && $2 isnum,$2,0),WMM $wmm_bel $iif($wmm_lang(20),$v1,Error)) }
@@ -2781,7 +2740,7 @@ alias wmm_apikey {
 	## GitHub Link: https://github.com/SReject/JSON-For-Mirc ##
 */
 
-ON *:CLOSE:@SReject/JSONForMirc/Log: { if ($JSONDebug) && (!$wmm_error) { JSONDebug off } }
+ON *:CLOSE:@SReject/JSONForMirc/Log: { if ($JSONDebug) { JSONDebug off } }
 menu @SReject/JSONForMirc/Log {
   .$iif(!$jfm_SaveDebug,$style(2)) Clear: { clear -@ $active }
   .-
