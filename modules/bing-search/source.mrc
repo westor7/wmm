@@ -297,7 +297,7 @@ ON *:DIALOG:wbs_sets:*:*: {
       var %n = $input($lang(27),eidbk60,$addon $wmm_bel $lang(22))
 
       if (!$dialog($dname)) { return }
-      if (!%net) { $mod $+ _sets | return }
+      if (!%n) { $mod $+ _sets | return }
       if ($numtok(%n,32) !== 1) { wmm_input error 60 $lang(28) | $mod $+ _sets | return }
       if ($len(%n) > 50) { wmm_input error 60 $lang(29) | $mod $+ _sets | return }
 
