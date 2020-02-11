@@ -1987,8 +1987,8 @@ alias -l wmm_modules_all_installed_list {
   var %isalias = $isalias(%d)
 
   if (!$remove(%d,_sets)) && (!%isalias) { return - }
-  if (%n) && ($remove(%d,_sets)) && (!%isalias) { return $iif($wmm_isadi && $file(%fm),$menuicon(%fm)) $style(2) $wmm_qd(%n $wmm_lang(76)) $+ :noop }
-  else { return $iif($wmm_isadi && $file(%fm),$menuicon(%fm)) $iif($dialog(%d),$style(1)) $wmm_qd(%n $wmm_lang(76)) $+ : $+ %d }
+  if (%n) && ($remove(%d,_sets)) && (!%isalias) { return $iif($wmm_isadi && $file(%fm),$menuicon(%fm)) $style(2) $wmm_qd(%n) $+ :noop }
+  else { return $iif($wmm_isadi && $file(%fm),$menuicon(%fm)) $iif($dialog(%d),$style(1)) $wmm_qd(%n) $+ : $+ %d }
 
   return
   :error | wmm_werror $scriptline $error | reseterror
