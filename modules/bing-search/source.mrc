@@ -136,10 +136,10 @@ ON *:DIALOG:wbs_sets:*:*: {
     if ($group(# [ $+ [ $mod ] $+ ] _menu_nicklist) == on) { did -c $dname 58 }
 
     var %f = $scriptdir $+ _lang.ini
+    var %t = $ini(%f,0)
 
-    if (!$ini(%f,0)) { did -b $dname 19 }
+    if (!%t) { did -b $dname 19 }
     else { 
-      var %t = $v1
       var %i = 1
 
       while (%i <= %t) {

@@ -136,10 +136,10 @@ ON *:DIALOG:wgs_sets:*:*: {
     if (% [ $+ [ $mod ] $+ ] _desc_chars_max) { did -ra $dname 49 % [ $+ [ $mod ] $+ ] _desc_chars_max }
 
     var %f = $scriptdir $+ lang.ini
+    var %t = $ini(%f,0)
 
-    if (!$ini(%f,0)) { did -b $dname 19 }
+    if (!%t) { did -b $dname 19 }
     else { 
-      var %t = $v1
       var %i = 1
 
       while (%i <= %t) {
