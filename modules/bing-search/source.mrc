@@ -3,7 +3,7 @@
 #########################################
 
 	 #      Bing-Search      #
-	  # v2.7 - (09/02/2020) #
+	  # v2.7 - (11/02/2020) #
 	   # Thanks Supporters #
 
 #########################################
@@ -18,7 +18,7 @@ dialog -l wbs_sets {
   option dbu disable
   icon $scriptdir $+ $mod $+ _main.ico, 0
   button "Close this window", 1, 77 136 193 17, default ok
-  icon 280, 295 136 30 9, $wmm_dir $+ donate.png, 1, noborder center
+  icon 280, 295 136 30 9, $wmm_dir $+ wmm_donate.png, 1, noborder center
   tab "Settings 1", 2, 2 2 324 122
   text "Ignore channel(s):", 3, 4 20 75 8, tab 2 center
   list 4, 4 30 78 92, disable tab 2 size hsbar vsbar
@@ -466,7 +466,7 @@ alias wbs_sets {
   if ($dialog(%d)) { dialog -ve %d %d | return }
   var %i = $scriptdir $+ $mod $+ _main.ico
   var %l = $scriptdir $+ $mod $+ _lang.ini
-  var %n = $wmm_dir $+ donate.png
+  var %n = $wmm_dir $+ wmm_donate.png
   if (!$file(%l)) || (!$file(%i)) || (!$file(%n)) { var %delay = 1 }
   if (%delay) {
     if (!$wmm_internet) { wmm_input error 60 There are some require files that missing from this module, there must be an internet connection in order to download them! | return }
@@ -485,7 +485,7 @@ alias wbs_sets {
 alias -l wbs_sets_reopen {
   var %i = $scriptdir $+ $mod $+ _main.ico
   var %l = $scriptdir $+ $mod $+ _lang.ini
-  var %n = $wmm_dir $+ donate.png
+  var %n = $wmm_dir $+ wmm_donate.png
   if (!$file(%l)) || (!$file(%i)) || (!$file(%n)) { wmm_input error 60 FATAL ERROR! @newline@ @newline@ $+ Error Code: 0xm001 | return }
   $mod $+ _sets
   return
