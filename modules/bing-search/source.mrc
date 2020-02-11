@@ -257,18 +257,18 @@ ON *:DIALOG:wbs_sets:*:*: {
     }
     if ($did == 7) {
       var %s = $did(4).seltext
-      var %net = $gettok(%s,1,32)
-      var %chan = $gettok(%s,3,32)
+      var %n = $gettok(%s,1,32)
+      var %c = $gettok(%s,3,32)
 
       did -b $dname $did
 
       if (!%s) { return }
 
-      set % $+ $mod $+ _ignore_ $+ %net $+ _chans $remtok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _chans,%chan,1,32)
+      set % $+ $mod $+ _ignore_ $+ %n $+ _chans $remtok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _chans,%c,1,32)
 
-      if (!% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _chans) { 
-        unset % [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _chans
-        set % $+ $mod $+ _ignore_chans_networks $remtok(% [ $+ [ $mod ] $+ ] _ignore_chans_networks,%net,1,32)
+      if (!% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _chans) { 
+        unset % [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _chans
+        set % $+ $mod $+ _ignore_chans_networks $remtok(% [ $+ [ $mod ] $+ ] _ignore_chans_networks,%n,1,32)
 
         if (!% [ $+ [ $mod ] $+ ] _ignore_chans_networks) { unset % $+ $mod $+ _ignore_chans_networks }
       }
@@ -276,66 +276,66 @@ ON *:DIALOG:wbs_sets:*:*: {
     }
     if ($did == 17) {
       var %s = $did(15).seltext
-      var %net = $gettok(%s,1,32)
-      var %nick = $gettok(%s,3,32)
+      var %n = $gettok(%s,1,32)
+      var %k = $gettok(%s,3,32)
 
       did -b $dname $did
 
       if (!%s) { return }
 
-      set % $+ $mod $+ _ignore_ $+ %net $+ _nicks $remtok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _nicks,%nick,1,32)
+      set % $+ $mod $+ _ignore_ $+ %n $+ _nicks $remtok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _nicks,%k,1,32)
 
-      if (!% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _nicks) { 
-        unset % [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _nicks
-        set % $+ $mod $+ _ignore_nicks_networks $remtok(% [ $+ [ $mod ] $+ ] _ignore_nicks_networks,%net,1,32)
+      if (!% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _nicks) { 
+        unset % [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _nicks
+        set % $+ $mod $+ _ignore_nicks_networks $remtok(% [ $+ [ $mod ] $+ ] _ignore_nicks_networks,%n,1,32)
 
         if (!% [ $+ [ $mod ] $+ ] _ignore_nicks_networks) { unset % [ $+ [ $mod ] $+ ] _ignore_nicks_networks }
       }
       wmm_ignore_cn_list
     }
     if ($did == 6) {
-      var %net = $input($lang(27),eidbk60,$addon $wmm_bel $lang(22))
+      var %n = $input($lang(27),eidbk60,$addon $wmm_bel $lang(22))
 
       if (!$dialog($dname)) { return }
       if (!%net) { $mod $+ _sets | return }
-      if ($numtok(%net,32) !== 1) { wmm_input error 60 $lang(28) | $mod $+ _sets | return }
-      if ($len(%net) > 50) { wmm_input error 60 $lang(29) | $mod $+ _sets | return }
+      if ($numtok(%n,32) !== 1) { wmm_input error 60 $lang(28) | $mod $+ _sets | return }
+      if ($len(%n) > 50) { wmm_input error 60 $lang(29) | $mod $+ _sets | return }
 
-      var %chan = $input($lang(30),eidbk60,$addon $wmm_bel $lang(22))
+      var %c = $input($lang(30),eidbk60,$addon $wmm_bel $lang(22))
 
       if (!$dialog($dname)) { return }
-      if (!%chan) { $mod $+ _sets | return }
-      if ($numtok(%chan,32) !== 1) { wmm_input error 60 $lang(31) | $mod $+ _sets | return }
-      if ($numtok(%chan,44) !== 1) { wmm_input error 60 $lang(31) | $mod $+ _sets | return }
-      if ($left(%chan,1) !== $chr(35)) { wmm_input error 60 $lang(32) | $mod $+ _sets | return }
-      if ($istok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _chans,%chan,32)) { wmm_input error 60 $lang(33) | $mod $+ _sets | return }
+      if (!%c) { $mod $+ _sets | return }
+      if ($numtok(%c,32) !== 1) { wmm_input error 60 $lang(31) | $mod $+ _sets | return }
+      if ($numtok(%c,44) !== 1) { wmm_input error 60 $lang(31) | $mod $+ _sets | return }
+      if ($left(%c,1) !== $chr(35)) { wmm_input error 60 $lang(32) | $mod $+ _sets | return }
+      if ($istok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _chans,%c,32)) { wmm_input error 60 $lang(33) | $mod $+ _sets | return }
 
-      set % $+ $mod $+ _ignore_ $+ %net $+ _chans $addtok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _chans,%chan,32)
+      set % $+ $mod $+ _ignore_ $+ %n $+ _chans $addtok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _chans,%c,32)
 
-      if (!$istok(% [ $+ [ $mod ] $+ ] _ignore_chans_networks,%net,32)) { set % $+ $mod $+ _ignore_chans_networks $addtok(% [ $+ [ $mod ] $+ ] _ignore_chans_networks,%net,32) }
+      if (!$istok(% [ $+ [ $mod ] $+ ] _ignore_chans_networks,%n,32)) { set % $+ $mod $+ _ignore_chans_networks $addtok(% [ $+ [ $mod ] $+ ] _ignore_chans_networks,%n,32) }
 
       wmm_ignore_cn_list
 
       $mod $+ _sets
     }
     if ($did == 16) {
-      var %net = $input($lang(27),eidbk60,$addon $wmm_bel $lang(22))
+      var %n = $input($lang(27),eidbk60,$addon $wmm_bel $lang(22))
 
       if (!$dialog($dname)) { return }
-      if (!%net) { $mod $+ _sets | return }
-      if ($numtok(%net,32) !== 1) { wmm_input error 60 $lang(28) | $mod $+ _sets | return }
-      if ($len(%net) > 50) { wmm_input error 60 $lang(29) | $mod $+ _sets | return }
+      if (!%n) { $mod $+ _sets | return }
+      if ($numtok(%n,32) !== 1) { wmm_input error 60 $lang(28) | $mod $+ _sets | return }
+      if ($len(%n) > 50) { wmm_input error 60 $lang(29) | $mod $+ _sets | return }
 
-      var %nick = $input($lang(21),eidbk60,$addon $wmm_bel $lang(22))
+      var %k = $input($lang(21),eidbk60,$addon $wmm_bel $lang(22))
 
       if (!$dialog($dname)) { return }
-      if (!%nick) { $mod $+ _sets | return }
-      if ($numtok(%nick,32) !== 1) { wmm_input error 60 $lang(35) | $mod $+ _sets | return }
-      if ($istok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _nicks,%nick,32)) { wmm_input error 60 $lang(34) | $mod $+ _sets | return }
+      if (!%k) { $mod $+ _sets | return }
+      if ($numtok(%k,32) !== 1) { wmm_input error 60 $lang(35) | $mod $+ _sets | return }
+      if ($istok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _nicks,%k,32)) { wmm_input error 60 $lang(34) | $mod $+ _sets | return }
 
-      set % $+ $mod $+ _ignore_ $+ %net $+ _nicks $addtok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _nicks,%nick,32)
+      set % $+ $mod $+ _ignore_ $+ %n $+ _nicks $addtok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _nicks,%k,32)
 
-      if (!$istok(% [ $+ [ $mod ] $+ ] _ignore_nicks_networks,%net,32)) { set % $+ $mod $+ _ignore_nicks_networks $addtok(% [ $+ [ $mod ] $+ ] _ignore_nicks_networks,%net,32) }
+      if (!$istok(% [ $+ [ $mod ] $+ ] _ignore_nicks_networks,%n,32)) { set % $+ $mod $+ _ignore_nicks_networks $addtok(% [ $+ [ $mod ] $+ ] _ignore_nicks_networks,%n,32) }
 
       wmm_ignore_cn_list
 
@@ -346,9 +346,9 @@ ON *:DIALOG:wbs_sets:*:*: {
 
       var %z = 1
       while (%z <= $numtok(% [ $+ [ $mod ] $+ ] _ignore_chans_networks,32)) {
-        var %net = $gettok(% [ $+ [ $mod ] $+ ] _ignore_chans_networks,%z,32)
+        var %n = $gettok(% [ $+ [ $mod ] $+ ] _ignore_chans_networks,%z,32)
 
-        if (% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _chans) { unset % [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _chans }
+        if (% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _chans) { unset % [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _chans }
 
         inc %z
       }
@@ -362,9 +362,9 @@ ON *:DIALOG:wbs_sets:*:*: {
 
       var %z = 1
       while (%z <= $numtok(% [ $+ [ $mod ] $+ ] _ignore_nicks_networks,32)) {
-        var %net = $gettok(% [ $+ [ $mod ] $+ ] _ignore_nicks_networks,%z,32)
+        var %n = $gettok(% [ $+ [ $mod ] $+ ] _ignore_nicks_networks,%z,32)
 
-        if (% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _nicks) { unset % [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _nicks }
+        if (% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _nicks) { unset % [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ %n ] $+ ] _nicks }
 
         inc %z
       }
