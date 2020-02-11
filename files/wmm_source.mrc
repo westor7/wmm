@@ -36,7 +36,7 @@ dialog -l wmm_module_sets {
   title ""
   size -1 -1 233 170
   option dbu disable
-  icon $wmm_dir $+ wmm_main.ico, 0
+  icon $wmm_logo_ico, 0
   tab "Settings 1", 1, 2 2 230 88
   list 3, 4 30 80 58, tab 1 size vsbar disable multsel extsel
   button >, 4, 108 30 18 12, tab 1 disable
@@ -67,7 +67,7 @@ dialog -l wmm_module_sets {
   text "", 13, 207 161 21 8, disable center
   text "News:", 43, 70 93 100 8, center
   text "Loading the latest available news...", 42, 10 104 215 45, center
-  icon 230, 202 153 30 9, $wmm_dir $+ wmm_donate.png, 1, noborder center
+  icon 230, 202 153 30 9, $wmm_donate_png, 1, noborder center
   menu "Menu", 14
   item "Help", 18, 14
   item break, 501
@@ -88,7 +88,7 @@ dialog -l wmm_module {
   title ""
   size -1 -1 265 285
   option dbu disable
-  icon $wmm_dir $+ wmm_main.ico, 0
+  icon $wmm_logo_ico, 0
   button "Close this window", 1, 45 269 165 15, default ok
   tab "Modules", 2, 2 2 262 209
   button "Install", 7, 200 121 61 12, disable tab 2
@@ -106,13 +106,13 @@ dialog -l wmm_module {
   text "Module List:", 90, 75 20 113 8, center
   text "Module Description:", 9, 75 70 113 8, center
   edit "" 8, 4 80 257 40, disable read multi autovs autohs vsbar center
-  icon 14, 4 150 75 58, $wmm_dir $+ wmm_no_preview.png, 1, noborder
-  icon 15, 92 150 80 58, $wmm_dir $+ wmm_no_preview.png, 1, noborder
-  icon 16, 185 150 75 58, $wmm_dir $+ wmm_no_preview.png, 1, noborder
+  icon 14, 4 150 75 58, $wmm_noprev_png, 1, noborder
+  icon 15, 92 150 80 58, $wmm_noprev_png, 1, noborder
+  icon 16, 185 150 75 58, $wmm_noprev_png, 1, noborder
   text "Module Screenshots:", 17, 75 140 113 8, center
   text "", 5, 241 275 18 8, disable center
-  icon 23, 234 267 30 9, $wmm_dir $+ wmm_donate.png, 1, noborder center
-  icon 28, 123 121 17 17, $wmm_dir $+ wmm_main.ico, 1, noborder center hide
+  icon 23, 234 267 30 9, $wmm_donate_png, 1, noborder center
+  icon 28, 123 121 17 17, $wmm_logo_ico, 1, noborder center hide
   menu "Menu", 10
   item "Help", 18, 10
   item break, 501
@@ -148,10 +148,10 @@ ON *:START: {
 
     wmm_fix_extra_modules_installed
 
-    var %lng = $wmm_dir $+ wmm_lang.ini
-    var %ico = $wmm_dir $+ wmm_main.ico
-    var %png = $wmm_dir $+ wmm_no_preview.png
-    var %don = $wmm_dir $+ wmm_donate.png
+    var %lng = $wmm_lang_ini
+    var %ico = $wmm_logo_ico
+    var %png = $wmm_noprev_png
+    var %don = $wmm_donate_png
 
     wmm_dl $wmm_main_ico_url $qt(%ico) 
     wmm_dl $wmm_lang_url $qt(%lng) 
@@ -192,10 +192,10 @@ ON *:START: {
 
     if (!$wmm_rconf(Settings,Language)) { wmm_wconf Settings Language English }
 
-    var %lng = $wmm_dir $+ wmm_lang.ini
-    var %ico = $wmm_dir $+ wmm_main.ico
-    var %png = $wmm_dir $+ wmm_no_preview.png
-    var %don = $wmm_dir $+ wmm_donate.png
+    var %lng = $wmm_lang_ini
+    var %ico = $wmm_logo_ico
+    var %png = $wmm_noprev_png
+    var %don = $wmm_donate_png
 
     if (!$file(%lng)) { var %delay = 1 | wmm_dl $wmm_lang_url $qt(%lng) }
     if (!$file(%ico)) { var %delay = 1 | wmm_dl $wmm_main_ico_url $qt(%ico) }
@@ -1085,6 +1085,10 @@ alias wmm_images_zip_file { return $wmm_temp $+ wmm_modules_images.zip }
 alias wmm_errors { return $lines($wmm_temp $+ wmm_errors.log) }
 alias wmm_dir { return $nofile($script) }
 alias wmm_conf { return $wmm_dir $+ wmm_conf.ini }
+alias wmm_lang_ini { return $wmm_dir $+ wmm_lang.ini }
+alias wmm_donate_png { return $wmm_dir $+ wmm_donate.png }
+alias wmm_noprev_png { return $wmm_dir $+ wmm_no_preview.png }
+alias wmm_logo_ico { return $wmm_dir $+ wmm_main.ico }
 alias wmm_sets_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_sets_v5_0.ini }
 alias wmm_main_ico_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_main.ico }
 alias wmm_main_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_no_preview.png }
@@ -1135,10 +1139,10 @@ alias wmm {
 
   wmm_fix_extra_modules_installed
 
-  var %don = $wmm_dir $+ wmm_donate.png
-  var %ico = $wmm_dir $+ wmm_main.ico
-  var %png = $wmm_dir $+ wmm_no_preview.png
-  var %lng = $wmm_dir $+ wmm_lang.ini
+  var %don = $wmm_donate_png
+  var %ico = $wmm_logo_ico
+  var %png = $wmm_noprev_png
+  var %lng = $wmm_lang_ini
 
   if (!$file(%lng)) || (!$file(%ico)) || (!$file(%png)) || (!$file(%don)) { 
     if (!$wmm_internet) { wmm_input error 60 There are missing some several required project files and you must be connected to internet in order to continue for downloading them! | return }
@@ -1182,10 +1186,10 @@ alias wmm_sets {
 
   wmm_fix_extra_modules_installed
 
-  var %don = $wmm_dir $+ wmm_donate.png
-  var %ico = $wmm_dir $+ wmm_main.ico
-  var %png = $wmm_dir $+ wmm_no_preview.png
-  var %lng = $wmm_dir $+ wmm_lang.ini
+  var %don = $wmm_donate_png
+  var %ico = $wmm_logo_ico
+  var %png = $wmm_noprev_png
+  var %lng = $wmm_lang_ini
 
   if (!$file(%lng)) || (!$file(%ico)) || (!$file(%png)) || (!$file(%don)) { 
     if (!$wmm_internet) { wmm_input error 60 There are missing some several required project files and you must be connected to internet in order to continue for downloading them! | return }
@@ -1213,10 +1217,10 @@ alias -l wmm_check_before_open {
 
   wmm_check_load_def_settings
 
-  var %lng = $wmm_dir $+ wmm_lang.ini
-  var %don = $wmm_dir $+ wmm_donate.png
-  var %ico = $wmm_dir $+ wmm_main.ico
-  var %png = $wmm_dir $+ wmm_no_preview.png
+  var %lng = $wmm_lang_ini
+  var %don = $wmm_donate_png
+  var %ico = $wmm_logo_ico
+  var %png = $wmm_noprev_png
 
   if (!$file(%lng)) { wmm_input error 60 FATAL ERROR! @newline@ @newline@ $+ Error Code: CANNOT_FIND_LANGUAGE_FILE | return }
   if (!$file(%don)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_DONATION_IMAGE_FILE | return }
@@ -1337,7 +1341,7 @@ alias wmm_check_monitor_warn {
 }
 
 alias wmm_lang {
-  var %f = $wmm_dir $+ wmm_lang.ini
+  var %f = $wmm_lang_ini
   var %lng = $wmm_rconf(Settings,Language)
 
   if (!%lng) { var %lng = English }
@@ -1358,7 +1362,7 @@ alias wmm_lang {
 }
 
 alias wmm_langs {
-  var %f = $wmm_dir $+ wmm_lang.ini
+  var %f = $wmm_lang_ini
 
   if (!$isid) || (!$file(%f)) || (!$ini(%f,0)) { return 0 }
 
@@ -1438,7 +1442,7 @@ alias -l wmm_reset_images {
 
         if ($file(%f)) { did -g %d %id $qt(%f) }
         else { 
-          var %f = $wmm_dir $+ wmm_no_preview.png
+          var %f = $wmm_noprev_png
 
           if (!$file(%f)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) MISSING_NOPREVIEW_IMAGE_FILE_FOR_ $+ %i $+ _ITEM | wmm_d_close %d | return }
 
@@ -1453,7 +1457,7 @@ alias -l wmm_reset_images {
     return
   }
 
-  var %f = $wmm_dir $+ wmm_no_preview.png
+  var %f = $wmm_noprev_png
   did -h %d 28
 
   if (!$file(%f)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_NOPREVIEW_IMAGE_FILE | wmm_d_close %d }
@@ -1632,10 +1636,10 @@ alias -l wmm_mod_menus_check_and_set_after {
 alias -l wmm_check_update_install {
   if (!$1) { return }
 
-  var %l = $wmm_dir $+ wmm_lang.ini
-  var %i = $wmm_dir $+ wmm_main.ico
-  var %p = $wmm_dir $+ wmm_no_preview.png
-  var %d = $wmm_dir $+ wmm_donate.png
+  var %l = $wmm_lang_ini
+  var %i = $wmm_logo_ico
+  var %p = $wmm_noprev_png
+  var %d = $wmm_donate_png
   var %s = $urlget($1).state
   var %fo = $urlget($1).target
   var %fn = $wmm_dir $+ $nopath(%fo)
@@ -1858,7 +1862,7 @@ alias -l wmm_tool {
 
   if (s isincs $1) && (%status) { 
     var %d = wmm_module
-    var %ico = $wmm_dir $+ wmm_main.ico
+    var %ico = $wmm_logo_ico
 
     if (!$file(%ico)) { wmm_dl $wmm_main_ico_url $qt(%ico) | return }
 
@@ -2021,7 +2025,7 @@ alias -l wmm_pic {
 
   var %a = $wmm_resize_image($1) 
 
-  window -fadCBvzpk0w0 +estf %win -1 -1 %a $qt($wmm_dir $+ wmm_main.ico)
+  window -fadCBvzpk0w0 +estf %win -1 -1 %a $qt($wmm_logo_ico)
   titlebar %win %details
   drawpic -s %win 0 0 %a $1
 
@@ -2228,18 +2232,18 @@ menu @wmm_pic {
 
 menu @wmm {
   -
-  $iif($wmm_isadi && $file($wmm_dir $+ wmm_main.ico),$menuicon($wmm_dir $+ wmm_main.ico)) $iif($dialog(wmm_module),$style(1)) $wmm_qd($iif($wmm_lang(73),$v1,Open the) $upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager)): { .timer -ho 1 100 wmm | wmm_d_close wmm_module_sets }
+  $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $iif($dialog(wmm_module),$style(1)) $wmm_qd($iif($wmm_lang(73),$v1,Open the) $upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager)): { .timer -ho 1 100 wmm | wmm_d_close wmm_module_sets }
   -
-  $iif($wmm_isadi && $file($wmm_dir $+ wmm_main.ico),$menuicon($wmm_dir $+ wmm_main.ico)) $iif($dialog(wmm_module_sets),$style(1)) $wmm_qd($iif($wmm_lang(73),$v1,Open the) $upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $wmm_sep $iif($wmm_lang(69),$v1,Settings)): { .timer -ho 1 500 wmm_sets | wmm_d_close wmm_module }
+  $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $iif($dialog(wmm_module_sets),$style(1)) $wmm_qd($iif($wmm_lang(73),$v1,Open the) $upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $wmm_sep $iif($wmm_lang(69),$v1,Settings)): { .timer -ho 1 500 wmm_sets | wmm_d_close wmm_module }
   -
 }
 
 #wmm_adiirc_menus on
 menu menubar,status,channel {
   $iif($wmm_rconf(Settings,Menus),-)
-  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $iif($file($wmm_dir $+ wmm_main.ico),$menuicon($wmm_dir $+ wmm_main.ico)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $+ )): { wmm }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $iif($file($wmm_dir $+ wmm_main.ico),$menuicon($wmm_dir $+ wmm_main.ico)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $wmm_sep $iif($wmm_lang(69),$v1,Settings) $+ )): { wmm_sets }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$iif($file($wmm_dir $+ wmm_main.ico),$menuicon($wmm_dir $+ wmm_main.ico)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $wmm_sep $iif($wmm_lang(77),$v1,Modules List)))
+  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $+ )): { wmm }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $wmm_sep $iif($wmm_lang(69),$v1,Settings) $+ )): { wmm_sets }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $wmm_sep $iif($wmm_lang(77),$v1,Modules List)))
   .$iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$submenu($wmm_modules_all_installed_list($1)))
   $iif($wmm_rconf(Settings,Menus),-)
 }
