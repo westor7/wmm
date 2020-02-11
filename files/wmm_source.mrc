@@ -30,8 +30,6 @@
 
 ; --- Start of dialogs ---
 
-alias wmm_mod_ { }
-
 dialog -l wmm_module_sets {
   title ""
   size -1 -1 233 170
@@ -153,9 +151,9 @@ ON *:START: {
     var %png = $wmm_noprev_png
     var %don = $wmm_donate_png
 
-    wmm_dl $wmm_main_ico_url $qt(%ico) 
+    wmm_dl $wmm_logo_ico_url $qt(%ico) 
     wmm_dl $wmm_lang_url $qt(%lng) 
-    wmm_dl $wmm_main_png_url $qt(%png)
+    wmm_dl $wmm_noprev_png_url $qt(%png)
     wmm_dl $wmm_donate_png_url $qt(%don)
 
     wmm_check_load_def_settings
@@ -198,8 +196,8 @@ ON *:START: {
     var %don = $wmm_donate_png
 
     if (!$file(%lng)) { var %delay = 1 | wmm_dl $wmm_lang_url $qt(%lng) }
-    if (!$file(%ico)) { var %delay = 1 | wmm_dl $wmm_main_ico_url $qt(%ico) }
-    if (!$file(%png)) { var %delay = 1 | wmm_dl $wmm_main_png_url $qt(%png) }
+    if (!$file(%ico)) { var %delay = 1 | wmm_dl $wmm_logo_ico_url $qt(%ico) }
+    if (!$file(%png)) { var %delay = 1 | wmm_dl $wmm_noprev_png_url $qt(%png) }
     if (!$file(%don)) { var %delay = 1 | wmm_dl $wmm_donate_png_url $qt(%don) }
 
     if (!%delay) { wmm_tool -s }
@@ -219,10 +217,10 @@ ON *:START: {
 }
 
 ON *:UNLOAD: {
-  var %l = $scriptdir $+ wmm_lang.ini
-  var %i = $scriptdir $+ wmm_main.ico
-  var %p = $scriptdir $+ wmm_no_preview.png
-  var %d = $scriptdir $+ wmm_donate.png
+  var %l = $wmm_lang_ini
+  var %i = $wmm_logo_ico
+  var %p = $wmm_noprev_png
+  var %d = $wmm_donate_png
 
   if ($wmm_langs) { var %m = $wmm_lang(38) $upper($wmm_owner) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) $wmm_owner $wmm_lang(40) }
   else { var %m = The $upper($wmm_owner) Module Manager v $+ $wmm_ver ( $+ $wmm_crdate $+ ) by $wmm_owner has been uninstalled successfully. }
@@ -1088,10 +1086,10 @@ alias wmm_conf { return $wmm_dir $+ wmm_conf.ini }
 alias wmm_lang_ini { return $wmm_dir $+ wmm_lang.ini }
 alias wmm_donate_png { return $wmm_dir $+ wmm_donate.png }
 alias wmm_noprev_png { return $wmm_dir $+ wmm_no_preview.png }
-alias wmm_logo_ico { return $wmm_dir $+ wmm_main.ico }
+alias wmm_logo_ico { return $wmm_dir $+ wmm_logo.ico }
 alias wmm_sets_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_sets_v5_0.ini }
-alias wmm_main_ico_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_main.ico }
-alias wmm_main_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_no_preview.png }
+alias wmm_logo_ico_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_logo.ico }
+alias wmm_noprev_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_no_preview.png }
 alias wmm_donate_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_donate.png }
 alias wmm_lang_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_lang.ini }
 alias wmm_modules_page { return https://github.com/westor7/wmm/tree/master/modules/ $+ $lower($1) }
@@ -1152,8 +1150,8 @@ alias wmm {
     wmm_input warn 3 Downloading some missing project required files...
 
     wmm_dl $wmm_lang_url $qt(%lng)
-    wmm_dl $wmm_main_ico_url $qt(%ico)
-    wmm_dl $wmm_main_png_url $qt(%png)
+    wmm_dl $wmm_logo_ico_url $qt(%ico)
+    wmm_dl $wmm_noprev_png_url $qt(%png)
     wmm_dl $wmm_donate_png_url $qt(%don)
 
     return
@@ -1199,8 +1197,8 @@ alias wmm_sets {
     wmm_input warn 3 Downloading some missing project required files...
 
     wmm_dl $wmm_lang_url $qt(%lng)
-    wmm_dl $wmm_main_ico_url $qt(%ico)
-    wmm_dl $wmm_main_png_url $qt(%png)
+    wmm_dl $wmm_logo_ico_url $qt(%ico)
+    wmm_dl $wmm_noprev_png_url $qt(%png)
     wmm_dl $wmm_donate_png_url $qt(%don)
 
     return
@@ -1224,7 +1222,7 @@ alias -l wmm_check_before_open {
 
   if (!$file(%lng)) { wmm_input error 60 FATAL ERROR! @newline@ @newline@ $+ Error Code: CANNOT_FIND_LANGUAGE_FILE | return }
   if (!$file(%don)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_DONATION_IMAGE_FILE | return }
-  if (!$file(%ico)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_MAIN_IMAGE_FILE | return }
+  if (!$file(%ico)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_LOGO_IMAGE_FILE | return }
   if (!$file(%png)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_NOPREVIEW_IMAGE_FILE | return }
 
   wmm_dl_sets -o $1
@@ -1864,7 +1862,7 @@ alias -l wmm_tool {
     var %d = wmm_module
     var %ico = $wmm_logo_ico
 
-    if (!$file(%ico)) { wmm_dl $wmm_main_ico_url $qt(%ico) | return }
+    if (!$file(%ico)) { wmm_dl $wmm_logo_ico_url $qt(%ico) | return }
 
     wmm_t_close wmm
     wmm_t_close wmm1
