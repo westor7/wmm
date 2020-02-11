@@ -135,7 +135,7 @@ ON *:DIALOG:wbs_sets:*:*: {
     if ($group(# [ $+ [ $mod ] $+ ] _menu_query) == on) { did -c $dname 57 }
     if ($group(# [ $+ [ $mod ] $+ ] _menu_nicklist) == on) { did -c $dname 58 }
 
-    var %f = $scriptdir $+ $mod $+ _lang.ini
+    var %f = $scriptdir $+ _lang.ini
 
     if (!$ini(%f,0)) { did -b $dname 19 }
     else { 
@@ -493,7 +493,7 @@ alias -l addon { return $gettok($read($script,n,5),3,32) }
 alias -l cx { return 009501821161684206895%3Ai7e1srbu6re }
 
 alias -l lang {
-  var %f = $scriptdir $+ $mod $+ _lang.ini
+  var %f = $scriptdir $+ lang.ini
 
   if (!% [ $+ [ $mod ] $+ ] _lang) { set % $+ $mod $+ _lang English }
 

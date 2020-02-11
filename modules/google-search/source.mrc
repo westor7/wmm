@@ -135,7 +135,7 @@ ON *:DIALOG:wgs_sets:*:*: {
     if (% [ $+ [ $mod ] $+ ] _title_chars_max) { did -ra $dname 47 % [ $+ [ $mod ] $+ ] _title_chars_max }
     if (% [ $+ [ $mod ] $+ ] _desc_chars_max) { did -ra $dname 49 % [ $+ [ $mod ] $+ ] _desc_chars_max }
 
-    var %f = $scriptdir $+ $mod $+ _lang.ini
+    var %f = $scriptdir $+ lang.ini
 
     if (!$ini(%f,0)) { did -b $dname 19 }
     else { 
@@ -503,7 +503,7 @@ alias -l addon { return $gettok($read($script,n,5),3,32) }
 alias -l cx { return 009501821161684206895%3Ai7e1srbu6re }
 
 alias -l lang {
-  var %f = $scriptdir $+ $mod $+ _lang.ini
+  var %f = $scriptdir $+ lang.ini
 
   if (!% [ $+ [ $mod ] $+ ] _lang) { set % $+ $mod $+ _lang English }
   if (!$file(%f)) || (!$isid) || (!$1) || ($1 !isnum) { return 0 }
