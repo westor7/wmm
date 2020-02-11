@@ -135,7 +135,7 @@ ON *:DIALOG:wbs_sets:*:*: {
     if ($group(# [ $+ [ $mod ] $+ ] _menu_query) == on) { did -c $dname 57 }
     if ($group(# [ $+ [ $mod ] $+ ] _menu_nicklist) == on) { did -c $dname 58 }
 
-    var %f = $scriptdir $+ _lang.ini
+    var %f = $scriptdir $+ lang.ini
     var %t = $ini(%f,0)
 
     if (!%t) { did -b $dname 19 }
