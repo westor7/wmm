@@ -346,11 +346,6 @@ ON *:LOAD: {
   wmm_dl $wmm_mod_logo_url($addon) $qt($scriptdir $+ logo.ico)
   wmm_dl $wmm_mod_lang_url($addon) $qt($scriptdir $+ lang.ini)
 
-  .enable $chr(35) $+ $mod $+ _menu_menubar
-  .disable $chr(35) $+ $mod $+ _menu_status
-  .disable $chr(35) $+ $mod $+ _menu_nicklist
-  .disable $chr(35) $+ $mod $+ _menu_channel
-
   set -i % $+ $mod $+ _status 1
   set -i % $+ $mod $+ _tiny 1
   set -i % $+ $mod $+ _strip 0
@@ -612,35 +607,35 @@ alias wbs_bing_search {
 #wbs_menu_menubar off
 menu menubar { 
   -
-  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $lang(4) $+ ): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver $wmm_sep $lang(4) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_menubar end
 #wbs_menu_status off
 menu status { 
   -
-  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $lang(4) $+ ): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver $wmm_sep $lang(4) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_status end
 #wbs_menu_channel off
 menu channel { 
   -
-  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $lang(4) $+ ): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver $wmm_sep $lang(4) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_channel end
 #wbs_menu_nicklist off
 menu nicklist { 
   -
-  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $lang(4) $+ ): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver $wmm_sep $lang(4) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_nicklist end
 #wbs_menu_query off
 menu query { 
   -
-  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $lang(4) $+ ): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver $wmm_sep $lang(4) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_query end
