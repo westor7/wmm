@@ -73,46 +73,7 @@ dialog -l wbs_sets {
 
 ON *:DIALOG:wbs_sets:*:*: {
   if ($devent == init) {
-    dialog -t $dname $addon v $+ $ [ $+ [ $mod ] $+ ] _ver $lang(4) $wmm_bel (/ [ $+ [ $mod ] $+ ] _sets)
-
-    .timer[ $+ $mod $+ _ANIMATE_TITLE_NOW] -ho 1 2000 wmm_dtitle $dname $dialog($dname).title
-
-    did -ra $dname 1 $lang(3)
-    did -ra $dname 2 $lang(4) 1
-    did -ra $dname 3 $lang(5)
-    did -ra $dname 6 $lang(6)
-    did -ra $dname 7 $lang(7)
-    did -ra $dname 8 $lang(8)
-    did -ra $dname 16 $lang(6)
-    did -ra $dname 14 $lang(9)
-    did -ra $dname 17 $lang(7)
-    did -ra $dname 18 $lang(8)
-    did -ra $dname 13 $lang(4) 2
-    did -ra $dname 9 $lang(10)
-    did -ra $dname 11 $lang(11)
-    did -ra $dname 20 $lang(12)
-    did -ra $dname 27 $lang(19)
-    did -ra $dname 12 $lang(13)
-    did -ra $dname 21 v $+ $ [ $+ [ $mod ] $+ ] _ver
-    did -ra $dname 29 $lang(47) $qt($lang(43)) $lang(48)
-    did -ra $dname 30 $lang(47) $qt($lang(44)) $lang(48)
-    did -ra $dname 31 $lang(47) $qt($lang(45)) $lang(48)
-    did -o $dname 22 $lang(14)
-    did -o $dname 23 $lang(15)
-    did -o $dname 24 $lang(16)
-    did -o $dname 25 $lang(17)
-    did -o $dname 26 $lang(18)
-    did -ra $dname 52 $lang(49)
-    did -ra $dname 46 $lang(50) $qt($lang(43)) $lang(51)
-    did -ra $dname 48 $lang(50) $qt($lang(44)) $lang(51)
-    did -ra $dname 53 $lang(4) 3
-    did -ra $dname 54 $lang(52) $qt(menubar) $lang(53)
-    did -ra $dname 55 $lang(52) $qt(status) $lang(53)
-    did -ra $dname 56 $lang(52) $qt(channel) $lang(53)
-    did -ra $dname 57 $lang(52) $qt(query) $lang(53)
-    did -ra $dname 58 $lang(52) $qt(nicklist) $lang(53)
-    did -ra $dname 520 $lang(54)
-    did -ra $dname 620 $lang(55)
+    dialog_sets_init $dname
 
     if ($istok(% [ $+ [ $mod ] $+ ] _show,title,32)) { did -c $dname 29 }
     if ($istok(% [ $+ [ $mod ] $+ ] _show,description,32)) { did -c $dname 30 }
@@ -169,7 +130,6 @@ ON *:DIALOG:wbs_sets:*:*: {
     if (!$did(28)) || (!$wmm_isdigit($did(28))) || ($did(28) > 9) { set % $+ $mod $+ _max_results 3 }
     if (!$did(47)) || (!$wmm_isdigit($did(47))) || ($did(47) > 300) { set % $+ $mod $+ _title_chars_max 100 }
     if (!$did(49)) || (!$wmm_isdigit($did(49))) || ($did(49) > 300) { set % $+ $mod $+ _desc_chars_max 50 }
-    if ($did(19)) { set % $+ $mod $+ _lang $did(19) }
   }
   if ($devent == edit) {
     if ($did == 5) {
@@ -189,12 +149,19 @@ ON *:DIALOG:wbs_sets:*:*: {
       else { unset % $+ $mod $+ _title_chars_max }
     }
     if ($did == 49) {
-      if ($did($did).text) { set % $+ $mod $+ _desc_chars_max $v1 }
-      else { unset % $+ $mod $+ _desc_chars_max }
+      if ($did($did).text) && ($wmm_isdigit($did($did).text)) && ($did($did).text < 300) { set % $+ $mod $+ _desc_chars_max $did($did).text }
+      else { set % $+ $mod $+ _desc_chars_max 50 }
     }
   }
   if ($devent == sclick) {
     if ($did == 280) { url $wmm_donate }
+    if ($did == 19) {
+      if ($did($did).text == % [ $+ [ $mod ] $+ ] _lang) { return }
+
+      set % $+ $mod $+ _lang $did($did).text
+
+      dialog_sets_init $dname
+    }
     if ($did == 29) {
       var %v = title
 
@@ -512,6 +479,53 @@ alias -l lang {
   :error | wmm_werror $addon $scriptline $error | reseterror
 }
 
+alias -l dialog_sets_init {
+  if (!$1) || (!$dialog($1)) { return }
+
+  .timer[ $+ $mod $+ _ANIMATE_TITLE_*] off
+
+  dialog -t $1 $addon v $+ $ [ $+ [ $mod ] $+ ] _ver $lang(4) $wmm_bel (/ [ $+ [ $mod ] $+ ] _sets)
+
+  .timer[ $+ $mod $+ _ANIMATE_TITLE_NOW] -ho 1 1000 wmm_dtitle $1 $dialog($1).title
+
+  did -ra $1 1 $lang(3)
+  did -ra $1 2 $lang(4) 1
+  did -ra $1 3 $lang(5)
+  did -ra $1 6 $lang(6)
+  did -ra $1 7 $lang(7)
+  did -ra $1 8 $lang(8)
+  did -ra $1 16 $lang(6)
+  did -ra $1 14 $lang(9)
+  did -ra $1 17 $lang(7)
+  did -ra $1 18 $lang(8)
+  did -ra $1 13 $lang(4) 2
+  did -ra $1 9 $lang(10)
+  did -ra $1 11 $lang(11)
+  did -ra $1 20 $lang(12)
+  did -ra $1 27 $lang(19)
+  did -ra $1 12 $lang(13)
+  did -ra $1 21 v $+ $ [ $+ [ $mod ] $+ ] _ver
+  did -ra $1 29 $lang(47) $qt($lang(43)) $lang(48)
+  did -ra $1 30 $lang(47) $qt($lang(44)) $lang(48)
+  did -ra $1 31 $lang(47) $qt($lang(45)) $lang(48)
+  did -o $1 22 $lang(14)
+  did -o $1 23 $lang(15)
+  did -o $1 24 $lang(16)
+  did -o $1 25 $lang(17)
+  did -o $1 26 $lang(18)
+  did -ra $1 52 $lang(49)
+  did -ra $1 46 $lang(50) $qt($lang(43)) $lang(51)
+  did -ra $1 48 $lang(50) $qt($lang(44)) $lang(51)
+  did -ra $1 53 $lang(4) 3
+  did -ra $1 54 $lang(52) $qt(menubar) $lang(53)
+  did -ra $1 55 $lang(52) $qt(status) $lang(53)
+  did -ra $1 56 $lang(52) $qt(channel) $lang(53)
+  did -ra $1 57 $lang(52) $qt(query) $lang(53)
+  did -ra $1 58 $lang(52) $qt(nicklist) $lang(53)
+  did -ra $1 520 $lang(54)
+  did -ra $1 620 $lang(55)
+}
+
 ; ##########################################################
 
 alias wbs_sets { 
@@ -629,7 +643,7 @@ menu menubar {
   -
 }
 #wbs_menu_menubar end
-#wbs_menu_status off
+#wbs_menu_status on
 menu status { 
   -
   $iif($isalias(wmm_isadi) && $wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $iif($isalias(wmm_qd),$wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ),* $addon v $+ $ [ $+ [ $mod ] $+ ] _ver - Settings *): $+ $mod $+ _sets
