@@ -3,7 +3,7 @@
 #########################################
 
 	 #      Bing-Search      #
-	  # v2.7 - (12/02/2020) #
+	  # v2.7 - (13/02/2020) #
 	   # Thanks Supporters #
 
 #########################################
@@ -18,7 +18,7 @@ dialog -l wbs_sets {
   option dbu disable
   icon $scriptdir $+ logo.ico, 0
   button "Close this window", 1, 77 136 193 17, default ok
-  icon 280, 295 136 30 9, $wmm_dir $+ wmm_donate.png, 1, noborder center
+  icon 280, 295 136 30 9, $wmm_donate_png, 1, noborder center
   tab "Settings 1", 2, 2 2 324 122
   text "Ignore channel(s):", 3, 4 20 75 8, tab 2 center
   list 4, 4 30 78 92, disable tab 2 size hsbar vsbar
@@ -341,7 +341,7 @@ ON *:DIALOG:wbs_sets:*:*: {
 }
 
 ON *:LOAD: {  
-  if (!$manager) { noop $input(You have to use the $qt($upper($wmm_owner) Module Manager) and install that module from the manager in order to work that module!,houdbk60,Error) | .unload -nrs $qt($script) | return }
+  if (!$manager) { noop $input(You have to use the $qt($upper($wmm_owner) Module Manager) and install that module from the manager in order to work that module!,houdbk60,Error) | .unload -rs $qt($script) | return }
 
   wmm_dl $wmm_mod_logo_url($addon) $qt($scriptdir $+ logo.ico)
   wmm_dl $wmm_mod_lang_url($addon) $qt($scriptdir $+ lang.ini)
@@ -351,19 +351,21 @@ ON *:LOAD: {
   .disable $chr(35) $+ $mod $+ _menu_nicklist
   .disable $chr(35) $+ $mod $+ _menu_channel
 
-  set -i % $+ $mod $+ _status 1 
-  set -i % $+ $mod $+ _tiny 1 
-  set -i % $+ $mod $+ _strip 0 
-  set -i % $+ $mod $+ _output 0 
-  set -i % $+ $mod $+ _lang English 
+  set -i % $+ $mod $+ _status 1
+  set -i % $+ $mod $+ _tiny 1
+  set -i % $+ $mod $+ _strip 0
+  set -i % $+ $mod $+ _output 0
+  set -i % $+ $mod $+ _lang English
   set -i % $+ $mod $+ _max_results 3
-  set -i % $+ $mod $+ _prefix_nick ! 
-  set -i % $+ $mod $+ _prefix_chan @ 
-  set -i % $+ $mod $+ _title_chars_max 100 
-  set -i % $+ $mod $+ _desc_chars_max 50 
-  set -i % $+ $mod $+ _show title description link 
+  set -i % $+ $mod $+ _prefix_nick !
+  set -i % $+ $mod $+ _prefix_chan @
+  set -i % $+ $mod $+ _title_chars_max 100
+  set -i % $+ $mod $+ _desc_chars_max 50
+  set -i % $+ $mod $+ _show title description link
 
-  ;TODO edo pithanon na balw /set -i to kainourio flag tou set.
+  .timer[ $+ $mod $+ _*] off
+
+  unset % $+ $mod $+ _*
 
   hfree -w $mod $+ _*
 
@@ -479,7 +481,6 @@ alias -l lang {
 
 alias -l dialog_sets_init {
   if (!$1) || (!$dialog($1)) { return }
-
   .timer[ $+ $mod $+ _ANIMATE_TITLE_*] off
 
   dialog -t $1 $addon v $+ $ [ $+ [ $mod ] $+ ] _ver $lang(4) $wmm_bel (/ [ $+ [ $mod ] $+ ] _sets)
@@ -506,11 +507,13 @@ alias -l dialog_sets_init {
   did -ra $1 29 $lang(47) $qt($lang(43)) $lang(48)
   did -ra $1 30 $lang(47) $qt($lang(44)) $lang(48)
   did -ra $1 31 $lang(47) $qt($lang(45)) $lang(48)
+
   did -o $1 22 $lang(14)
   did -o $1 23 $lang(15)
   did -o $1 24 $lang(16)
   did -o $1 25 $lang(17)
   did -o $1 26 $lang(18)
+
   did -ra $1 52 $lang(49)
   did -ra $1 46 $lang(50) $qt($lang(43)) $lang(51)
   did -ra $1 48 $lang(50) $qt($lang(44)) $lang(51)
@@ -611,35 +614,35 @@ alias wbs_bing_search {
 #wbs_menu_menubar off
 menu menubar { 
   -
-  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $lang(4) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_menubar end
 #wbs_menu_status off
 menu status { 
   -
-  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $lang(4) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_status end
 #wbs_menu_channel off
 menu channel { 
   -
-  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $lang(4) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_channel end
 #wbs_menu_nicklist off
 menu nicklist { 
   -
-  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $lang(4) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_nicklist end
 #wbs_menu_query off
 menu query { 
   -
-  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $lang(4) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_query end
