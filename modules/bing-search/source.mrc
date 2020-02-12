@@ -3,7 +3,7 @@
 #########################################
 
 	 #      Bing-Search      #
-	  # v2.7 - (11/02/2020) #
+	  # v2.7 - (12/02/2020) #
 	   # Thanks Supporters #
 
 #########################################
@@ -118,38 +118,33 @@ ON *:DIALOG:wbs_sets:*:*: {
   if ($devent == menu) {
     if ($did == 23) { url $wmm_page }
     if ($did == 24) { wmm_input ok 60 $addon v $+ $ [ $+ [ $mod ] $+ ] _ver $lang(36) $ [ $+ [ $mod ] $+ ] _crdate $lang(26) $wmm_owner }
-    if ($did == 25) { dialog -k $dname | .timer -mo 1 500 $mod $+ _sets }
+    if ($did == 25) { dialog -k $dname | .timer -ho 1 500 $mod $+ _sets }
     if ($did == 26) { dialog -k $dname }
   }
   if ($devent == close) {
     .timer[ $+ $mod $+ _*] off
 
     if (!% [ $+ [ $mod ] $+ ] _show) { set % $+ $mod $+ _show title link }
-    if (!$did(5)) || ($did(5) isalnum) { set % $+ $mod $+ _prefix_chan @ }
-    if (!$did(10)) || ($did(10) isalnum) { set % $+ $mod $+ _prefix_nick ! }
-    if (!$did(28)) || (!$wmm_isdigit($did(28))) || ($did(28) > 9) { set % $+ $mod $+ _max_results 3 }
-    if (!$did(47)) || (!$wmm_isdigit($did(47))) || ($did(47) > 300) { set % $+ $mod $+ _title_chars_max 100 }
-    if (!$did(49)) || (!$wmm_isdigit($did(49))) || ($did(49) > 300) { set % $+ $mod $+ _desc_chars_max 50 }
   }
   if ($devent == edit) {
     if ($did == 5) {
-      if ($did($did).text) { set % $+ $mod $+ _prefix_nick $v1 }
-      else { unset % $+ $mod $+ _prefix_nick }
+      if ($did($did).text) && ($did($did).text isalnum) { set % $+ $mod $+ _prefix_nick $v1 }
+      else { set % $+ $mod $+ _prefix_nick ! }
     }
     if ($did == 10) {
-      if ($did($did).text) { set % $+ $mod $+ _prefix_chan $v1 }
-      else { unset % $+ $mod $+ _prefix_chan }
+      if ($did($did).text) && ($did($did).text isalnum) { set % $+ $mod $+ _prefix_chan $did($did).text }
+      else { set % $+ $mod $+ _prefix_chan @ }
     }
     if ($did == 28) {
-      if ($did($did).text) { set % $+ $mod $+ _max_results $v1 }
-      else { unset % $+ $mod $+ _max_results }
+      if ($did($did).text) && ($wmm_isdigit($did($did).text)) { set % $+ $mod $+ _max_results $did($did).text }
+      else { set % $+ $mod $+ _max_results 3 }
     }
     if ($did == 47) {
-      if ($did($did).text) { set % $+ $mod $+ _title_chars_max $v1 }
-      else { unset % $+ $mod $+ _title_chars_max }
+      if ($did($did).text) && ($wmm_isdigit($did($did).text)) && ($did($did).text <= 300) { set % $+ $mod $+ _title_chars_max $did($did).text }
+      else { set % $+ $mod $+ _title_chars_max 100 }
     }
     if ($did == 49) {
-      if ($did($did).text) && ($wmm_isdigit($did($did).text)) && ($did($did).text < 300) { set % $+ $mod $+ _desc_chars_max $did($did).text }
+      if ($did($did).text) && ($wmm_isdigit($did($did).text)) && ($did($did).text <= 300) { set % $+ $mod $+ _desc_chars_max $did($did).text }
       else { set % $+ $mod $+ _desc_chars_max 50 }
     }
   }
@@ -346,25 +341,28 @@ ON *:DIALOG:wbs_sets:*:*: {
 }
 
 ON *:LOAD: {  
-  if (!$manager) { noop $input(You must first download and install the $qt($upper($wmm_owner) Module Manager) and install that module from the manager in order to work that module!,houdbk60,Error) | .unload -nrs $qt($script) | return }
-  if ($group(# [ $+ [ $lower($addon) ] ] ).fname !== $script) { wmm_input error 60 This module cannot work more than one time into this client because you already have this module installed! | .unload -nrs $qt($script) | return }
+  if (!$manager) { noop $input(You have to use the $qt($upper($wmm_owner) Module Manager) and install that module from the manager in order to work that module!,houdbk60,Error) | .unload -nrs $qt($script) | return }
 
   wmm_dl $wmm_mod_logo_url($addon) $qt($scriptdir $+ logo.ico)
   wmm_dl $wmm_mod_lang_url($addon) $qt($scriptdir $+ lang.ini)
 
   .enable $chr(35) $+ $mod $+ _menu_menubar
+  .disable $chr(35) $+ $mod $+ _menu_status
+  .disable $chr(35) $+ $mod $+ _menu_nicklist
+  .disable $chr(35) $+ $mod $+ _menu_channel
 
-  if (% [ $+ [ $mod ] $+ ] _status == $null) { set % $+ $mod $+ _status 1 }
-  if (% [ $+ [ $mod ] $+ ] _tiny == $null) { set % $+ $mod $+ _tiny 1 }
-  if (% [ $+ [ $mod ] $+ ] _strip == $null) { set % $+ $mod $+ _strip 0 }
-  if (% [ $+ [ $mod ] $+ ] _output == $null) { set % $+ $mod $+ _output 0 }
-  if (% [ $+ [ $mod ] $+ ] _lang == $null) { set % $+ $mod $+ _lang English }
-  if (% [ $+ [ $mod ] $+ ] _max_results == $null) { set % $+ $mod $+ _max_results 3 }
-  if (% [ $+ [ $mod ] $+ ] _prefix_nick == $null) { set % $+ $mod $+ _prefix_nick ! }
-  if (% [ $+ [ $mod ] $+ ] _prefix_chan == $null) { set % $+ $mod $+ _prefix_chan @ }
-  if (% [ $+ [ $mod ] $+ ] _title_chars_max == $null) { set % $+ $mod $+ _title_chars_max 100 }
-  if (% [ $+ [ $mod ] $+ ] _desc_chars_max == $null) { set % $+ $mod $+ _desc_chars_max 50 }
-  if (% [ $+ [ $mod ] $+ ] _show == $null) { set % $+ $mod $+ _show title description link }
+  set -i % $+ $mod $+ _status 1 
+  set -i % $+ $mod $+ _tiny 1 
+  set -i % $+ $mod $+ _strip 0 
+  set -i % $+ $mod $+ _output 0 
+  set -i % $+ $mod $+ _lang English 
+  set -i % $+ $mod $+ _max_results 3
+  set -i % $+ $mod $+ _prefix_nick ! 
+  set -i % $+ $mod $+ _prefix_chan @ 
+  set -i % $+ $mod $+ _title_chars_max 100 
+  set -i % $+ $mod $+ _desc_chars_max 50 
+  set -i % $+ $mod $+ _show title description link 
+
   ;TODO edo pithanon na balw /set -i to kainourio flag tou set.
 
   hfree -w $mod $+ _*
@@ -396,7 +394,7 @@ ON *:UNLOAD: {
 }
 
 ON *:INPUT:#: {
-  if (!$manager) || (!% [ $+ [ $mod ] $+ ] _status) || (!% [ $+ [ $mod ] $+ ] _output) || ($inpaste) || ($ctrlenter) || ($left($1,1) == $comchar) || ($status !== connected) || ($me !ison $chan) { return }
+  if (!% [ $+ [ $mod ] $+ ] _status) || (!% [ $+ [ $mod ] $+ ] _output) || ($inpaste) || ($ctrlenter) || ($left($1,1) == $comchar) || ($status !== connected) || ($me !ison $chan) { return }
   tokenize 32 $strip($1-)
 
   var %cn = $network $+ ~ $+ $me $+ ~ $+ $chan
@@ -421,7 +419,7 @@ ON *:INPUT:#: {
 }
 
 ON $*:TEXT:$(/^(\Q $+ $replacecs($evalnext($+(%,$mod,_prefix_nick)),\E,\E\\E\Q) $+ \E|\Q $+ $replacecs($evalnext($+(%,$mod,_prefix_chan)),\E,\E\\E\Q) $+ \E).*/Si):#: {
-  if (!$manager) || (!% [ $+ [ $mod ] $+ ] _status) || ($istok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ $network ] $+ ] _chans,$chan,32)) || ($istok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ $network ] $+ ] _nicks,$nick,32)) { return }
+  if (!% [ $+ [ $mod ] $+ ] _status) || ($istok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ $network ] $+ ] _chans,$chan,32)) || ($istok(% [ $+ [ $mod ] $+ ] _ignore_ [ $+ [ $network ] $+ ] _nicks,$nick,32)) { return }
   tokenize 32 $strip($1-)
 
   var %cn = $network $+ ~ $+ $nick $+ ~ $+ $chan
@@ -455,7 +453,7 @@ alias wbs_crdate { return $remove($gettok($read($script,n,6),5,32),$chr(40),$chr
 
 alias -l mod { return wbs }
 alias -l command { return bing }
-alias -l manager { return $iif($isalias(wmm_ver),$wmm_ver,0) }
+alias -l manager { return $iif($dialog(wmm_module),1,0) }
 alias -l addon { return $gettok($read($script,n,5),3,32) }
 alias -l cx { return 009501821161684206895%3Ai7e1srbu6re }
 
@@ -524,36 +522,23 @@ alias -l dialog_sets_init {
   did -ra $1 58 $lang(52) $qt(nicklist) $lang(53)
   did -ra $1 520 $lang(54)
   did -ra $1 620 $lang(55)
+
+  return
+  :error | wmm_werror $addon $scriptline $error | reseterror
 }
 
 ; ##########################################################
 
 alias wbs_sets { 
-  if (!$manager) { noop $input(You must first download and install the $qt($upper($wmm_owner) Module Manager) and install that module from the manager in order to work that module!,houdbk60,Error) | .unload -nrs $qt($script) | return }
-  if ($group(# [ $+ [ $lower($addon) ] ] ).fname !== $script) { wmm_input error 60 This module cannot work more than one time into this client because you already have this module installed! | .unload -nrs $qt($script) | return }
   var %d = $mod $+ _sets
 
   if ($dialog(%d)) { dialog -ve %d %d | return }
 
   var %i = $scriptdir $+ logo.ico
   var %l = $scriptdir $+ lang.ini
-  var %n = $wmm_dir $+ wmm_donate.png
+  var %n = $wmm_donate_png
 
-  if (!$file(%l)) || (!$file(%i)) || (!$file(%n)) { var %delay = 1 }
-
-  if (%delay) {
-    if (!$wmm_internet) { wmm_input error 60 There are some require files that missing from this module, there must be an internet connection in order to download them! | return }
-
-    wmm_dl $wmm_mod_logo_url($addon) $qt(%i)
-    wmm_dl $wmm_mod_lang_url($addon) $qt(%l)
-    wmm_dl $wmm_donate_png_url $qt(%n)
-
-    .timer[ $+ $mod $+ _DELAY_DL_AND_OPEN] -o 1 3 $mod $+ _sets_reopen 
-
-    wmm_input warn 3 Downloading some require module files...
-
-    return 
-  }
+  if (!$file(%l)) || (!$file(%i)) || (!$file(%n)) { wmm_input error 60 FATAL ERROR! @newline@ @newline@ $+ Error Code: 0xm001 | .unload -rs $qt($script) | return }
 
   dialog -md %d %d
 
@@ -561,21 +546,8 @@ alias wbs_sets {
   :error | wmm_werror $addon $scriptline $error | reseterror
 }
 
-alias -l wbs_sets_reopen {
-  var %i = $scriptdir $+ logo.ico
-  var %l = $scriptdir $+ lang.ini
-  var %n = $wmm_dir $+ wmm_donate.png
-
-  if (!$file(%l)) || (!$file(%i)) || (!$file(%n)) { wmm_input error 60 FATAL ERROR! @newline@ @newline@ $+ Error Code: 0xm001 | return }
-
-  $mod $+ _sets
-
-  return
-  :error | wmm_werror $addon $scriptline $error | reseterror
-}
-
 alias wbs_bing_search {
-  if (!$wmm_internet) || (!$1-) || (!$wmm_apikey($addon)) || (!$cx) { return }
+  if (!$1-) || (!$wmm_internet) || (!$wmm_apikey($addon)) { return }
 
   if (msg isin $3) { var %output = $3 $2 }
   elseif (notice isin $3) { var %output = $3 $1 }
@@ -639,35 +611,35 @@ alias wbs_bing_search {
 #wbs_menu_menubar off
 menu menubar { 
   -
-  $iif($isalias(wmm_isadi) && $wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $iif($isalias(wmm_qd),$wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ),* $addon v $+ $ [ $+ [ $mod ] $+ ] _ver - Settings *): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_menubar end
-#wbs_menu_status on
+#wbs_menu_status off
 menu status { 
   -
-  $iif($isalias(wmm_isadi) && $wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $iif($isalias(wmm_qd),$wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ),* $addon v $+ $ [ $+ [ $mod ] $+ ] _ver - Settings *): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_status end
 #wbs_menu_channel off
 menu channel { 
   -
-  $iif($isalias(wmm_isadi) && $wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $iif($isalias(wmm_qd),$wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ),* $addon v $+ $ [ $+ [ $mod ] $+ ] _ver - Settings *): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_channel end
 #wbs_menu_nicklist off
 menu nicklist { 
   -
-  $iif($isalias(wmm_isadi) && $wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $iif($isalias(wmm_qd),$wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ),* $addon v $+ $ [ $+ [ $mod ] $+ ] _ver - Settings *): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_nicklist end
 #wbs_menu_query off
 menu query { 
   -
-  $iif($isalias(wmm_isadi) && $wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $iif($isalias(wmm_qd),$wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ),* $addon v $+ $ [ $+ [ $mod ] $+ ] _ver - Settings *): $+ $mod $+ _sets
+  $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver - $iif($lang(4),$v1,Settings) $+ ): $+ $mod $+ _sets
   -
 }
 #wbs_menu_query end
