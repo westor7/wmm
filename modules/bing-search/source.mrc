@@ -365,8 +365,6 @@ ON *:LOAD: {
 
   .timer[ $+ $mod $+ _*] off
 
-  unset % $+ $mod $+ _*
-
   hfree -w $mod $+ _*
 
   .signal -n wmm_close
