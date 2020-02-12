@@ -32,13 +32,13 @@ dialog -l wbs_sets {
   button "Clear", 18, 200 111 43 12, disable tab 2
   tab "Settings 2", 13
   text "Private Notice Command:", 9, 4 20 125 8, tab 13
-  edit "", 5, 130 19 18 9, tab 13 limit 1 center
+  edit "", 5, 130 20 18 9, tab 13 limit 1 center
   text "Channel Message Command:", 11, 4 30 125 8, tab 13
-  edit "", 10, 130 29 18 9, tab 13 limit 1 center
+  edit "", 10, 130 30 18 9, tab 13 limit 1 center
   combo 19, 4 65 63 57, tab 13 size drop
   text "Language:", 20, 4 55 63 8, tab 13 center
   text "Max Search Results:", 27, 4 40 126 8, tab 13
-  edit "", 28, 130 39 18 9, tab 13 limit 1 center
+  edit "", 28, 130 40 18 9, tab 13 limit 1 center
   check "Enable", 12, 2 141 54 10
   text "", 21, 301 144 22 8, center disable
   check "Show the 'Title' information", 29, 160 18 164 10, tab 13
