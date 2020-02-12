@@ -3,7 +3,7 @@
 ######################################
 
 	# WESTOR Module Manager #
-	 # v5.0 - (11/02/2020) #
+	 # v5.0 - (13/02/2020) #
 	  # Thanks Supporters #
 
 ######################################
@@ -1472,6 +1472,7 @@ alias wmm_mod_install {
   var %s = $urlget($1).state
   var %f = $urlget($1).target
   var %n = $lower($file(%f).name)
+  var %a = $wmm_rsconf(%n,Alias)
   var %nd = $wmm_dir $+ modules\ $+ %n $+ \
   var %nf = %nd $+ source.mrc
 
@@ -1487,6 +1488,8 @@ alias wmm_mod_install {
   .copy -of $qt(%f) $qt(%nf)
   .load -rs $qt(%nf)
   .remove $qt(%f)
+
+  if (%a) { .enable $chr(35) $+ %a $+ _menu_menubar }
 
   did -euz %d 6
 
@@ -1763,11 +1766,11 @@ alias -l wmm_modules_installed_plus_updated_list {
 
   if (!$dialog(%d)) || ($isid) { return }
 
-  var %t = $did(%d,6).lines
-
   did -b %d 7,8,11,12,13,60,600
   did -r %d 8,60,600,250
   did -h %d 250
+
+  var %t = $did(%d,6).lines
 
   if (!%t) { return }
 
@@ -2539,6 +2542,8 @@ alias wmm_dl {
   var %d = $nofile(%f)
 
   if (!$isdir(%d)) { mkdir $qt(%d) }
+
+  if ($isfile(%f)) { .remove $qt(%f) }
 
   noop $urlget($1,gif,$qt(%f),noop)
 
