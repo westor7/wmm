@@ -18,7 +18,7 @@ dialog -l wbs_sets {
   option dbu disable
   icon $scriptdir $+ logo.ico, 0
   button "Close this window", 1, 77 136 193 17, default ok
-  icon 280, 295 136 30 9, $wmm_donate_png, 1, noborder center
+  icon 280, 295 136 30 9, $wmm_support_png, 1, noborder center
   tab "Settings 1", 2, 2 2 324 122
   text "Ignore channel(s):", 3, 4 20 75 8, tab 2 center
   list 4, 4 30 78 92, disable tab 2 size hsbar vsbar
@@ -149,7 +149,7 @@ ON *:DIALOG:wbs_sets:*:*: {
     }
   }
   if ($devent == sclick) {
-    if ($did == 280) { url $wmm_donate }
+    if ($did == 280) { url $wmm_support_page }
     if ($did == 19) {
       if ($did($did).text == % [ $+ [ $mod ] $+ ] _lang) { return }
 
@@ -539,7 +539,7 @@ alias wbs_sets {
 
   var %i = $scriptdir $+ logo.ico
   var %l = $scriptdir $+ lang.ini
-  var %n = $wmm_donate_png
+  var %n = $wmm_support_png
 
   if (!$file(%l)) || (!$file(%i)) || (!$file(%n)) { wmm_input error 60 FATAL ERROR! @newline@ @newline@ $+ Error Code: 0xm001 | .unload -rs $qt($script) | return }
 
