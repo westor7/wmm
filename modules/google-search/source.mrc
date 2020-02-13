@@ -348,7 +348,7 @@ ON *:DIALOG:wgs_sets:*:*: {
       wmm_ignore_cn_list
     }
   }
-  
+
   return
   :error | wmm_werror $addon $scriptline $error | reseterror
 }
