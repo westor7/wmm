@@ -18,7 +18,7 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 - Auto update modules silently supported.
 - Screenshot modules images prievew.
 - Mutli-language support included.
-- Multi-client support *(AdiIRC + mIRC)*.
+- Multi-client support *([AdiIRC](https://adiirc.com) + [mIRC](https://mirc.com))*.
 - Full customizable settings and options.
 - Working and tested only under Windows 10 operating system.
 
