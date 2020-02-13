@@ -34,9 +34,19 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 
 ### Especially Thanks:
 
-- **SReject** for [JSONFormIRC](https://github.com/SReject/JSON-For-Mirc "") code and other stuff.
-- **rockcavera** for [HTML2ASCII](http://hawkee.com/snippet/17963/ "") code.
+- **SReject** for [JSONFormIRC](https://github.com/SReject/JSON-For-Mirc) code and other stuff.
+- **rockcavera** for [HTML2ASCII](http://hawkee.com/snippet/17963/) code.
 - **Ouims** for general help especially on regex.
+
+------------
+
+### Donate:
+
+- If you want to support this project to help to continue providing more modules (why not your idea too?)
+  you can do it with a small/big donation according your desire using one of the following methods:
+
+- [PayPal](https://paypal.me/westor)
+- [BTC](https://raw.githubusercontent.com/westor7/wmm/master/images/btc_address.png)
 
 ------------
 
