@@ -3,7 +3,7 @@
 ######################################
 
 	# WESTOR Module Manager #
-	 # v5.0 - (14/02/2020) #
+	 # v5.0 - (13/02/2020) #
 	  # Thanks Supporters #
 
 ######################################
@@ -27,6 +27,7 @@
 ;TODO na peraso ola ta "$wmm_dir $+ wmm_main.ico" se alias gia na kanei apethias call.
 ;TODO na afereso apo pantou to $wmm_error den xriazete pleon.
 ;TODO na ftiakso ligo to code style pantou diladi na doso spaces anamesa sta code gia na einai pio readable.
+:TODO na perimenw mexri na bgei h epomenh adiirc stable version giati exei fix sto #4925
 
 ; --- Start of dialogs ---
 
@@ -820,7 +821,6 @@ ON *:DIALOG:wmm_module:*:*: {
       did -a $dname 8 $wmm_lang(83) $+ : $+ $crlf
       did -a $dname 8 $replace(%changelog,$chr(166),$+ $+ $crlf $+ $+)
       did -c $dname 8 1 1
-      ;TODO exei bug to adiirc sto /did -c 
     }
     if ($did == 6) {
       var %m = $did($did).seltext
@@ -840,7 +840,6 @@ ON *:DIALOG:wmm_module:*:*: {
       did -re $dname 8
       did -a $dname 8 $replace(%desc_temp,$chr(166),$+ $+ $crlf $+ $+)
       did -c $dname 8 1 1
-      ;TODO exei bug to adiirc sto /did -c 
 
       if (!%path) { did -e $dname 7 }
       elseif (%path) { did -b $dname 7 }
@@ -888,7 +887,6 @@ ON *:DIALOG:wmm_module:*:*: {
 
       did -a $dname 8 %line2
       did -c $dname 8 1 1
-      ;TODO exei bug to adiirc sto /did -c 
     }
     if ($did == 12) {
       if ($wmm_check_initial_warn) { wmm_input error 60 $wmm_lang(33) | return }
