@@ -35,7 +35,11 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 ### Support & Donate:
 
 - If you want to support this project to help to continue providing more modules (why not your idea too?)
-  you can do it with a small/big donation according your desire using one of the following methods:
+  and improvements in the hole project you can do it with a small or big donation according your desire
+  using one of the following currently supported methods:
+  
+  (Thanks in advantage, if you want your nickname to be displayed here in donators list, connect in
+   my network from [here](https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL) and contact me so i can add it.)
 
 - [PayPal](https://paypal.me/westor)
 - [BTC](https://raw.githubusercontent.com/westor7/wmm/master/images/btc_address.png)
