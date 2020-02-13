@@ -12,11 +12,9 @@
 
 ;TODO Na allakso to code etsi oste na otan tha kanei install ena module na kanei create folder kai na min ta petaei ola ta
 ;     arxeia apo ta modules xyma mesa se ena folder, na exei to kathe module ksexoristo folder me ta files tou mesa
-;TODO na prostheso donate gia BTC button se ola ta modules kai sto WMM
 ;TODO na perimenw mexri na kanei stable tin kainouria JSON kai na tin testaro.
 ;TODO na kanw ola ta modules etsi oste na min mporei kanenas na ta kanei install ektos apo to manager
 ;     diladi na balw ston ON LOAD ena check "if (!$dialog(wmm_module)) { unload }" gia na to aferei.
-;TODO na kanw rename ola ta extra files (px: donate.png) se wmm_donate.png gia na einai pio sygkekrimena.
 ;TODO na kanw rename merika aliases kai na balw pio sygkekrimeno onoma gia na ta katalabeno kalytera.
 ;TODO na afereso ta $isid opou den xriazete kyrios se ola ta 'alias -l'
 ;TODO na bro enan kalytero tropo gia to $wmm_error kai $wmm_errors kai ean den einai toso anagkaia na ta afereso
@@ -66,7 +64,7 @@ dialog -l wmm_module_sets {
   text "", 13, 207 161 21 8, disable center
   text "News:", 43, 70 93 100 8, center
   text "Loading the latest available news...", 42, 10 104 215 45, center
-  icon 230, 202 153 30 9, $wmm_donate_png, 1, noborder center
+  icon 230, 202 153 30 9, $wmm_support_png, 1, noborder center
   menu "Menu", 14
   item "Help", 18, 14
   item break, 501
@@ -110,7 +108,7 @@ dialog -l wmm_module {
   icon 16, 185 150 75 58, $wmm_noprev_png, 1, noborder
   text "Module Screenshots:", 17, 75 140 113 8, center
   text "", 5, 241 275 18 8, disable center
-  icon 23, 234 267 30 9, $wmm_donate_png, 1, noborder center
+  icon 23, 234 267 30 9, $wmm_support_png, 1, noborder center
   icon 28, 123 121 17 17, $wmm_logo_ico, 1, noborder center hide
   menu "Menu", 10
   item "Help", 18, 10
@@ -143,19 +141,19 @@ ON *:START: {
 
     hfree -w WMM_LANG_*
 
-    url $wmm_donate_page
+    url $wmm_support_page
 
     wmm_fix_extra_modules_installed
 
     var %lng = $wmm_lang_ini
     var %ico = $wmm_logo_ico
     var %png = $wmm_noprev_png
-    var %don = $wmm_donate_png
+    var %don = $wmm_support_png
 
     wmm_dl $wmm_logo_ico_url $qt(%ico) 
     wmm_dl $wmm_lang_url $qt(%lng) 
     wmm_dl $wmm_noprev_png_url $qt(%png)
-    wmm_dl $wmm_donate_png_url $qt(%don)
+    wmm_dl $wmm_support_png_url $qt(%don)
 
     wmm_check_load_def_settings
 
@@ -194,12 +192,12 @@ ON *:START: {
     var %lng = $wmm_lang_ini
     var %ico = $wmm_logo_ico
     var %png = $wmm_noprev_png
-    var %don = $wmm_donate_png
+    var %don = $wmm_support_png
 
     if (!$file(%lng)) { var %delay = 1 | wmm_dl $wmm_lang_url $qt(%lng) }
     if (!$file(%ico)) { var %delay = 1 | wmm_dl $wmm_logo_ico_url $qt(%ico) }
     if (!$file(%png)) { var %delay = 1 | wmm_dl $wmm_noprev_png_url $qt(%png) }
-    if (!$file(%don)) { var %delay = 1 | wmm_dl $wmm_donate_png_url $qt(%don) }
+    if (!$file(%don)) { var %delay = 1 | wmm_dl $wmm_support_png_url $qt(%don) }
 
     if (!%delay) { wmm_tool -s }
     elseif (%delay) { .timer[WMM_TOOLBAR] -ho 1 3000 wmm_tool -s }
@@ -221,7 +219,7 @@ ON *:UNLOAD: {
   var %l = $wmm_lang_ini
   var %i = $wmm_logo_ico
   var %p = $wmm_noprev_png
-  var %d = $wmm_donate_png
+  var %d = $wmm_support_png
 
   if ($wmm_langs) { var %m = $wmm_lang(38) $upper($wmm_owner) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) $wmm_owner $wmm_lang(40) }
   else { var %m = The $upper($wmm_owner) Module Manager v $+ $wmm_ver ( $+ $wmm_crdate $+ ) by $wmm_owner has been uninstalled successfully. }
@@ -456,7 +454,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
   }
 
   if ($devent == sclick) {
-    if ($did == 230) { url $wmm_donate }
+    if ($did == 230) { url $wmm_support_page }
 
     if ($did == 10) {
       if ($did($did).text == $wmm_rconf(Settings,Language)) { return }
@@ -630,7 +628,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
 
   if ($devent == menu) {
     if ($did == 18) { url $wmm_page }
-    if ($did == 24) { url $wmm_donate }
+    if ($did == 24) { url $wmm_support_page }
     if ($did == 29) { url $wmm_all_modules_url }
     if ($did == 22) { dialog -k $dname }
     if ($did == 21) { .timer -ho 1 500 wmm_sets | dialog -k $dname }
@@ -759,7 +757,7 @@ ON *:DIALOG:wmm_module:*:*: {
 
     :sclick
 
-    if ($did == 23) { url $wmm_donate }
+    if ($did == 23) { url $wmm_support_page }
     if ($did == 2) {
       did -c wmm_module 6 1
       did -hu $dname 11,12,13,6,60,600,250
@@ -1047,7 +1045,7 @@ ON *:DIALOG:wmm_module:*:*: {
   if ($devent == menu) {
     if ($did == 27) { url $wmm_all_modules_url }
     if ($did == 18) { url $wmm_page }
-    if ($did == 24) { url $wmm_donate }
+    if ($did == 24) { url $wmm_support_page }
     if ($did == 22) { dialog -k $dname }
     if ($did == 21) { .timer -ho 1 500 wmm | dialog -k $dname }
     if ($did == 19) { .timer -ho 1 100 wmm_sets | dialog -k $dname }
@@ -1074,21 +1072,23 @@ alias wmm_crdate { return $remove($gettok($read($script,n,$iif($right($script,4)
 
 alias wmm_owner { return $+($chr(119),$chr(101),$chr(115),$chr(116),$chr(111),$chr(114)) }
 alias wmm_page { return https://github.com/westor7/wmm }
-alias wmm_donate { return https://paypal.me/ $+ $wmm_owner }
-alias wmm_donate_page { return https://github.com/westor7/wmm }
+
+alias wmm_support_page { return https://github.com/westor7/wmm }
+;TODO na balw ena kalytero link pou na einai pio omorfa described
+
 alias wmm_sets_file { return $wmm_temp $+ wmm_modules.ini }
 alias wmm_images_zip_file { return $wmm_temp $+ wmm_modules_images.zip }
 alias wmm_errors { return $lines($wmm_temp $+ wmm_errors.log) }
 alias wmm_dir { return $nofile($script) }
 alias wmm_conf { return $wmm_dir $+ wmm_conf.ini }
 alias wmm_lang_ini { return $wmm_dir $+ wmm_lang.ini }
-alias wmm_donate_png { return $wmm_dir $+ wmm_donate.png }
+alias wmm_support_png { return $wmm_dir $+ wmm_support.png }
 alias wmm_noprev_png { return $wmm_dir $+ wmm_no_preview.png }
 alias wmm_logo_ico { return $wmm_dir $+ wmm_logo.ico }
 alias wmm_sets_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_sets_v5_0.ini }
 alias wmm_logo_ico_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_logo.ico }
 alias wmm_noprev_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_no_preview.png }
-alias wmm_donate_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_donate.png }
+alias wmm_support_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_support.png }
 alias wmm_lang_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_lang.ini }
 alias wmm_modules_page { return https://github.com/westor7/wmm/tree/master/modules/ $+ $lower($1) }
 alias wmm_images_zip_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_modules_images.zip }
@@ -1135,7 +1135,7 @@ alias wmm {
 
   wmm_fix_extra_modules_installed
 
-  var %don = $wmm_donate_png
+  var %don = $wmm_support_png
   var %ico = $wmm_logo_ico
   var %png = $wmm_noprev_png
   var %lng = $wmm_lang_ini
@@ -1150,7 +1150,7 @@ alias wmm {
     wmm_dl $wmm_lang_url $qt(%lng)
     wmm_dl $wmm_logo_ico_url $qt(%ico)
     wmm_dl $wmm_noprev_png_url $qt(%png)
-    wmm_dl $wmm_donate_png_url $qt(%don)
+    wmm_dl $wmm_support_png_url $qt(%don)
 
     return
   }
@@ -1182,7 +1182,7 @@ alias wmm_sets {
 
   wmm_fix_extra_modules_installed
 
-  var %don = $wmm_donate_png
+  var %don = $wmm_support_png
   var %ico = $wmm_logo_ico
   var %png = $wmm_noprev_png
   var %lng = $wmm_lang_ini
@@ -1197,7 +1197,7 @@ alias wmm_sets {
     wmm_dl $wmm_lang_url $qt(%lng)
     wmm_dl $wmm_logo_ico_url $qt(%ico)
     wmm_dl $wmm_noprev_png_url $qt(%png)
-    wmm_dl $wmm_donate_png_url $qt(%don)
+    wmm_dl $wmm_support_png_url $qt(%don)
 
     return
   }
@@ -1214,12 +1214,12 @@ alias -l wmm_check_before_open {
   wmm_check_load_def_settings
 
   var %lng = $wmm_lang_ini
-  var %don = $wmm_donate_png
+  var %don = $wmm_support_png
   var %ico = $wmm_logo_ico
   var %png = $wmm_noprev_png
 
   if (!$file(%lng)) { wmm_input error 60 FATAL ERROR! @newline@ @newline@ $+ Error Code: CANNOT_FIND_LANGUAGE_FILE | return }
-  if (!$file(%don)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_DONATION_IMAGE_FILE | return }
+  if (!$file(%don)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_SUPPORT_IMAGE_FILE | return }
   if (!$file(%ico)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_LOGO_IMAGE_FILE | return }
   if (!$file(%png)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_NOPREVIEW_IMAGE_FILE | return }
 
@@ -1638,7 +1638,7 @@ alias -l wmm_check_update_install {
   var %l = $wmm_lang_ini
   var %i = $wmm_logo_ico
   var %p = $wmm_noprev_png
-  var %d = $wmm_donate_png
+  var %d = $wmm_support_png
   var %s = $urlget($1).state
   var %fo = $urlget($1).target
   var %fn = $wmm_dir $+ $nopath(%fo)
