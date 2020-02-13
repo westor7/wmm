@@ -6,7 +6,7 @@
 
 ### Description:
 
-This is a project written on mSL *(mIRC Scripting Language)* that allows you to download and install all the available and currently supported modules from this git repo.
+This is a project written on mSL *(mIRC Scripting Language)* that allows you to download and install all the available and currently supported modules from this git repo and helps you improve your own bot with these modules.
 
 ![](https://github.com/westor7/wmm/blob/master/images/wmm_2.jpg)
 
@@ -17,6 +17,7 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 - Very easy modules managment.
 - Auto update modules silently supported.
 - Screenshot modules images prievew.
+- Latest project news field in the windows.
 - Mutli-language support included.
 - Multi-client support *([AdiIRC](https://adiirc.com) 32/64bits + [mIRC](https://mirc.com) 32bits)*.
 - Full customizable settings and options.
