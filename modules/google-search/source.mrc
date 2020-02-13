@@ -348,6 +348,7 @@ ON *:DIALOG:wgs_sets:*:*: {
       wmm_ignore_cn_list
     }
   }
+  
   return
   :error | wmm_werror $addon $scriptline $error | reseterror
 }
@@ -415,9 +416,12 @@ ON *:INPUT:#: {
   if ($left($1,1) == %c_char) && ($1 == $+(%c_char,$command)) { var %action = $iif(% [ $+ [ $mod ] $+ ] _output,msg,.msg) $chan }
 
   if (%action) {
+    var %e = $gettok($gettok($wmm_rsconf($addon,Examples),1,166),3-,32)
+    if (!%e) { var %e = Nothing }
+
     hadd -mu6 $upper($mod) $+ _FLOOD %cn 1
 
-    if (!$2) { .timer -h 1 0 %action ( $++ $wmm_bold($me) $++ ): $lang(37) - $lang(38) $wmm_bold($1 < $+ $wmm_under($lang(46)) $+ >) - ( $++ $lang(39) $wmm_bold($1 $wmm_under(Greece)) $+ ) | return }
+    if (!$2) { .timer -h 1 0 %action ( $++ $wmm_bold($me) $++ ): $lang(37) - $lang(38) $wmm_bold($1 < $+ $wmm_under($lang(46)) $+ >) - ( $++ $lang(39) $wmm_bold($1 $wmm_under(%e)) $+ ) | return }
 
     .timer -h 1 0 $mod $+ _ $+ $replace($addon,$chr(45),$chr(95)) $me $chan $gettok(%action,1,32) $unsafe($2-)
   }
@@ -441,9 +445,12 @@ ON $*:TEXT:$(/^(\Q $+ $replacecs($evalnext($+(%,$mod,_prefix_nick)),\E,\E\\E\Q) 
   if ($left($1,1) == %c_char) && ($1 == $+(%c_char,$command)) { var %action = $iif(% [ $+ [ $mod ] $+ ] _output,msg,.msg) $chan }
 
   if (%action) {
+    var %e = $gettok($gettok($wmm_rsconf($addon,Examples),1,166),3-,32)
+    if (!%e) { var %e = Nothing }
+
     hadd -mu6 $upper($mod) $+ _FLOOD %cn 1
 
-    if (!$2) { %action ( $++ $wmm_bold($nick) $++ ): $lang(37) - $lang(38) $wmm_bold($1 < $+ $wmm_under($lang(46)) $+ >) - ( $++ $lang(39) $wmm_bold($1 $wmm_under(Greece)) $+ ) | return }
+    if (!$2) { %action ( $++ $wmm_bold($nick) $++ ): $lang(37) - $lang(38) $wmm_bold($1 < $+ $wmm_under($lang(46)) $+ >) - ( $++ $lang(39) $wmm_bold($1 $wmm_under(%e)) $+ ) | return }
 
     $mod $+ _ $+ $replace($addon,$chr(45),$chr(95)) $nick $chan $gettok(%action,1,32) $2-
   }
