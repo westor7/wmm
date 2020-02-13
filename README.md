@@ -26,6 +26,7 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 
 > **ATTENTION:** If you are using **AdiIRC 64bits** client then you have to install [tsc64.dll](https://tablacus.github.io/scriptcontrol_en.html) to work!!!
 
+- Before you start the installation make sure that you are using the latest client online version.
 - Extract the downloaded file into any random direction.
 - Disable the **Initalization Warning** and **Monitor File Changes** options from your client Script Editor *(ALT+R ☛ Options)* menu *(if are enabled)*.
 - Load the **WESTOR Module Manager.mrc** file from your Script Editor *(ALT +R ☛ File ☛ Load ☛ Select the file)* or via command from editbox ``/load -rs "FOLDER_DIRECTION\WMM\WESTOR Module Manager.mrc``
@@ -38,7 +39,7 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
   and improvements in the hole project you can do it with a small or big donation according your desire
   using one of the following currently supported methods:
   
-  (Thanks in advantage, also if you want your nickname to be displayed here in donators list, connect in my network from [here](https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL) and contact me so i can add it.)
+  (Thank you very much in advantage, also if you want your nickname or email or what ever personal information to be displayed here in Donators list, connect in my network from [here](https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL) and contact me so i can add it.)
 
 - [PayPal](https://paypal.me/westor)
 - [BTC](https://raw.githubusercontent.com/westor7/wmm/master/images/btc_address.png)
