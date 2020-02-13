@@ -40,7 +40,7 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 
 ------------
 
-### Donate:
+### Support & Donate:
 
 - If you want to support this project to help to continue providing more modules (why not your idea too?)
   you can do it with a small/big donation according your desire using one of the following methods:
