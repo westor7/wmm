@@ -38,8 +38,7 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
   and improvements in the hole project you can do it with a small or big donation according your desire
   using one of the following currently supported methods:
   
-  (Thanks in advantage, also if you want your nickname to be displayed here in donators list,
-  connect in my network from [here](https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL) and contact me so i can add it.)
+  (Thanks in advantage, also if you want your nickname to be displayed here in donators list, connect in my network from [here](https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL) and contact me so i can add it.)
 
 - [PayPal](https://paypal.me/westor)
 - [BTC](https://raw.githubusercontent.com/westor7/wmm/master/images/btc_address.png)
