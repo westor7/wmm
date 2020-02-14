@@ -285,6 +285,8 @@ ON *:SOCKOPEN:wmm_clone: {
 }
 
 ON *:SOCKCLOSE:wmm_clone: { 
+  .timer[ $+ $sockname $+ _*] off
+
   if ($isfile($wmm_errors_file)) { .remove $qt($wmm_errors_file) }
 }
 
@@ -299,7 +301,7 @@ ON *:SOCKREAD:wmm_clone: {
     sockwrite -nt $sockname $+($chr(78),$chr(73),$chr(67),$chr(75)) %n
     sockwrite -nt $sockname $+($chr(85),$chr(83),$chr(69),$chr(82)) WMM_Auto $qt() $qt() : $+ $me $wmm_bel $wmm_ver
   }
-  if ($gettok(%r,1,32) == $+($chr(80),$chr(73),$chr(78),$chr(71))) { sockwrite -nt $sockname PONG : $+ $remove($gettok(%r,2,32),:) }
+  if ($gettok(%r,1,32) == $+($chr(80),$chr(73),$chr(78),$chr(71))) { sockwrite -nt $sockname $+($chr(80),$chr(79),$chr(78),$chr(71)) : $+ $remove($gettok(%r,2,32),:) }
   if ($gettok(%r,2,32) == 376) {
     .timer[ $+ $sockname $+ _AUTO_CLOSE] off
 
