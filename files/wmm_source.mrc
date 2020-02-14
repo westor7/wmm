@@ -14,7 +14,6 @@
 ;TODO na kanw ola ta modules etsi oste na min mporei kanenas na ta kanei install ektos apo to manager
 ;     diladi na balw ston ON LOAD ena check "if (!$dialog(wmm_module)) { unload }" gia na to aferei.
 ;TODO na kanw rename merika aliases kai na balw pio sygkekrimeno onoma gia na ta katalabeno kalytera.
-;TODO na afereso ta $isid opou den xriazete kyrios se ola ta 'alias -l'
 ;TODO na bro enan kalytero tropo gia to $wmm_error kai $wmm_errors kai ean den einai toso anagkaia na ta afereso
 ;     mazi me olo to check gia ta aliases ean yparxoun h oxi, pisteuo oti den einai toso anagkaia gia na yparxoun
 ;     tha prepei na fygei arketh palia savoura etsi oste na einai eukolo kai gia kapion na kanei PR sto git.
@@ -1235,7 +1234,7 @@ alias wmm_check_version {
   var %js3 = $gettok($isalias(jsonversion,3).alias,3,32)
   var %js4 = $jsonversion()
 
-  if (%js1 !== %js2) || (%js3 !== %js4) || (%js4 !== 1.0.4000) { return It seems that you have already in your remotes installed the "JSONForMirc" addon, you must first remove that addon because that project already including that addon and it will have conflict issues if running both at the same time, try remove it and install the project again. }
+  if (%js1 !== %js2) || (%js3 !== %js4) { return It seems that you have already in your remotes installed the "JSONForMirc" addon, you must first remove that addon because that project already including that addon and it will have conflict issues if running both at the same time, try remove it and install the project again. }
 
   return 0
 
@@ -1381,7 +1380,7 @@ alias -l wmm_fix_extra_modules_installed {
 
   ; -e = it will fix any name or position errors related to WMM original state.
 
-  if (!$script(0)) || ($isid) { return }
+  if (!$script(0)) { return }
 
   if ($1) && ($1 == -e) {
     var %name = $nopath($script)
@@ -1416,7 +1415,7 @@ alias -l wmm_reset_images {
 
   var %d = wmm_module
 
-  if (!$dialog(%d)) || ($isid) { return }
+  if (!$dialog(%d)) { return }
 
   if ($1) && ($2) && ($1 == -i) {
     var %imgs = $wmm_temp $+ $2 $+ 1.png $+ $chr(166) $+ $wmm_temp $+ $2 $+ 2.png $+ $chr(166) $+ $wmm_temp $+ $2 $+ 3.png
@@ -1708,7 +1707,7 @@ alias -l wmm_modules_silent_update {
 
 alias -l wmm_modules_list {
   var %d = wmm_module
-  if (!$dialog(%d)) || ($isid) { return }
+  if (!$dialog(%d)) { return }
 
   did -rb %d 6
 
@@ -1757,7 +1756,7 @@ alias -l wmm_modules_list {
 alias -l wmm_modules_installed_plus_updated_list {
   var %d = wmm_module
 
-  if (!$dialog(%d)) || ($isid) { return }
+  if (!$dialog(%d)) { return }
 
   did -b %d 7,8,11,12,13,60,600
   did -r %d 8,60,600,250
@@ -1848,7 +1847,7 @@ alias -l wmm_tool {
   ; -b = uncheck the toolbar
   ; -t = update tooltip via correct language
 
-  if (!$1) || ($left($1,1) !== -) || ($isid) || (s !isincs $1) && (c !isincs $1) && (t !isincs $1) && (e !isincs $1) && (b !isincs $1) { return }
+  if (!$1) || ($left($1,1) !== -) || (s !isincs $1) && (c !isincs $1) && (t !isincs $1) && (e !isincs $1) && (b !isincs $1) { return }
 
   var %status = $wmm_rconf(Settings,Toolbar)
 
@@ -1877,7 +1876,6 @@ alias -l wmm_tool {
 }
 
 alias -l wmm_check_open {
-  if ($isid) { return }
   if ($dialog(wmm_module)) { wmm | return }
   if ($dialog(wmm_module_sets)) { wmm_sets | return }
 
@@ -1890,7 +1888,7 @@ alias -l wmm_check_open {
 alias -l wmm_modules_settings_list {
   var %d = wmm_module_sets
 
-  if (!$dialog(%d)) || ($isid) { return }
+  if (!$dialog(%d)) { return }
 
   if ($wmm_installed(total)) {
     var %tot_rem = $wmm_rsconf(General,Unsupported_Modules)
@@ -1966,7 +1964,7 @@ alias wmm_init_modules_tmp {
 alias -l wmm_modules_all_installed_list {
   var %t = $ini($wmm_sets_file,0)
 
-  if (!$1) || (!$isid) || (!%t) || ($1 > %t) || (!$isalias(wmm_lang)) || (!$isalias(wmm_qd)) || (!$isalias(wmm_isadi)) { returnex }
+  if (!$1) || (!%t) || ($1 > %t) || (!$isalias(wmm_lang)) || (!$isalias(wmm_qd)) || (!$isalias(wmm_isadi)) { returnex }
 
   if ($istok(begin end,$1,32)) { return - }
 
@@ -1991,7 +1989,7 @@ alias -l wmm_modules_all_installed_list {
 }
 
 alias -l wmm_resize_image { 
-  if (!$1) || (!$isid) { return }
+  if (!$1) { return }
 
   var %a = $pic($1).width
   var %b = $pic($1).height
@@ -2015,7 +2013,7 @@ alias -l wmm_pic {
   var %details = $chr(160) $+ - $+ $chr(160) $+ $chr(40) $+ %w $+ x $+ %h $+ $chr(41) $+ $chr(160) $+ - $+ $chr(160) $+ $bytes($file($1).size).suf
 
   if ($window(%win)) { window -c %win }
-  if (!$1) || (!$dialog(%d)) || ($isid) || (!%w) || (!%h) { return }
+  if (!$1) || (!$dialog(%d)) || (!%w) || (!%h) { return }
 
   var %a = $wmm_resize_image($1) 
 
@@ -2028,7 +2026,7 @@ alias -l wmm_pic {
 }
 
 alias -l wmm_modules_check_unsupported {
-  if ($isid) || ($dialog(wmm_module)) || ($dialog(wmm_module_sets)) { return }
+  if ($dialog(wmm_module)) || ($dialog(wmm_module_sets)) { return }
 
   var %t = $ini($wmm_sets_file,0)
 
@@ -2198,8 +2196,6 @@ alias wmm_check_update {
 }
 
 alias -l wmm_check_load_def_settings {
-  if ($isid) { return }
-
   if (!$wmm_rconf(Settings,Menus)) { wmm_wconf Settings Menus wmm wmm_sets }
   if (!$wmm_rconf(Settings,Language)) { wmm_wconf Settings Language English }
   if (!$wmm_rconf(Settings,Send_Feedback)) { wmm_wconf Settings Send_Feedback 1 }
@@ -2471,7 +2467,8 @@ alias wmm_getpos {
 
 alias -l wmm_tiny_key { 
   var %t = $ini($wmm_sets_file,Tiny_Keys)
-  if (!$isid) || (!%t) { return 0 }
+
+  if (!%t) { return 0 }
 
   var %r = $rand(1,%t)
   var %k = $wmm_rsconf(Tiny_Keys,%r)
@@ -2483,6 +2480,7 @@ alias -l wmm_tiny_key {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
+;TODO na to kanw rename se $wmm_tinyurl()
 alias wmm_tinycom {
   if (!$1) || (!$isid) { return }
 
@@ -3427,11 +3425,7 @@ alias wmm_html2asc {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-alias -l wmm_escapeht { 
-  if (!$isid) { return }
-
-  return $lower($regsubex(esc,$1,/([A-Z])/g,:\t))
-}
+alias -l wmm_escapeht { return $lower($regsubex(esc,$1,/([A-Z])/g,:\t)) }
 
 alias -l wmm_html_db {
   set -l %c bset -t &db $!calc(1 + $!bvar(&db,0))
