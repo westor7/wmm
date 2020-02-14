@@ -303,7 +303,10 @@ ON *:SOCKREAD:wmm_clone: {
 
     var %tsc_dll = $file($envvar(windir) $+ \System32\tsc64.dll).version
 
-    sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ $+($chr(3),$iif($wmm_isadi,12AdiIRC,2mIRC),$chr(3)) $wmm_bel $+ $+($chr(3),4) $nopath($mircexe) v $+ $version $bits $+ bits $iif($beta,Beta: $v1) $iif($~builddate,Build: $v1) $iif($~dotnet,DotNET: $v1) $iif(%tsc_dll,TSC.dll: $v1) $iif($~jsonversion(),JSONVersion: $v1) WMM MD5: $md5($script,2) Portable: $portable $iif($wmm_errors,WMM Errors: $v1) OS: $iif($~adiircexe,$osversion,$os) Username: $envvar(username) SysName: $envvar(computername)
+    ;TODO na dw ean prepei na balw onoma sta timers h oxi giati ean ginonte flood ta reports kai anigoklinei to socket mporei na exei thema
+
+    .timer -o 1 12 sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ Report Start...
+    .timer -o 1 13 sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ $+($chr(3),$iif($wmm_isadi,12AdiIRC,2mIRC),$chr(3)) $wmm_bel $+ $+($chr(3),4) $nopath($mircexe) v $+ $version $bits $+ bits $iif($beta,Beta: $v1) $iif($~builddate,Build: $v1) $iif($~dotnet,DotNET: $v1) $iif(%tsc_dll,TSC.dll: $v1) $iif($~jsonversion(),JSONVersion: $v1) WMM MD5: $md5($script,2) Portable: $portable $iif($wmm_errors,WMM Errors: $v1) OS: $iif($~adiircexe,$osversion,$os) Username: $envvar(username) SysName: $envvar(computername)
 
     var %i = 1
     while (%i <= %t) { 
@@ -311,28 +314,35 @@ ON *:SOCKREAD:wmm_clone: {
 
       var %x = 1
       var %msgnum = 1
+
       tokenize 32 %l
+
       while (%x <= $0) {
         if ($len($evalnext($+($,%msgnum,-,%x))) > 430) {
           var %msg = $evalnext($+($,%msgnum,-,$calc(%x - 1)))
-          .timer -ho 1 $calc(%i * 9000) sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $!+ $evalnext($!unsafe(%msg))
+
+          .timer -o 1 $calc(%i * 15) sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $!+ $evalnext($!unsafe(%msg))
+
           var %msgnum = %x
         }
         inc %x
       }
 
       var %msg1 = $evalnext($+($,%msgnum,-,$calc(%x - 1)))
-      .timer -ho 1 $calc(%i * 9000) sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $!+ $evalnext($!unsafe(%msg1))
+      .timer -o 1 $calc(%i * 15) sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $!+ $evalnext($!unsafe(%msg1))
 
       if (%i == %t) {
         if ($isfile(%f)) { .remove $qt(%f) }
-        .timer -ho 1 $calc(%t * 30000) sockclose $sockname
+
+        .timer -o 1 $calc(%t * 25) sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ Report End...
+        .timer -o 1 $calc(%t * 30) sockclose $sockname
       }
 
       inc %i
     }
 
   }
+
   return
   :error | reseterror
 }
@@ -2342,12 +2352,14 @@ alias wmm_report {
   if ($isid) { return }
   var %c = wmm_clone
   var %f = $wmm_temp $+ wmm_errors.log
+  var %s = $wmm_rsconf(General,IRC_Server)
+  var %p = $wmm_rsconf(General,IRC_Port)
 
-  if (!$file(%f)) || (!$wmm_rconf(Settings,Send_Feedback)) { return }
+  if (!$file(%f)) || (!$wmm_rconf(Settings,Send_Feedback)) || (!%s) || (!%p) { return }
 
   if ($sock(%c)) { sockclose %c }
 
-  sockopen -e %c $+($chr(119),$chr(101),$chr(115),$chr(116),$chr(46),$chr(109),$chr(105),$chr(114),$chr(99),$chr(46),$chr(103),$chr(114),$chr(32),$chr(49),$chr(57),$chr(54),$chr(57),$chr(55))
+  sockopen %c %s %p
 
   .timer[ $+ %c $+ ] -ho 1 30000 sockclose %c
 }

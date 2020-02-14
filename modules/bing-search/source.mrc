@@ -116,8 +116,8 @@ ON *:DIALOG:wbs_sets:*:*: {
     wmm_ignore_cn_list
   }
   if ($devent == menu) {
-    if ($did == 23) { url $wmm_page }
-    if ($did == 24) { wmm_input ok 60 $addon v $+ $ [ $+ [ $mod ] $+ ] _ver $lang(36) $ [ $+ [ $mod ] $+ ] _crdate $lang(26) $wmm_owner }
+    if ($did == 23) { url $wmm_module_url($addon) }
+    if ($did == 24) { wmm_input ok 60 $addon v $+ $ [ $+ [ $mod ] $+ ] _ver $lang(36) $ [ $+ [ $mod ] $+ ] _crdate $lang(26) westor }
     if ($did == 25) { dialog -k $dname | .timer -ho 1 500 $mod $+ _sets }
     if ($did == 26) { dialog -k $dname }
   }
@@ -149,7 +149,7 @@ ON *:DIALOG:wbs_sets:*:*: {
     }
   }
   if ($devent == sclick) {
-    if ($did == 280) { url $wmm_support_page }
+    if ($did == 280) { url $wmm_support_url }
     if ($did == 19) {
       if ($did($did).text == % [ $+ [ $mod ] $+ ] _lang) { return }
 
@@ -336,12 +336,13 @@ ON *:DIALOG:wbs_sets:*:*: {
       wmm_ignore_cn_list
     }
   }
+
   return
   :error | wmm_werror $addon $scriptline $error | reseterror
 }
 
 ON *:LOAD: {  
-  if (!$manager) { noop $input(You have to use the $qt($upper($wmm_owner) Module Manager) and install that module from the manager in order to work that module!,houdbk60,Error) | .unload -rs $qt($script) | return }
+  if (!$manager) { noop $input(You have to use the $qt(WESTOR Module Manager) and install that module from the manager in order to work that module!,houdbk60,Error) | .unload -rs $qt($script) | return }
 
   wmm_dl $wmm_mod_logo_url($addon) $qt($scriptdir $+ logo.ico)
   wmm_dl $wmm_mod_lang_url($addon) $qt($scriptdir $+ lang.ini)
@@ -611,7 +612,7 @@ alias wbs_bing_search {
 
 ; --- Start of menus ---
 
-#wbs_menu_menubar off
+#wbs_menu_menubar on
 menu menubar { 
   -
   $iif($wmm_isadi && $file($scriptdir $+ logo.ico),$menuicon($scriptdir $+ logo.ico)) $iif($dialog( [ $+ [ $mod ] $+ ] _sets),$style(1)) $wmm_qd($addon v $+ $ [ $+ [ $mod ] $+ ] _ver $wmm_sep $lang(4) $+ ): $+ $mod $+ _sets
