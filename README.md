@@ -1,19 +1,16 @@
 <h1 align="center">
 	<img
 		width="300"
-		alt="The Lounge"
+		alt="WESTOR Module Manager"
 		src="https://github.com/westor7/wmm/blob/master/images/wmm_180x180.png">
 </h1>
 
 <p align="center">
 	<a href="https://paypal.me/westor"><img
-		alt="nothing"
 		src="https://img.shields.io/badge/Donate-PayPal-blue.svg"></a>
 	<a href="https://raw.githubusercontent.com/westor7/wmm/master/images/btc_address.png"><img
-		alt="nothing2"
 		src="https://img.shields.io/badge/Donate-BTC-orange.svg"></a>
 	<a href="https://j.mp/westor_chat"><img
-		alt="nothing3"
 		src="https://img.shields.io/badge/Contact-IRC-brightgreen.svg"></a>
 </p>
 
