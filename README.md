@@ -14,7 +14,7 @@
 		src="https://img.shields.io/badge/Donate-BTC-orange.svg"></a>
 	<a href="https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL"><img
 		alt="nothing3"
-		src="https://img.shields.io/badge/Contact-IRC-red.svg"></a>
+		src="https://img.shields.io/badge/Contact-IRC-brightgreen.svg"></a>
 </p>
 
 <p align="center">
