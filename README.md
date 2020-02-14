@@ -12,7 +12,7 @@
 	<a href="https://raw.githubusercontent.com/westor7/wmm/master/images/btc_address.png"><img
 		alt="nothing2"
 		src="https://img.shields.io/badge/Donate-BTC-orange.svg"></a>
-	<a href="https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL"><img
+	<a href="https://j.mp/westor_chat"><img
 		alt="nothing3"
 		src="https://img.shields.io/badge/Contact-IRC-brightgreen.svg"></a>
 </p>
@@ -55,7 +55,7 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
   and improvements in the hole project you can do it with a small or big donation according your desire
   using one of the following currently supported methods:
   
-  (Thank you very much in advantage, also if you want your nickname or email or what ever personal information to be displayed here in Donators list, connect in my network from [here](https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL) and contact me so i can add it.)
+  (Thank you very much in advantage, also if you want your nickname or email or what ever personal information to be displayed here in Donators list, connect in my network from [here](https://j.mp/westor_chat) and contact me so i can add it.)
 
 - [PayPal](https://paypal.me/westor)
 - [BTC](https://raw.githubusercontent.com/westor7/wmm/master/images/btc_address.png)
