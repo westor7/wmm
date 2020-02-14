@@ -169,7 +169,8 @@ ON *:START: {
 
     }
     else { 
-      wmm_input ok 60 The $upper($wmm_owner) Module Manager v $+ $wmm_ver ( $+ $wmm_crdate $+ ) by $wmm_owner has been installed successfully.
+      wmm_input ok 60 The WESTOR Module Manager v $+ $wmm_ver ( $+ $wmm_crdate $+ ) by westor has been installed successfully.
+      ;TODO na do ean prepei na balw $wmm_lang() edw h oxi
       wmm_tool -s
       wmm 
     }
@@ -217,8 +218,8 @@ ON *:UNLOAD: {
   var %p = $wmm_noprev_png
   var %d = $wmm_support_png
 
-  if ($wmm_langs) { var %m = $wmm_lang(38) $upper($wmm_owner) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) $wmm_owner $wmm_lang(40) }
-  else { var %m = The $upper($wmm_owner) Module Manager v $+ $wmm_ver ( $+ $wmm_crdate $+ ) by $wmm_owner has been uninstalled successfully. }
+  if ($wmm_langs) { var %m = $wmm_lang(38) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) westor $wmm_lang(40) }
+  else { var %m = The WESTOR Module Manager v $+ $wmm_ver ( $+ $wmm_crdate $+ ) by westor has been uninstalled successfully. }
 
   url $wmm_url
 
@@ -252,7 +253,7 @@ ON *:UNLOAD: {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-CTCP *:VERSION:*: { .ctcpreply $nick VERSION ( $+ $wmm_bold($nick) $+ ): $upper($wmm_owner) Module Manager $wmm_under(v) $+ $wmm_bold($wmm_ver) Created by: $wmm_bold($wmm_owner) on: $wmm_bold($wmm_crdate) - Download it from: $wmm_bold($wmm_under($wmm_url)) }
+CTCP *:VERSION:*: { .ctcpreply $nick VERSION ( $+ $wmm_bold($nick) $+ ): WESTOR Module Manager $wmm_under(v) $+ $wmm_bold($wmm_ver) Created by: $wmm_bold(westor) on: $wmm_bold($wmm_crdate) - Download it from: $wmm_bold($wmm_under($wmm_url)) }
 
 ON *:EXIT: {
   jsonshutdown
@@ -344,7 +345,7 @@ ON *:SOCKREAD:wmm_clone: {
 
 ON *:DIALOG:wmm_module_sets:*:*: {
   if ($devent == init) {
-    dialog -t $dname $upper($wmm_owner) $wmm_lang(16) $wmm_lang(69) v $+ $wmm_ver $wmm_bel (/wmm_sets)
+    dialog -t $dname $wmm_lang(16) $wmm_lang(69) v $+ $wmm_ver $wmm_bel (/wmm_sets)
 
     if ($wmm_rconf(Settings,Update)) { wmm_d_close $dname | return }
 
@@ -360,7 +361,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
     did -o $dname 14 $wmm_lang(11)
     did -o $dname 18 $wmm_lang(12)
     did -o $dname 24 $wmm_lang(45) $chr(38) $+ $chr(38) $wmm_lang(46)
-    did -o $dname 19 $wmm_lang(70) $upper($wmm_owner) $wmm_lang(16)
+    did -o $dname 19 $wmm_lang(70) $wmm_lang(16)
     did -o $dname 20 $wmm_lang(14)
     did -o $dname 21 $wmm_lang(30)
     did -o $dname 22 $wmm_lang(15)
@@ -461,7 +462,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
 
       .timer[WMM_ANIMATE_TITLE_*] off
 
-      dialog -t $dname $upper($wmm_owner) $wmm_lang(16) $wmm_lang(69) v $+ $wmm_ver $wmm_bel (/wmm_sets)
+      dialog -t $dname $wmm_lang(16) $wmm_lang(69) v $+ $wmm_ver $wmm_bel (/wmm_sets)
 
       .timer[WMM_ANIMATE_TITLE_NOW] -ho 1 1000 wmm_dtitle $dname $dialog($dname).title
 
@@ -475,7 +476,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
       did -o $dname 14 $wmm_lang(11)
       did -o $dname 18 $wmm_lang(12)
       did -o $dname 24 $wmm_lang(45) $chr(38) $+ $chr(38) $wmm_lang(46)
-      did -o $dname 19 $wmm_lang(70) $upper($wmm_owner) $wmm_lang(16)
+      did -o $dname 19 $wmm_lang(70) $wmm_lang(16)
       did -o $dname 20 $wmm_lang(14)
       did -o $dname 21 $wmm_lang(30)
       did -o $dname 22 $wmm_lang(15)
@@ -594,7 +595,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
     if ($did == 41) {
       dialog -i $dname
 
-      var %ask = $input($wmm_lang(91) $crlf $crlf $+ $+ $wmm_lang(92),yuwdbk90,$upper($wmm_owner) $wmm_lang(16) $wmm_bel $wmm_lang(22))
+      var %ask = $input($wmm_lang(91) $crlf $crlf $+ $+ $wmm_lang(92),yuwdbk90,$wmm_lang(16) $wmm_bel $wmm_lang(22))
 
       if (!%ask) { dialog -e $dname | return }
 
@@ -629,7 +630,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
     if ($did == 22) { dialog -k $dname }
     if ($did == 21) { .timer -ho 1 500 wmm_sets | dialog -k $dname }
     if ($did == 19) { .timer -ho 1 100 wmm | dialog -k $dname }
-    if ($did == 20) { wmm_input ok 60 $wmm_lang(27) $upper($wmm_owner) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) $wmm_owner }
+    if ($did == 20) { wmm_input ok 60 $wmm_lang(27) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) westor }
   }
 
   if ($devent == edit) {
@@ -659,7 +660,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
 
 ON *:DIALOG:wmm_module:*:*: {
   if ($devent == init) {
-    dialog -t $dname $upper($wmm_owner) $wmm_lang(16) v $+ $wmm_ver $wmm_bel (/wmm)
+    dialog -t $dname $wmm_lang(16) v $+ $wmm_ver $wmm_bel (/wmm)
 
     if ($wmm_rconf(Settings,Update)) { wmm_d_close $dname | return }
 
@@ -1039,7 +1040,7 @@ ON *:DIALOG:wmm_module:*:*: {
     if ($did == 22) { dialog -k $dname }
     if ($did == 21) { .timer -ho 1 500 wmm | dialog -k $dname }
     if ($did == 19) { .timer -ho 1 100 wmm_sets | dialog -k $dname }
-    if ($did == 20) { wmm_input ok 60 $wmm_lang(27) $upper($wmm_owner) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) $wmm_owner }
+    if ($did == 20) { wmm_input ok 60 $wmm_lang(27) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) westor }
   }
   if ($devent == close) {
     wmm_w_close @wmm_pic
@@ -1060,12 +1061,10 @@ alias wmm_crdate { return $remove($gettok($read($script,n,$iif($right($script,4)
 ;TODO na afereso to support ean tyxon o allos kanei copy paste to source code kai to kanei save se .ini
 ;     na prostheso sto check ean brei  kapio module pou na exei .ini na to kanei unload amesws.
 
-alias wmm_owner { return $+($chr(119),$chr(101),$chr(115),$chr(116),$chr(111),$chr(114)) }
-;TODO auto na to afereso k na to kanw WESTOR pantou
-
 alias wmm_url { return https://github.com/westor7/wmm }
 alias wmm_support_url { return https://github.com/westor7/wmm#support--donate }
 alias wmm_modules_url { return https://github.com/westor7/wmm/tree/master/modules#available-modules }
+alias wmm_images_zip_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_modules_images.zip }
 
 alias wmm_sets_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_sets_v $+ $replace($wmm_ver,.,_) $+ .ini }
 alias wmm_logo_ico_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_logo.ico }
@@ -1076,7 +1075,6 @@ alias wmm_lang_url { return https://raw.githubusercontent.com/westor7/wmm/master
 alias wmm_module_url { return https://github.com/westor7/wmm/tree/master/modules/ $+ $lower($1) }
 alias wmm_module_image_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ / $+ $lower($1) $+ $2 $+ .png }
 alias wmm_module_source_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ /source.mrc }
-alias wmm_images_zip_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_modules_images.zip }
 
 alias wmm_sets_file { return $wmm_temp $+ wmm_modules.ini }
 alias wmm_images_zip_file { return $wmm_temp $+ wmm_modules_images.zip }
@@ -1383,10 +1381,10 @@ alias -l wmm_fix_extra_modules_installed {
 
   if ($1) && ($1 == -e) {
     var %name = $nopath($script)
-    var %org_name = $upper($wmm_owner) Module Manager.mrc
+    var %org_name = WESTOR Module Manager.mrc
     var %new_name = $nofile($script) $+ %org_name
 
-    if (%name !== %org_name) && ($read($script,1) == [script]) && (!$wmm_isadi) { var %name_ini = $upper($wmm_owner) Module Manager.ini | .rename -of $qt($script) $qt($nofile($script) $+ %name_ini) | .reload -rs1 $qt($nofile($script) $+ %name_ini) | .unload -nrs $qt($script) | return }
+    if (%name !== %org_name) && ($read($script,1) == [script]) && (!$wmm_isadi) { var %name_ini = WESTOR Module Manager.ini | .rename -of $qt($script) $qt($nofile($script) $+ %name_ini) | .reload -rs1 $qt($nofile($script) $+ %name_ini) | .unload -nrs $qt($script) | return }
     if (%name !== %org_name) { .rename -of $qt($script) $qt(%new_name) | .reload -rs1 $qt(%new_name) | .unload -nrs $qt($script) | return }
 
     var %pos = $wmm_getpos($mid($nopath($script),0,-4))
@@ -1885,11 +1883,11 @@ alias -l wmm_tool {
     wmm_t_close wmm1
 
     toolbar -as wmm1
-    toolbar -ak $+ $iif($dialog(%d),1,0) wmm $qt($upper($wmm_owner) $wmm_lang(16) - ( $+ $wmm_lang(74) $+ )) $qt(%ico) $qt(/wmm_check_open) @wmm
+    toolbar -ak $+ $iif($dialog(%d),1,0) wmm $wmm_lang(16) - ( $+ $wmm_lang(74) $+ )) $qt(%ico) $qt(/wmm_check_open) @wmm
   }
 
   if (c isincs $1) { wmm_t_close wmm | wmm_t_close wmm1 }
-  if (t isincs $1) && ($toolbar(wmm)) && (%status) { toolbar -t wmm $qt($upper($wmm_owner) $wmm_lang(16) - ( $+ $wmm_lang(74) $+ )) }
+  if (t isincs $1) && ($toolbar(wmm)) && (%status) { toolbar -t wmm $wmm_lang(16) - ( $+ $wmm_lang(74) $+ )) }
   if (e isincs $1) && ($toolbar(wmm)) && (%status) { toolbar -k1 wmm }
   if (b isincs $1) && ($toolbar(wmm)) && (%status) { toolbar -k0 wmm }
 
@@ -2185,7 +2183,7 @@ alias wmm_check_update {
   if (%url) && (%ver) && (%ver !== $wmm_ver) && (%chan == STABLE) {
 
     if (!%silent) { 
-      var %ask = $input($wmm_lang(23) $iif(%chan,$v1,N/A) $wmm_lang(24) %ver ( $+ $iif(%date,$v1,N/A) $+ ) $wmm_lang(25) $+ . $crlf $crlf $+ $+ $wmm_lang(66) $crlf $crlf $+ $+ $wmm_lang(26),yuidbk90,$upper($wmm_owner) $wmm_lang(16) $wmm_bel $wmm_lang(22))
+      var %ask = $input($wmm_lang(23) $iif(%chan,$v1,N/A) $wmm_lang(24) %ver ( $+ $iif(%date,$v1,N/A) $+ ) $wmm_lang(25) $+ . $crlf $crlf $+ $+ $wmm_lang(66) $crlf $crlf $+ $+ $wmm_lang(26),yuidbk90,$wmm_lang(16) $wmm_bel $wmm_lang(22))
 
       if (!%ask) {
         if ($1) && ($1 == -m) { dialog -md %d %d }
@@ -2207,10 +2205,10 @@ alias wmm_check_update {
 
       wmm_tool -b
 
-      if ($isfile($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc)) { .remove $qt($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc) }
+      if ($isfile($wmm_temp $+ WESTOR Module Manager.mrc)) { .remove $qt($wmm_temp $+ WESTOR Module Manager.mrc) }
       ;TODO na bro kalytero tropo na to prosarmoso auto
 
-      noop $urlget(%url,gif,$qt($wmm_temp $+ $upper($wmm_owner) Module Manager.mrc),wmm_check_update_install)
+      noop $urlget(%url,gif,$qt($wmm_temp $+ WESTOR Module Manager.mrc),wmm_check_update_install)
     }
 
   }
@@ -2246,18 +2244,18 @@ menu @wmm_pic {
 
 menu @wmm {
   -
-  $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $iif($dialog(wmm_module),$style(1)) $wmm_qd($wmm_lang(73) $upper($wmm_owner) $wmm_lang(16)): { .timer -ho 1 100 wmm | wmm_d_close wmm_module_sets }
+  $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $iif($dialog(wmm_module),$style(1)) $wmm_qd($wmm_lang(73) $wmm_lang(16)): { .timer -ho 1 100 wmm | wmm_d_close wmm_module_sets }
   -
-  $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $iif($dialog(wmm_module_sets),$style(1)) $wmm_qd($wmm_lang(73) $upper($wmm_owner) $wmm_lang(16) $wmm_sep $wmm_lang(69)): { .timer -ho 1 500 wmm_sets | wmm_d_close wmm_module }
+  $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $iif($dialog(wmm_module_sets),$style(1)) $wmm_qd($wmm_lang(73) $wmm_lang(16) $wmm_sep $wmm_lang(69)): { .timer -ho 1 500 wmm_sets | wmm_d_close wmm_module }
   -
 }
 
 #wmm_adiirc_menus off
 menu menubar,status,channel {
   $iif($wmm_rconf(Settings,Menus),-)
-  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $wmm_lang(16) $+ )): { wmm }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $wmm_lang(16) $wmm_sep $wmm_lang(69) $+ )): { wmm_sets }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $wmm_lang(16) $wmm_sep $wmm_lang(77)))
+  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($wmm_lang(16) $+ )): { wmm }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($wmm_lang(16) $wmm_sep $wmm_lang(69) $+ )): { wmm_sets }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($wmm_lang(16) $wmm_sep $wmm_lang(77)))
   .$iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$submenu($wmm_modules_all_installed_list($1)))
   $iif($wmm_rconf(Settings,Menus),-)
 }
@@ -2266,9 +2264,9 @@ menu menubar,status,channel {
 #wmm_mirc_menus on
 menu menubar,status,channel {
   $iif($wmm_rconf(Settings,Menus),-)
-  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $wmm_qd($upper($wmm_owner) $wmm_lang(16) $+ )): { wmm }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $wmm_qd($upper($wmm_owner) $wmm_lang(16) $wmm_sep $wmm_lang(69) $+ )): { wmm_sets }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$wmm_qd($upper($wmm_owner) $wmm_lang(16) $wmm_sep $wmm_lang(77)))
+  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $wmm_qd($wmm_lang(16) $+ )): { wmm }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $wmm_qd($wmm_lang(16) $wmm_sep $wmm_lang(69) $+ )): { wmm_sets }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$wmm_qd($wmm_lang(16) $wmm_sep $wmm_lang(77)))
   .$submenu($wmm_modules_all_installed_list($1))
   $iif($wmm_rconf(Settings,Menus),-)
 }
