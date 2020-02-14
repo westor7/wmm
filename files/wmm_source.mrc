@@ -132,9 +132,6 @@ ON *:START: {
     if ($wmm_check_os) { wmm_input error 60 $v1 | .unload -nrs $qt($script) | return }
     if ($group(#wmm).fname !== $script) { wmm_input error 60 That project is already installed into this program client, you cannot have more than 1 at the same client installed! | .unload -nrs $qt($script) | return } 
 
-    if ($wmm_isadi) { .disable #wmm_mirc_menus | .enable #wmm_adiirc_menus }
-    else { .disable #wmm_adiirc_menus | .enable #wmm_mirc_menus }
-
     hfree -w WMM_LANG_*
 
     url $wmm_support_url
@@ -177,9 +174,6 @@ ON *:START: {
   }
   elseif ($starting) {
     if ($wmm_check_version) || ($wmm_check_os) || ($group(#wmm).fname !== $script) { .unload -nrs $qt($script) | return }
-
-    if ($wmm_isadi) { .disable #wmm_mirc_menus | .enable #wmm_adiirc_menus }
-    else { .disable #wmm_adiirc_menus | .enable #wmm_mirc_menus }
 
     jsonshutdown
     wmm_fix_extra_modules_installed
@@ -1121,9 +1115,6 @@ alias wmm {
   ; .timer[WMM_MOD_SILENT_UPDATE_*] off
   ;TODO na to afereso? na dw ean xriazete prwta poythena
 
-  if ($wmm_isadi) { .disable #wmm_mirc_menus | .enable #wmm_adiirc_menus }
-  else { .disable #wmm_adiirc_menus | .enable #wmm_mirc_menus }
-
   wmm_fix_extra_modules_installed
 
   var %don = $wmm_support_png
@@ -1167,9 +1158,6 @@ alias wmm_sets {
   .timer[WMM_CHECK_FOR_UPDATE_SILENT] off
   .timer[WMM_CHECK_BEFORE_OPEN_DIALOG] off
   ; .timer[WMM_MOD_SILENT_UPDATE_*] off
-
-  if ($wmm_isadi) { .disable #wmm_mirc_menus | .enable #wmm_adiirc_menus }
-  else { .disable #wmm_adiirc_menus | .enable #wmm_mirc_menus }
 
   wmm_fix_extra_modules_installed
 
@@ -2250,27 +2238,14 @@ menu @wmm {
   -
 }
 
-#wmm_adiirc_menus off
 menu menubar,status,channel {
   $iif($wmm_rconf(Settings,Menus),-)
-  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($wmm_lang(16) $+ )): { wmm }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($wmm_lang(16) $wmm_sep $wmm_lang(69) $+ )): { wmm_sets }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($wmm_lang(16) $wmm_sep $wmm_lang(77)))
-  .$iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$submenu($wmm_modules_all_installed_list($1)))
-  $iif($wmm_rconf(Settings,Menus),-)
-}
-#wmm_adiirc_menus end
-
-#wmm_mirc_menus on
-menu menubar,status,channel {
-  $iif($wmm_rconf(Settings,Menus),-)
-  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $wmm_qd($wmm_lang(16) $+ )): { wmm }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $wmm_qd($wmm_lang(16) $wmm_sep $wmm_lang(69) $+ )): { wmm_sets }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$wmm_qd($wmm_lang(16) $wmm_sep $wmm_lang(77)))
+  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($wmm_lang(16) $+ )): { wmm }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($wmm_lang(16) $wmm_sep $wmm_lang(69) $+ )): { wmm_sets }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($wmm_lang(16) $wmm_sep $wmm_lang(77)))
   .$submenu($wmm_modules_all_installed_list($1))
   $iif($wmm_rconf(Settings,Menus),-)
 }
-#wmm_mirc_menus end
 
 ; --- End of menus ---
 
