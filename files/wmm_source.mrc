@@ -2241,18 +2241,18 @@ menu @wmm_pic {
 
 menu @wmm {
   -
-  $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $iif($dialog(wmm_module),$style(1)) $wmm_qd($iif($wmm_lang(73),$v1,Open the) $upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager)): { .timer -ho 1 100 wmm | wmm_d_close wmm_module_sets }
+  $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $iif($dialog(wmm_module),$style(1)) $wmm_qd($wmm_lang(73) $upper($wmm_owner) $wmm_lang(16)): { .timer -ho 1 100 wmm | wmm_d_close wmm_module_sets }
   -
-  $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $iif($dialog(wmm_module_sets),$style(1)) $wmm_qd($iif($wmm_lang(73),$v1,Open the) $upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $wmm_sep $iif($wmm_lang(69),$v1,Settings)): { .timer -ho 1 500 wmm_sets | wmm_d_close wmm_module }
+  $iif($wmm_isadi && $file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $iif($dialog(wmm_module_sets),$style(1)) $wmm_qd($wmm_lang(73) $upper($wmm_owner) $wmm_lang(16) $wmm_sep $wmm_lang(69)): { .timer -ho 1 500 wmm_sets | wmm_d_close wmm_module }
   -
 }
 
 #wmm_adiirc_menus off
 menu menubar,status,channel {
   $iif($wmm_rconf(Settings,Menus),-)
-  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $+ )): { wmm }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $wmm_sep $iif($wmm_lang(69),$v1,Settings) $+ )): { wmm_sets }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $wmm_sep $iif($wmm_lang(77),$v1,Modules List)))
+  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $wmm_lang(16) $+ )): { wmm }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $wmm_lang(16) $wmm_sep $wmm_lang(69) $+ )): { wmm_sets }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $wmm_lang(16) $wmm_sep $wmm_lang(77)))
   .$iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$submenu($wmm_modules_all_installed_list($1)))
   $iif($wmm_rconf(Settings,Menus),-)
 }
@@ -2261,9 +2261,9 @@ menu menubar,status,channel {
 #wmm_mirc_menus on
 menu menubar,status,channel {
   $iif($wmm_rconf(Settings,Menus),-)
-  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $+ )): { wmm }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $wmm_sep $iif($wmm_lang(69),$v1,Settings) $+ )): { wmm_sets }
-  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $wmm_sep $iif($wmm_lang(77),$v1,Modules List)))
+  $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $wmm_qd($upper($wmm_owner) $wmm_lang(16) $+ )): { wmm }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_sets,32),$iif($dialog(wmm_module_sets),$style(1)) $wmm_qd($upper($wmm_owner) $wmm_lang(16) $wmm_sep $wmm_lang(69) $+ )): { wmm_sets }
+  $iif($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32),$wmm_qd($upper($wmm_owner) $wmm_lang(16) $wmm_sep $wmm_lang(77)))
   .$submenu($wmm_modules_all_installed_list($1))
   $iif($wmm_rconf(Settings,Menus),-)
 }
