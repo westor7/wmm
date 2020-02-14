@@ -5,10 +5,6 @@
 		src="https://github.com/westor7/wmm/blob/master/images/wmm_180x180.png">
 </h1>
 
-<h3 align="center">
-	WESTOR Module Manager
-</h3>
-
 <p align="center">
 	<a href="https://paypal.me/westor"><img
 		alt="nothing"
