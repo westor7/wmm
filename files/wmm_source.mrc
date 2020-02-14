@@ -3,15 +3,13 @@
 ######################################
 
 	# WESTOR Module Manager #
-	 # v5.0 - (13/02/2020) #
+	 # v5.0 - (14/02/2020) #
 	  # Thanks Supporters #
 
 ######################################
 
 */
 
-;TODO Na allakso to code etsi oste na otan tha kanei install ena module na kanei create folder kai na min ta petaei ola ta
-;     arxeia apo ta modules xyma mesa se ena folder, na exei to kathe module ksexoristo folder me ta files tou mesa
 ;TODO na perimenw mexri na kanei stable tin kainouria JSON kai na tin testaro.
 ;TODO na kanw ola ta modules etsi oste na min mporei kanenas na ta kanei install ektos apo to manager
 ;     diladi na balw ston ON LOAD ena check "if (!$dialog(wmm_module)) { unload }" gia na to aferei.
@@ -22,10 +20,9 @@
 ;     tha prepei na fygei arketh palia savoura etsi oste na einai eukolo kai gia kapion na kanei PR sto git.
 ;TODO na do ton kodika pou kanei connect gia na kanei report ta errors ean einai swstos kai ean leitourgei
 ;     pithanon na thelei perisotera pragmata.
-;TODO na peraso ola ta "$wmm_dir $+ wmm_main.ico" se alias gia na kanei apethias call.
-;TODO na afereso apo pantou to $wmm_error den xriazete pleon.
 ;TODO na ftiakso ligo to code style pantou diladi na doso spaces anamesa sta code gia na einai pio readable.
-:TODO na perimenw mexri na bgei h epomenh adiirc stable version giati exei fix sto #4925
+;TODO na perimenw mexri na bgei h epomenh adiirc stable version giati exei fix sto #4925
+;TODO na prostheo se opio alias den exei ":error | wmm_werror $scriptline $error | reseterror" 
 
 ; --- Start of dialogs ---
 
@@ -793,8 +790,8 @@ ON *:DIALOG:wmm_module:*:*: {
 
       did -rh $dname 250
 
-      var %f_ico = $wmm_temp $+ %alias $+ _main.ico
-      if (!$file(%f_ico)) { var %f_ico = $nofile(%path) $+ %alias $+ _main.ico }
+      var %f_ico = $wmm_temp $+ %alias $+ _logo.ico
+      if (!$file(%f_ico)) { var %f_ico = $nofile(%path) $+ %alias $+ _logo.ico }
 
       if ($file(%f_ico)) { did -vg $dname 28 $qt(%f_ico) }
       else { did -h $dname 28 }
@@ -827,8 +824,8 @@ ON *:DIALOG:wmm_module:*:*: {
       var %alias = $wmm_rsconf(%m,Alias)
       var %path = $wmm_getpath(%m)
 
-      var %f_ico = $wmm_temp $+ %alias $+ _main.ico
-      if (!$file(%f_ico)) { var %f_ico = $nofile(%path) $+ %alias $+ _main.ico }
+      var %f_ico = $wmm_temp $+ %alias $+ _logo.ico
+      if (!$file(%f_ico)) { var %f_ico = $nofile(%path) $+ %alias $+ _logo.ico }
 
       if ($file(%f_ico)) { did -vg $dname 28 $qt(%f_ico) }
       else { did -h $dname 28 }
@@ -863,8 +860,8 @@ ON *:DIALOG:wmm_module:*:*: {
       else {
         did -hr $dname 250
 
-        var %f_ico = $wmm_temp $+ %alias $+ _main.ico
-        if (!$file(%f_ico)) { var %f_ico = $nofile(%path) $+ %alias $+ _main.ico }
+        var %f_ico = $wmm_temp $+ %alias $+ _logo.ico
+        if (!$file(%f_ico)) { var %f_ico = $nofile(%path) $+ %alias $+ _logo.ico }
 
         if ($file(%f_ico)) { did -vg $dname 28 $qt(%f_ico) }
         else { did -h $dname 28 }
@@ -1072,10 +1069,7 @@ alias wmm_crdate { return $remove($gettok($read($script,n,$iif($right($script,4)
 
 alias wmm_owner { return $+($chr(119),$chr(101),$chr(115),$chr(116),$chr(111),$chr(114)) }
 alias wmm_page { return https://github.com/westor7/wmm }
-
-alias wmm_support_page { return https://github.com/westor7/wmm }
-;TODO na balw ena kalytero link pou na einai pio omorfa described
-
+alias wmm_support_page { return https://github.com/westor7/wmm#support--donate }
 alias wmm_sets_file { return $wmm_temp $+ wmm_modules.ini }
 alias wmm_images_zip_file { return $wmm_temp $+ wmm_modules_images.zip }
 alias wmm_errors { return $lines($wmm_temp $+ wmm_errors.log) }
@@ -1085,7 +1079,7 @@ alias wmm_lang_ini { return $wmm_dir $+ wmm_lang.ini }
 alias wmm_support_png { return $wmm_dir $+ wmm_support.png }
 alias wmm_noprev_png { return $wmm_dir $+ wmm_no_preview.png }
 alias wmm_logo_ico { return $wmm_dir $+ wmm_logo.ico }
-alias wmm_sets_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_sets_v5_0.ini }
+alias wmm_sets_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_sets_v $+ $replace($wmm_ver,.,_) $+ .ini }
 alias wmm_logo_ico_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_logo.ico }
 alias wmm_noprev_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_no_preview.png }
 alias wmm_support_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_support.png }
@@ -1129,6 +1123,7 @@ alias wmm {
   .timer[WMM_CHECK_FOR_UPDATE_SILENT] off
   .timer[WMM_CHECK_BEFORE_OPEN_DIALOG] off
   ; .timer[WMM_MOD_SILENT_UPDATE_*] off
+  ;TODO na to afereso? na dw ean xriazete prwta poythena
 
   if ($wmm_isadi) { .disable #wmm_mirc_menus | .enable #wmm_adiirc_menus }
   else { .disable #wmm_adiirc_menus | .enable #wmm_mirc_menus }
@@ -1979,7 +1974,7 @@ alias -l wmm_modules_all_installed_list {
   var %d = $wmm_rsconf(%n,Alias) $+ _sets
 
   if ($wmm_isadi) {
-    var %ico = $replace(%d,_sets,_main) $+ .ico
+    var %ico = $replace(%d,_sets,_logo) $+ .ico
     var %fm = $wmm_temp $+ %ico
 
     if (!$file(%fm)) { var %fm = $wmm_dir $+ modules $+ \ $+ %ico }
