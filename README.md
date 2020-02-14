@@ -1,14 +1,33 @@
-![](https://github.com/westor7/wmm/blob/master/images/wmm_180x180.png)
+<h1 align="center">
+	<img
+		width="300"
+		alt="The Lounge"
+		src="https://github.com/westor7/wmm/blob/master/images/wmm_180x180.png">
+</h1>
 
-[![Donate-paypal](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/westor)
-[![Donate-btc](https://img.shields.io/badge/Donate-BTC-orange.svg)](https://github.com/westor7/wmm/blob/master/images/btc_address.png)
-[![Contact](https://img.shields.io/badge/Contact-IRC-red.svg)](https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL)
+<h3 align="center">
+	WESTOR Module Manager
+</h3>
+
+<p align="center">
+	<a href="https://paypal.me/westor"><img
+		alt="nothing"
+		src="https://img.shields.io/badge/Donate-PayPal-blue.svg"></a>
+	<a href="https://github.com/westor7/wmm/blob/master/images/btc_address.png"><img
+		alt="nothing2"
+		src="https://img.shields.io/badge/Donate-BTC-orange.svg"></a>
+	<a href="https://kiwiirc.com/nextclient/real.chatnet.gr:+6697?nick=mSL-??&amp;theme=nightswatch&amp;channel=#mSL"><img
+		alt="nothing3"
+		src="https://img.shields.io/badge/Contact-IRC-red.svg"></a>
+</p>
+
+<p align="center">
+	<img src="https://github.com/westor7/wmm/blob/master/images/wmm_2.jpg" width="550">
+</p>
 
 ### Description:
 
 This is a project written on mSL *(mIRC Scripting Language)* that allows you to download and install all the available and currently supported modules from this git repo and helps you improve your own bot with these modules.
-
-![](https://github.com/westor7/wmm/blob/master/images/wmm_2.jpg)
 
 ### Features:
 
