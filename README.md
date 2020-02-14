@@ -2,7 +2,7 @@
 	<img
 		width="300"
 		alt="WESTOR Module Manager"
-		src="https://github.com/westor7/wmm/blob/master/images/wmm_180x180.png">
+		src="https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_180x180.png">
 </h1>
 
 <p align="center">
@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-	<img src="https://github.com/westor7/wmm/blob/master/images/wmm_2.jpg" width="550">
+	<img src="https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_2.jpg" width="550">
 </p>
 
 ### Description:
