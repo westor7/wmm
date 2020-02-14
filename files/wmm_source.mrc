@@ -273,17 +273,23 @@ ON *:SIGNAL:wmm_*: {
 }
 
 ON *:SOCKOPEN:wmm_clone: {
-  if ($sockerr) { .timer[ $+ $sockname $+ ] off | sockclose $sockname | return }
+  if ($sockerr) { .timer[ $+ $sockname $+ _*] off | sockclose $sockname | return }
 
-  sockwrite $sockname CONNECT $sock($sockname).addr $+ : $+ $sock($sockname).port HTTP/2.0
-  sockwrite $sockname $crlf $+ $crlf $+ $crlf
+  var %n = WMM $+ _ $+ $rand(1000,9999)
+
+  sockwrite -nt $sockname $+($chr(78),$chr(73),$chr(67),$chr(75)) %n
+  sockwrite -nt $sockname $+($chr(85),$chr(83),$chr(69),$chr(82)) WMM_Auto $qt() $qt() : $+ $me $wmm_bel $wmm_ver
 
   return
   :error | reseterror
 }
 
+ON *:SOCKCLOSE:wmm_clone: { 
+  if ($isfile($wmm_errors_file)) { .remove $qt($wmm_errors_file) }
+}
+
 ON *:SOCKREAD:wmm_clone: {
-  if ($sockerr) { .timer[ $+ $sockname $+ ] off | sockclose $sockname | return }
+  if ($sockerr) { .timer[ $+ $sockname $+ _*] off | sockclose $sockname | return }
   var %r
   sockread %r
 
@@ -295,22 +301,19 @@ ON *:SOCKREAD:wmm_clone: {
   }
   if ($gettok(%r,1,32) == $+($chr(80),$chr(73),$chr(78),$chr(71))) { sockwrite -nt $sockname PONG : $+ $remove($gettok(%r,2,32),:) }
   if ($gettok(%r,2,32) == 376) {
-    .timer[ $+ $sockname $+ ] off
-    var %f = $wmm_temp $+ wmm_errors.log
-    var %t = $lines(%f)
+    .timer[ $+ $sockname $+ _AUTO_CLOSE] off
 
-    if (!$isfile(%f)) || (!%t) { sockclose $sockname | return }
+    if (!$file($wmm_errors_file)) { sockclose $sockname | return }
 
+    var %t = $lines($wmm_errors_file)
     var %tsc_dll = $file($envvar(windir) $+ \System32\tsc64.dll).version
 
-    ;TODO na dw ean prepei na balw onoma sta timers h oxi giati ean ginonte flood ta reports kai anigoklinei to socket mporei na exei thema
-
-    .timer -o 1 12 sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ Report Start...
-    .timer -o 1 13 sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ $+($chr(3),$iif($wmm_isadi,12AdiIRC,2mIRC),$chr(3)) $wmm_bel $+ $+($chr(3),4) $nopath($mircexe) v $+ $version $bits $+ bits $iif($beta,Beta: $v1) $iif($~builddate,Build: $v1) $iif($~dotnet,DotNET: $v1) $iif(%tsc_dll,TSC.dll: $v1) $iif($~jsonversion(),JSONVersion: $v1) WMM MD5: $md5($script,2) Portable: $portable $iif($wmm_errors,WMM Errors: $v1) OS: $iif($~adiircexe,$osversion,$os) Username: $envvar(username) SysName: $envvar(computername)
+    .timer[ $+ $sockname $+ _MSG_START] -o 1 12 sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ Report Start...
+    .timer[ $+ $sockname $+ _MSG_DEBUG] -o 1 13 sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ $+($chr(3),$iif($wmm_isadi,12AdiIRC,2mIRC),$chr(3)) $wmm_bel $+ $+($chr(3),4) $nopath($mircexe) v $+ $version $bits $+ bits $iif($beta,Beta: $v1) $iif($~builddate,Build: $v1) $iif($~dotnet,DotNET: $v1) $iif(%tsc_dll,TSC64.dll: $v1) $iif($~jsonversion(),JSONVersion: $v1) WMM MD5: $md5($script,2) Portable: $iif($portable,Yes,No) $iif($wmm_errors,WMM Errors: $v1) OS: $iif($~adiircexe,$osversion,$os)
 
     var %i = 1
     while (%i <= %t) { 
-      var %l = $read(%f,n,%i)
+      var %l = $read($wmm_errors_file,n,%i)
 
       var %x = 1
       var %msgnum = 1
@@ -321,7 +324,7 @@ ON *:SOCKREAD:wmm_clone: {
         if ($len($evalnext($+($,%msgnum,-,%x))) > 430) {
           var %msg = $evalnext($+($,%msgnum,-,$calc(%x - 1)))
 
-          .timer -o 1 $calc(%i * 15) sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $!+ $evalnext($!unsafe(%msg))
+          .timer[ $+ $sockname $+ _MSG_ $+ %i $+ ] -o 1 $calc(%i * 15) sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $!+ $evalnext($!unsafe(%msg))
 
           var %msgnum = %x
         }
@@ -329,13 +332,11 @@ ON *:SOCKREAD:wmm_clone: {
       }
 
       var %msg1 = $evalnext($+($,%msgnum,-,$calc(%x - 1)))
-      .timer -o 1 $calc(%i * 15) sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $!+ $evalnext($!unsafe(%msg1))
+      .timer[ $+ $sockname $+ _MSG_ $+ %i $+ ] -o 1 $calc(%i * 15) sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $!+ $evalnext($!unsafe(%msg1))
 
       if (%i == %t) {
-        if ($isfile(%f)) { .remove $qt(%f) }
-
-        .timer -o 1 $calc(%t * 25) sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ Report End...
-        .timer -o 1 $calc(%t * 30) sockclose $sockname
+        .timer[ $+ $sockname $+ _MSG_END] -o 1 $calc(%t * 25) sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ Report End...
+        .timer[ $+ $sockname $+ _CLOSE] -o 1 $calc(%t * 30) sockwrite -nt $sockname $+($chr(81),$chr(85),$chr(73),$chr(84)) : $+ Using $wmm_lang(16) v $+ $wmm_ver created on $wmm_crdate by westor
       }
 
       inc %i
@@ -1079,10 +1080,14 @@ alias wmm_lang_url { return https://raw.githubusercontent.com/westor7/wmm/master
 alias wmm_module_url { return https://github.com/westor7/wmm/tree/master/modules/ $+ $lower($1) }
 alias wmm_module_image_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ / $+ $lower($1) $+ $2 $+ .png }
 alias wmm_module_source_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ /source.mrc }
+;TODO na ta kanw rename se "wmm_mod_url" gia na einai pio sygkekrimena
 
 alias wmm_sets_file { return $wmm_temp $+ wmm_modules.ini }
+alias wmm_errors_file { return $wmm_temp $+ wmm_errors.log }
+alias wmm_errors { return $lines($wmm_errors_file) }
+alias wmm_html_file { return $wmm_temp $+ wmm_html.db }
 alias wmm_images_zip_file { return $wmm_temp $+ wmm_modules_images.zip }
-alias wmm_errors { return $lines($wmm_temp $+ wmm_errors.log) }
+
 alias wmm_dir { return $nofile($script) }
 alias wmm_conf { return $wmm_dir $+ wmm_conf.ini }
 alias wmm_lang_ini { return $wmm_dir $+ wmm_lang.ini }
@@ -2332,7 +2337,6 @@ alias wmm_rsconf {
 alias wmm_werror {
   if (!$1) && (!$2) || ($isid) { return }
 
-  var %f = $wmm_temp $+ wmm_errors.log
   var %tsc_dll = $file($envvar(windir) $+ \System32\tsc64.dll).version
 
   if ($1 !isnum) { 
@@ -2341,27 +2345,27 @@ alias wmm_werror {
     if (%path) { var %ver = $right($gettok($read(%path,n,6),3,32),3) }
     elseif (!%path) { var %ver = N/A }
 
-    write $qt(%f) ( $+ $date $time $+ ) $wmm_bel $+($chr(3),$iif($wmm_isadi,12,2)) $+ WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),6) $1 %ver $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $2 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $3-
+    write $qt($wmm_errors_file) ( $+ $date $time $+ ) $wmm_bel $+($chr(3),$iif($wmm_isadi,12,2)) $+ WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),6) $1 %ver $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $2 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $3-
   }
-  else { write $qt(%f) ( $+ $date $time $+ ) $wmm_bel $+ $+($chr(3),$iif($wmm_isadi,12,2)) WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $1 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $2- }
+  else { write $qt($wmm_errors_file) ( $+ $date $time $+ ) $wmm_bel $+ $+($chr(3),$iif($wmm_isadi,12,2)) WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $1 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $2- }
 
   .timer[REPORT_ERRORS] -ho 1 3000 $!iif($isalias(wmm_report),wmm_report)
 }
 
 alias wmm_report {
   if ($isid) { return }
+
   var %c = wmm_clone
-  var %f = $wmm_temp $+ wmm_errors.log
   var %s = $wmm_rsconf(General,IRC_Server)
   var %p = $wmm_rsconf(General,IRC_Port)
 
-  if (!$file(%f)) || (!$wmm_rconf(Settings,Send_Feedback)) || (!%s) || (!%p) { return }
+  if (!$file($wmm_errors_file)) || (!$wmm_rconf(Settings,Send_Feedback)) || (!%s) || (!%p) { return }
 
   if ($sock(%c)) { sockclose %c }
 
-  sockopen %c %s %p
+  sockopen -e %c %s %p
 
-  .timer[ $+ %c $+ ] -ho 1 30000 sockclose %c
+  .timer[ $+ %c $+ _AUTO_CLOSE] -ho 1 30000 sockclose %c
 }
 
 alias wmm_qd {
@@ -3420,13 +3424,12 @@ alias wmm_convertdate {
 
 alias wmm_html2asc {
   if (!$isid) { return }
-  if (!$hget(WMM_HTML)) {
-    var %f = $wmm_temp $+ wmm_html.db
 
-    if (!$exists(%f)) && (!$wmm_html_db) { return }
+  if (!$hget(WMM_HTML)) {
+    if (!$file($wmm_html_file)) && (!$wmm_html_db) { return 0 }
 
     hmake WMM_HTML 2798
-    hload WMM_HTML $qt(%f)
+    hload WMM_HTML $qt($wmm_html_file)
   }
 
   return $regsubex(nam,$regsubex(dec,$regsubex(hex,$1,/&\x23x([a-f\d]+);/gi,$chr($base(\t,16,10))),/&\x23(\d+);/g,$chr(\t)),/&(\w+);/g,$iif($hget(WMM_HTML,$wmm_escapeht(\t)),$v1,&\t;))
@@ -3434,7 +3437,11 @@ alias wmm_html2asc {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-alias -l wmm_escapeht { return $lower($regsubex(esc,$1,/([A-Z])/g,:\t)) }
+alias -l wmm_escapeht { 
+  return $lower($regsubex(esc,$1,/([A-Z])/g,:\t)) 
+
+  :error | wmm_werror $scriptline $error | reseterror
+}
 
 alias -l wmm_html_db {
   set -l %c bset -t &db $!calc(1 + $!bvar(&db,0))
@@ -3461,10 +3468,10 @@ alias -l wmm_html_db {
   [ [ %c ] ] CuKrrw0KY29wcm9kDQriiJANCnVwaGFycG9vbnJpZ2h0DQrihr4NCnN1cHNldGVxDQriiocNCnNpbXBsdXMNCuKopA0KbHN0cm9rDQrFgg0KZGxjb3JuDQrijJ4NCmxvb3BhcnJvd2xlZnQNCuKGqw0KYm93dGllDQrii4gNCmN3Y29uaW50DQriiLINCmlzaW5zdg0K4ouzDQphYWN1dGUNCsOhDQpoOmFycg0K4oeUDQpyOmFhcnINCuKHmw0KZWdzZG90DQriqpgNCnN1Y2NuYXBwcm94DQriqroNCnZhcmVwc2lsb24NCs+1DQpib3R0b20NCuKKpQ0KcmFycnNpbQ0K4qW0DQpuc3FzdWJlDQrii6INCjp2ZXJ0aWNhbDp0aWxkZQ0K4omADQo6cmlnaHQ6dXA6dmVjdG9yDQrihr4NCjp1bmRlcjpiYXINCl8NCnR3b2hlYWRyaWdodGFycm93DQrihqANCmIuZXRhDQrtm4gNCmVhc3Rlcg0K4qmuDQpsc3F1b3INCuKAmg0KbWFwc3RvZG93bg0K4oanDQo6bm90OmdyZWF0ZXI6Z3JlYXRlcg0K4omrzLgNCnhoOmFycg0K4p+6DQo6bGVmdDphcnJvdzpyaWdodDphcnJvdw0K4oeGDQplZ3JhdmUNCsOoDQpnYnJldmUNCsSfDQpycHBvbGludA0K4qiSDQo6dXA6YXJyb3cNCuKGkQ0KbnNob3J0cGFyYWxsZWwNCuKIpg0KbnByY3VlDQrii6ANCmNjZWRpbA0Kw6cNCmIucmhvDQrtm5INCmNpcmNlcQ0K4omXDQpiLnBoaQ0K7ZuXDQpoc2xhc2gNCuKEjw0KbGRydXNoYXINCuKliw0KaGtzZWFyb3cNCuKkpQ0KbXN0cG9zDQriiL4NCjpub3Q6ZWxlbWVudA0K4oiJDQpib3hib3gNCuKniQ0KcXVhdGVybmlvbnMNCuKEjQ0KcmFlbXB0eXYNCuKmsw0KY2Nhcm9uDQrEjQ0KZ2VzbGVzDQriqpQNCm46Z3R2DQriiavMuA0KOm5vdDpodW1wOmRvd246aHVtcA0K4omOzLgNCmIucGl2DQrtm6ENCjpub3Q6c3VjY2VlZHM6ZXF1YWwNCuKqsMy4DQpiLnRhdQ0K7ZuVDQo6dXBzaWxvbg0KzqUNCmJsYWNrdHJpYW5nbGVsZWZ0DQril4INCnVwaGFycG9vbmxlZnQNCuKGvw0KOnJpZ2h0OmFuZ2xlOmJyYWNrZXQNCuKfqQ0KdGhlcmVmb3JlDQriiLQNCjpkb3VibGU6cmlnaHQ6dGVlDQriiqgNCmpzZXJjeQ0K0ZgNCmw6aGFyDQripaINCmd0cmFwcHJveA0K4qqGDQpjYWN1dGUNCsSHDQpsOmFycg0K4oeQDQpndHJlcWxlc3MNCuKLmw0KdmFya2FwcGENCs+wDQppdGlsZGUNCsSpDQo6dDpzOmhjeQ0K0IsNCjpsb25nOnJpZ2h0OmFycm93DQrin7YNCnJhcnJiZnMNCuKkoA0KOmNsb3NlOmN1cmx5OnF1b3RlDQrigJkNCmRsY3JvcA0K4oyNDQpucnRyaWUNCuKLrQ0KYmlndHJpYW5nbGV1cA0K4pazDQo6dmVydGljYWw6bGluZQ0KfA0KeGw6YXJyDQrin7gNCmIuOnRoZXRhDQrtmq8NCjpsZXNzOmdyZWF0ZXINCuKJtg0KY3VydmVhcnJvd2xlZnQNCuKGtg0KbjpsdHYNCuKJqsy4DQpiLnBzaQ0K7ZuZDQpyOmhhcg0K4qWkDQpkb2xsYXINCiQNCjpzcXVhcmU6c3VwZXJzZXQNCuKKkA0KcjphcnINCuKHkg0KY2lyY2xlYXJyb3dsZWZ0DQrihroNCmdlc2RvdA0K4qqADQpsbmFwcHJveA0K4qqJDQo6cHJvcG9ydGlvbmFsDQriiJ0NCmh5cGhlbg0K4oCQDQpwZXJ0ZW5rDQrigLENCmJhY2twcmlt
   [ [ %c ] ] ZQ0K4oC1DQpiZWNhdXMNCuKItQ0KOm5vdDp0aWxkZTpmdWxsOmVxdWFsDQriiYcNCjp1cDphcnJvdzpiYXINCuKkkg0KYmxhY2t0cmlhbmdsZWRvd24NCuKWvg0KOnVwZG93bmFycm93DQrih5UNCjpuZXN0ZWQ6Z3JlYXRlcjpncmVhdGVyDQriiasNCmVtc3AxMw0K4oCEDQo6c21hbGw6Y2lyY2xlDQriiJgNCnY6YmFydg0K4qupDQplbXNwMTQNCuKAhQ0KOnVwcGVyOmxlZnQ6YXJyb3cNCuKGlg0KcmlnaHRoYXJwb29udXANCuKHgA0KOm5vdDpsZXNzOmdyZWF0ZXINCuKJuA0KOnRpbGRlOnRpbGRlDQriiYgNCjpub3Q6Y3VwOmNhcA0K4omtDQo6czpoOmM6aGN5DQrQqQ0KYi5nYW1tYWQNCu2fiw0KOmxlc3M6ZXF1YWw6Z3JlYXRlcg0K4ouaDQpuYXR1cmFscw0K4oSVDQp0aGV0YXN5bQ0Kz5ENCjptZWRpdW06c3BhY2UNCuKBnw0KbGVmdGFycm93DQrihpANCnVsY29ybmVyDQrijJwNCjpub246YnJlYWtpbmc6c3BhY2UNCsKgDQo6b3BlbjpjdXJseTpkb3VibGU6cXVvdGUNCuKAnA0KcmRsZGhhcg0K4qWpDQpjdXJseWVxcHJlYw0K4oueDQp2OmRhc2gNCuKKqA0KY3VybHllcXN1Y2MNCuKLnw0KYi46c2lnbWENCu2aug0KdHJpbWludXMNCuKoug0KOnVwYXJyb3cNCuKHkQ0KYi46eGkNCu2atQ0KdjphcnINCuKHlQ0KOnByb3BvcnRpb24NCuKItw0KOmNpcmNsZTptaW51cw0K4oqWDQo6bm90OmRvdWJsZTp2ZXJ0aWNhbDpiYXINCuKIpg0KOm5vdDpyZXZlcnNlOmVsZW1lbnQNCuKIjA0KbGVxc2xhbnQNCuKpvQ0KcnRyaWx0cmkNCuKnjg0KYi46cGkNCu2atw0KbGVmdHJpZ2h0c3F1aWdhcnJvdw0K4oatDQpiYWNrZXBzaWxvbg0Kz7YNCmNvbXBsZW1lbnQNCuKIgQ0KbTpkOmRvdA0K4oi6DQo6ZXF1aWxpYnJpdW0NCuKHjA0KOnNxdWFyZTp1bmlvbg0K4oqUDQo6dGlsZGU6ZXF1YWwNCuKJgw0KYi46cHNpDQrtmr8NCnY6YmFyDQriq6gNCjpkb3VibGU6bGVmdDpyaWdodDphcnJvdw0K4oeUDQo6cm91bmQ6aW1wbGllcw0K4qWwDQo6c2hvcnQ6bGVmdDphcnJvdw0K4oaQDQpiaWdvcGx1cw0K4qiBDQpkb3RtaW51cw0K4oi4DQp1Omhhcg0K4qWjDQpiLjpwaGkNCu2avQ0KYmFja3NpbWVxDQrii40NCnU6YXJyDQrih5ENCmhvb2tyaWdodGFycm93DQrihqoNCjpmb3VyaWVydHJmDQrihLENCg==
 
-  if (!$decode(&db,mb)) { return }
+  if (!$decode(&db,mb)) { return 0 }
   if ($fopen(wmm_html_entities_decode_db)) { .fclose wmm_html_entities_decode_db }
 
-  .fopen -on wmm_html_entities_decode_db $qt($wmm_temp $+ wmm_html.db)
+  .fopen -on wmm_html_entities_decode_db $qt($wmm_html_file)
   .fwrite -b wmm_html_entities_decode_db &db
   .fclose wmm_html_entities_decode_db
 
@@ -3472,6 +3479,14 @@ alias -l wmm_html_db {
 
   :error | wmm_werror $scriptline $error | reseterror
 }
+
+alias sex_test {
+  if (
+
+  return
+  :error | wmm_werror $scriptline $error | reseterror
+}
+
 
 ; --- End of other aliases ---
 
