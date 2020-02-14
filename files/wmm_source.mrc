@@ -625,7 +625,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
   if ($devent == menu) {
     if ($did == 18) { url $wmm_url }
     if ($did == 24) { url $wmm_support_url }
-    if ($did == 29) { url $wmm_all_modules_url }
+    if ($did == 29) { url $wmm_modules_url }
     if ($did == 22) { dialog -k $dname }
     if ($did == 21) { .timer -ho 1 500 wmm_sets | dialog -k $dname }
     if ($did == 19) { .timer -ho 1 100 wmm | dialog -k $dname }
@@ -699,7 +699,7 @@ ON *:DIALOG:wmm_module:*:*: {
       if (!%m) { var %m = $did(60).seltext }
       if (!%m) { var %m = $did(600).seltext }
 
-      if (%m) { url $wmm_modules_image(%m,1) }
+      if (%m) { url $wmm_module_image_url(%m,1) }
     }
     if ($did == 15) {
       var %m = $did(6).seltext
@@ -707,7 +707,7 @@ ON *:DIALOG:wmm_module:*:*: {
       if (!%m) { var %m = $did(60).seltext }
       if (!%m) { var %m = $did(600).seltext }
 
-      if (%m) { url $wmm_modules_image(%m,2) }
+      if (%m) { url $wmm_module_image_url(%m,2) }
     }
     if ($did == 16) {
       var %m = $did(6).seltext
@@ -715,7 +715,7 @@ ON *:DIALOG:wmm_module:*:*: {
       if (!%m) { var %m = $did(60).seltext }
       if (!%m) { var %m = $did(600).seltext }
 
-      if (%m) { url $wmm_modules_image(%m,3) }
+      if (%m) { url $wmm_module_image_url(%m,3) }
     }
     if ($did == 28) {
       var %m = $did(6).seltext
@@ -727,7 +727,7 @@ ON *:DIALOG:wmm_module:*:*: {
 
       if (!%m) || (!%path) { did -h $dname 28 | return }
 
-      url $wmm_modules_url(%m)
+      url $wmm_module_url(%m)
     }
   }
   if ($devent == dclick) { 
@@ -736,7 +736,7 @@ ON *:DIALOG:wmm_module:*:*: {
 
       if (!%m) { return }
 
-      url $wmm_modules_url(%m)
+      url $wmm_module_url(%m)
     }
     if ($did == 60) {
       var %m = $did($did).seltext
@@ -938,7 +938,7 @@ ON *:DIALOG:wmm_module:*:*: {
       if ($isfile($wmm_temp $+ %m $+ .mrc)) { .remove $qt($wmm_temp $+ %m $+ .mrc) }
       ;TODO na bro kalytero tropo gia auto edw
 
-      noop $urlget($wmm_modules_url(%m),gif,$qt($wmm_temp $+ %m $+ .mrc),wmm_mod_install)
+      noop $urlget($wmm_module_source_url(%m),gif,$qt($wmm_temp $+ %m $+ .mrc),wmm_mod_install)
     }
     if ($did == 13) { 
       if ($wmm_check_initial_warn) { wmm_input error 60 $wmm_lang(33) | return }
@@ -964,7 +964,7 @@ ON *:DIALOG:wmm_module:*:*: {
       if ($isfile($wmm_temp $+ %m $+ .mrc)) { .remove $qt($wmm_temp $+ %m $+ .mrc) }
       ;TODO na bro kalytero tropo gia auto edw
 
-      noop $urlget($wmm_modules_url(%m),gif,$qt($wmm_temp $+ %m $+ .mrc),wmm_mod_update)
+      noop $urlget($wmm_module_source_url(%m),gif,$qt($wmm_temp $+ %m $+ .mrc),wmm_mod_update)
     }
     if ($did == 14) { 
       var %m = $did(6).seltext
@@ -1007,7 +1007,7 @@ ON *:DIALOG:wmm_module:*:*: {
       var %path = $wmm_getpath(%m)
 
       if (!%m) || (!%path) { 
-        if (%m) { url $wmm_modules_url(%m) }
+        if (%m) { url $wmm_module_url(%m) }
 
         return 
       }
@@ -1033,7 +1033,7 @@ ON *:DIALOG:wmm_module:*:*: {
     }
   }
   if ($devent == menu) {
-    if ($did == 27) { url $wmm_all_modules_url }
+    if ($did == 27) { url $wmm_modules_url }
     if ($did == 18) { url $wmm_url }
     if ($did == 24) { url $wmm_support_url }
     if ($did == 22) { dialog -k $dname }
@@ -1061,8 +1061,23 @@ alias wmm_crdate { return $remove($gettok($read($script,n,$iif($right($script,4)
 ;     na prostheso sto check ean brei  kapio module pou na exei .ini na to kanei unload amesws.
 
 alias wmm_owner { return $+($chr(119),$chr(101),$chr(115),$chr(116),$chr(111),$chr(114)) }
+;TODO auto na to afereso k na to kanw WESTOR pantou
+
 alias wmm_url { return https://github.com/westor7/wmm }
 alias wmm_support_url { return https://github.com/westor7/wmm#support--donate }
+alias wmm_modules_url { return https://github.com/westor7/wmm/tree/master/modules#available-modules }
+
+alias wmm_sets_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_sets_v $+ $replace($wmm_ver,.,_) $+ .ini }
+alias wmm_logo_ico_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_logo.ico }
+alias wmm_noprev_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_no_preview.png }
+alias wmm_support_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_support.png }
+alias wmm_lang_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_lang.ini }
+
+alias wmm_module_url { return https://github.com/westor7/wmm/tree/master/modules/ $+ $lower($1) }
+alias wmm_module_image_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ / $+ $lower($1) $+ $2 $+ .png }
+alias wmm_module_source_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ /source.mrc }
+alias wmm_images_zip_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_modules_images.zip }
+
 alias wmm_sets_file { return $wmm_temp $+ wmm_modules.ini }
 alias wmm_images_zip_file { return $wmm_temp $+ wmm_modules_images.zip }
 alias wmm_errors { return $lines($wmm_temp $+ wmm_errors.log) }
@@ -1072,16 +1087,6 @@ alias wmm_lang_ini { return $wmm_dir $+ wmm_lang.ini }
 alias wmm_support_png { return $wmm_dir $+ wmm_support.png }
 alias wmm_noprev_png { return $wmm_dir $+ wmm_no_preview.png }
 alias wmm_logo_ico { return $wmm_dir $+ wmm_logo.ico }
-alias wmm_sets_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_sets_v $+ $replace($wmm_ver,.,_) $+ .ini }
-alias wmm_logo_ico_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_logo.ico }
-alias wmm_noprev_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_no_preview.png }
-alias wmm_support_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_support.png }
-alias wmm_lang_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_lang.ini }
-alias wmm_modules_url { return https://github.com/westor7/wmm/tree/master/modules/ $+ $lower($1) }
-alias wmm_images_zip_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_modules_images.zip }
-alias wmm_modules_image { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ / $+ $lower($1) $+ $2 $+ .png }
-alias wmm_all_modules_url { return https://github.com/westor7/wmm/tree/master/modules#available-modules }
-alias wmm_modules_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ /source.mrc }
 
 alias wmm_mod_logo_url {
   if (!$1) || (!$wmm_getpath($1)) { return 0 }
@@ -1711,7 +1716,7 @@ alias -l wmm_modules_silent_update {
       if ($isfile($wmm_temp $+ %mod $+ .mrc)) { .remove $qt($wmm_temp $+ %mod $+ .mrc) }
       ;TODO na bro kalytero tropo gia auto edw
 
-      noop $urlget($wmm_modules_url(%mod),gif,$qt($wmm_temp $+ %mod $+ .mrc),wmm_mod_silent_update)
+      noop $urlget($wmm_module_source_url(%mod),gif,$qt($wmm_temp $+ %mod $+ .mrc),wmm_mod_silent_update)
     }
 
     :next
