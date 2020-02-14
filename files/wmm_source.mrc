@@ -784,15 +784,13 @@ ON *:DIALOG:wmm_module:*:*: {
       var %m = $did($did).seltext
       var %path = $wmm_getpath(%m)
       var %alias = $wmm_rsconf(%m,Alias)
+      var %ico = $wmm_mod_logo_ico(%m)
 
       if (!%m) || (!%alias) || (!%path) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
       did -rh $dname 250
 
-      var %f_ico = $wmm_temp $+ %alias $+ _logo.ico
-      if (!$file(%f_ico)) { var %f_ico = $nofile(%path) $+ %alias $+ _logo.ico }
-
-      if ($file(%f_ico)) { did -vg $dname 28 $qt(%f_ico) }
+      if (%ico) { did -vg $dname 28 $qt(%ico) }
       else { did -h $dname 28 }
 
       wmm_reset_images -i %m
@@ -822,11 +820,9 @@ ON *:DIALOG:wmm_module:*:*: {
 
       var %alias = $wmm_rsconf(%m,Alias)
       var %path = $wmm_getpath(%m)
+      var %ico = $wmm_mod_logo_ico(%m)
 
-      var %f_ico = $wmm_temp $+ %alias $+ _logo.ico
-      if (!$file(%f_ico)) { var %f_ico = $nofile(%path) $+ %alias $+ _logo.ico }
-
-      if ($file(%f_ico)) { did -vg $dname 28 $qt(%f_ico) }
+      if (%ico) { did -vg $dname 28 $qt(%ico) }
       else { did -h $dname 28 }
 
       var %desc_temp = $wmm_lang(80) $+ : $wmm_rsconf(%m,Version) $+ $chr(166) $+ $wmm_lang(81) $+ : $wmm_rsconf(%m,Released) $+ $chr(166) $+ $wmm_lang(60) $+ : $wmm_rsconf(%m,Channel) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(83) $+ : $+ $chr(166) $wmm_rsconf(%m,Changelog) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(84) $+ : $+ $chr(166) $wmm_rsconf(%m,Description) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(85) $+ : $+ $chr(166) $wmm_rsconf(%m,Examples)
@@ -847,6 +843,7 @@ ON *:DIALOG:wmm_module:*:*: {
       var %m = $did(60).seltext
       var %path = $wmm_getpath(%m)
       var %alias = $wmm_rsconf(%m,Alias)
+      var %ico = $wmm_mod_logo_ico(%m)
 
       if (!%m) || (!%alias) || (!%path) { wmm_modules_installed_plus_updated_list | return }
 
@@ -859,10 +856,7 @@ ON *:DIALOG:wmm_module:*:*: {
       else {
         did -hr $dname 250
 
-        var %f_ico = $wmm_temp $+ %alias $+ _logo.ico
-        if (!$file(%f_ico)) { var %f_ico = $nofile(%path) $+ %alias $+ _logo.ico }
-
-        if ($file(%f_ico)) { did -vg $dname 28 $qt(%f_ico) }
+        if (%ico) { did -vg $dname 28 $qt(%ico) }
         else { did -h $dname 28 }
       }
 
@@ -1626,6 +1620,29 @@ alias -l wmm_mod_menus_check_and_set_after {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
+alias wmm_mod_logo_ico {
+  if (!$1) { return }
+
+  if ($wmm_getpath($1)) {
+    var %f = $nofile($v1) $+ logo.ico
+
+    if (!$file(%f)) { return 0 }
+
+    return %f
+  }
+
+  var %a = $wmm_rsconf($1,Alias)
+  var %f = $wmm_temp $+ %a $+ _logo.ico
+
+  if (!%a) { return 0 }
+  if (!$file(%f)) { return 0 }
+
+  return %f
+
+  return
+  :error | wmm_werror $scriptline $error | reseterror
+}
+
 alias -l wmm_check_update_install {
   if (!$1) { return }
 
@@ -1964,25 +1981,23 @@ alias wmm_init_modules_tmp {
 alias -l wmm_modules_all_installed_list {
   var %t = $ini($wmm_sets_file,0)
 
-  if (!$1) || (!%t) || ($1 > %t) || (!$isalias(wmm_lang)) || (!$isalias(wmm_qd)) || (!$isalias(wmm_isadi)) { returnex }
+  if (!$1) || (!%t) || ($1 > %t) { returnex }
 
   if ($istok(begin end,$1,32)) { return - }
 
   var %n = $ini($wmm_sets_file,$1)
-  var %d = $wmm_rsconf(%n,Alias) $+ _sets
+  var %a = $wmm_rsconf(%n,Alias)
 
-  if ($wmm_isadi) {
-    var %ico = $replace(%d,_sets,_logo) $+ .ico
-    var %fm = $wmm_temp $+ %ico
+  if (!%a) { return - }
 
-    if (!$file(%fm)) { var %fm = $wmm_dir $+ modules $+ \ $+ %ico }
-  }
+  var %m = $wmm_getpath(%n)
 
-  var %isalias = $isalias(%d)
+  if (!%m) { return - }
 
-  if (!$remove(%d,_sets)) && (!%isalias) { return - }
-  if (%n) && ($remove(%d,_sets)) && (!%isalias) { return $iif($wmm_isadi && $file(%fm),$menuicon(%fm)) $style(2) $wmm_qd(%n) $+ :noop }
-  else { return $iif($wmm_isadi && $file(%fm),$menuicon(%fm)) $iif($dialog(%d),$style(1)) $wmm_qd(%n) $+ : $+ %d }
+  var %d = %a $+ _sets
+  var %o = $wmm_mod_logo_ico(%n)
+
+  return $iif($wmm_isadi,$menuicon(%o)) $iif($dialog(%d),$style(1)) $wmm_qd(%n) $+ : $+ %d
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -1991,13 +2006,13 @@ alias -l wmm_modules_all_installed_list {
 alias -l wmm_resize_image { 
   if (!$1) { return }
 
-  var %a = $pic($1).width
-  var %b = $pic($1).height
+  var %a = $pic($1-).width
+  var %b = $pic($1-).height
   var %c = $window(-1).w
   var %d = $window(-1).h 
 
-  if (%a > %c) { var %b = $calc(( %c / %a ) * %b),%a %c }
-  if (%b > %d) { var %a = $calc(( %d / %b ) * %a),%b %d }
+  if (%a > %c) { var %b = $calc(( %c / %a ) * %b) | var %a = %c }
+  if (%b > %d) { var %a = $calc(( %d / %b ) * %a) | var %b = %d }
 
   return $int(%a) $int(%b)
 
@@ -2007,19 +2022,23 @@ alias -l wmm_resize_image {
 
 alias -l wmm_pic {
   var %d = wmm_module
-  var %w = $pic($1).width
-  var %h = $pic($1).height
-  var %win = @wmm_pic
-  var %details = $chr(160) $+ - $+ $chr(160) $+ $chr(40) $+ %w $+ x $+ %h $+ $chr(41) $+ $chr(160) $+ - $+ $chr(160) $+ $bytes($file($1).size).suf
+  var %n = @wmm_pic
+  var %f = $noqt($1-)
+  var %m = $left($nopath($remove(%f,$file(%f).ext)),-1)
+  var %a = $wmm_resize_image(%f) 
+  var %w = $pic(%f).width
+  var %h = $pic(%f).height
+  var %l = $chr(160) $+ $wmm_bel $chr(160) $+ %m $+ $chr(58) $+ $chr(160) $+ $wmm_sep $+ $chr(160) $+ $chr(40) $+ %w $+ x $+ %h $+ $chr(41) $+ $chr(160) $+ $wmm_sep $+ $chr(160) $+ $bytes($file(%f).size).suf
 
-  if ($window(%win)) { window -c %win }
   if (!$1) || (!$dialog(%d)) || (!%w) || (!%h) { return }
 
-  var %a = $wmm_resize_image($1) 
+  if ($window(%n)) { window -c %n }
 
-  window -fadCBvzpk0w0 +estf %win -1 -1 %a $qt($wmm_logo_ico)
-  titlebar %win %details
-  drawpic -s %win 0 0 %a $1
+  window -fadCBvzpk0w0 +estf %n -1 -1 %a $qt($wmm_logo_ico)
+
+  titlebar %n %l
+
+  drawpic -s %n 0 0 %a $qt(%f)
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -2228,7 +2247,7 @@ menu @wmm {
   -
 }
 
-#wmm_adiirc_menus on
+#wmm_adiirc_menus off
 menu menubar,status,channel {
   $iif($wmm_rconf(Settings,Menus),-)
   $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $iif($file($wmm_logo_ico),$menuicon($wmm_logo_ico)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $+ )): { wmm }
@@ -2239,7 +2258,7 @@ menu menubar,status,channel {
 }
 #wmm_adiirc_menus end
 
-#wmm_mirc_menus off
+#wmm_mirc_menus on
 menu menubar,status,channel {
   $iif($wmm_rconf(Settings,Menus),-)
   $iif($istok($wmm_rconf(Settings,Menus),wmm,32),$iif($dialog(wmm_module),$style(1)) $wmm_qd($upper($wmm_owner) $iif($wmm_lang(16),$v1,Module Manager) $+ )): { wmm }
