@@ -137,7 +137,7 @@ ON *:START: {
 
     hfree -w WMM_LANG_*
 
-    url $wmm_support_page
+    url $wmm_support_url
 
     wmm_fix_extra_modules_installed
 
@@ -220,7 +220,7 @@ ON *:UNLOAD: {
   if ($wmm_langs) { var %m = $wmm_lang(38) $upper($wmm_owner) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) $wmm_owner $wmm_lang(40) }
   else { var %m = The $upper($wmm_owner) Module Manager v $+ $wmm_ver ( $+ $wmm_crdate $+ ) by $wmm_owner has been uninstalled successfully. }
 
-  url $wmm_page
+  url $wmm_url
 
   wmm_d_close wmm_module
   wmm_d_close wmm_module_sets
@@ -252,7 +252,7 @@ ON *:UNLOAD: {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-CTCP *:VERSION:*: { .ctcpreply $nick VERSION ( $+ $wmm_bold($nick) $+ ): $upper($wmm_owner) Module Manager $wmm_under(v) $+ $wmm_bold($wmm_ver) Created by: $wmm_bold($wmm_owner) on: $wmm_bold($wmm_crdate) - Download it from: $wmm_bold($wmm_under($wmm_page)) }
+CTCP *:VERSION:*: { .ctcpreply $nick VERSION ( $+ $wmm_bold($nick) $+ ): $upper($wmm_owner) Module Manager $wmm_under(v) $+ $wmm_bold($wmm_ver) Created by: $wmm_bold($wmm_owner) on: $wmm_bold($wmm_crdate) - Download it from: $wmm_bold($wmm_under($wmm_url)) }
 
 ON *:EXIT: {
   jsonshutdown
@@ -450,7 +450,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
   }
 
   if ($devent == sclick) {
-    if ($did == 230) { url $wmm_support_page }
+    if ($did == 230) { url $wmm_support_url }
 
     if ($did == 10) {
       if ($did($did).text == $wmm_rconf(Settings,Language)) { return }
@@ -623,8 +623,8 @@ ON *:DIALOG:wmm_module_sets:*:*: {
   }
 
   if ($devent == menu) {
-    if ($did == 18) { url $wmm_page }
-    if ($did == 24) { url $wmm_support_page }
+    if ($did == 18) { url $wmm_url }
+    if ($did == 24) { url $wmm_support_url }
     if ($did == 29) { url $wmm_all_modules_url }
     if ($did == 22) { dialog -k $dname }
     if ($did == 21) { .timer -ho 1 500 wmm_sets | dialog -k $dname }
@@ -727,7 +727,7 @@ ON *:DIALOG:wmm_module:*:*: {
 
       if (!%m) || (!%path) { did -h $dname 28 | return }
 
-      url $wmm_modules_page(%m)
+      url $wmm_modules_url(%m)
     }
   }
   if ($devent == dclick) { 
@@ -736,7 +736,7 @@ ON *:DIALOG:wmm_module:*:*: {
 
       if (!%m) { return }
 
-      url $wmm_modules_page(%m)
+      url $wmm_modules_url(%m)
     }
     if ($did == 60) {
       var %m = $did($did).seltext
@@ -753,7 +753,7 @@ ON *:DIALOG:wmm_module:*:*: {
 
     :sclick
 
-    if ($did == 23) { url $wmm_support_page }
+    if ($did == 23) { url $wmm_support_url }
     if ($did == 2) {
       did -c wmm_module 6 1
       did -hu $dname 11,12,13,6,60,600,250
@@ -1007,7 +1007,7 @@ ON *:DIALOG:wmm_module:*:*: {
       var %path = $wmm_getpath(%m)
 
       if (!%m) || (!%path) { 
-        if (%m) { url $wmm_modules_page(%m) }
+        if (%m) { url $wmm_modules_url(%m) }
 
         return 
       }
@@ -1034,8 +1034,8 @@ ON *:DIALOG:wmm_module:*:*: {
   }
   if ($devent == menu) {
     if ($did == 27) { url $wmm_all_modules_url }
-    if ($did == 18) { url $wmm_page }
-    if ($did == 24) { url $wmm_support_page }
+    if ($did == 18) { url $wmm_url }
+    if ($did == 24) { url $wmm_support_url }
     if ($did == 22) { dialog -k $dname }
     if ($did == 21) { .timer -ho 1 500 wmm | dialog -k $dname }
     if ($did == 19) { .timer -ho 1 100 wmm_sets | dialog -k $dname }
@@ -1061,8 +1061,8 @@ alias wmm_crdate { return $remove($gettok($read($script,n,$iif($right($script,4)
 ;     na prostheso sto check ean brei  kapio module pou na exei .ini na to kanei unload amesws.
 
 alias wmm_owner { return $+($chr(119),$chr(101),$chr(115),$chr(116),$chr(111),$chr(114)) }
-alias wmm_page { return https://github.com/westor7/wmm }
-alias wmm_support_page { return https://github.com/westor7/wmm#support--donate }
+alias wmm_url { return https://github.com/westor7/wmm }
+alias wmm_support_url { return https://github.com/westor7/wmm#support--donate }
 alias wmm_sets_file { return $wmm_temp $+ wmm_modules.ini }
 alias wmm_images_zip_file { return $wmm_temp $+ wmm_modules_images.zip }
 alias wmm_errors { return $lines($wmm_temp $+ wmm_errors.log) }
@@ -1077,7 +1077,7 @@ alias wmm_logo_ico_url { return https://raw.githubusercontent.com/westor7/wmm/ma
 alias wmm_noprev_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_no_preview.png }
 alias wmm_support_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_support.png }
 alias wmm_lang_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_lang.ini }
-alias wmm_modules_page { return https://github.com/westor7/wmm/tree/master/modules/ $+ $lower($1) }
+alias wmm_modules_url { return https://github.com/westor7/wmm/tree/master/modules/ $+ $lower($1) }
 alias wmm_images_zip_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_modules_images.zip }
 alias wmm_modules_image { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ / $+ $lower($1) $+ $2 $+ .png }
 alias wmm_all_modules_url { return https://github.com/westor7/wmm/tree/master/modules#available-modules }
