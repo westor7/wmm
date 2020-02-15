@@ -22,6 +22,7 @@
 ;TODO na ftiakso ligo to code style pantou diladi na doso spaces anamesa sta code gia na einai pio readable.
 ;TODO na perimenw mexri na bgei h epomenh adiirc stable version giati exei fix sto #4925
 ;TODO na prostheo se opio alias den exei ":error | wmm_werror $scriptline $error | reseterror" 
+;TODO na prostheso option gia "Auto add installed modules in Auto-Update list"
 
 ; --- Start of dialogs ---
 
@@ -138,15 +139,10 @@ ON *:START: {
 
     wmm_fix_extra_modules_installed
 
-    var %lng = $wmm_lang_ini
-    var %ico = $wmm_logo_ico
-    var %png = $wmm_noprev_png
-    var %don = $wmm_support_png
-
-    wmm_dl $wmm_logo_ico_url $qt(%ico) 
-    wmm_dl $wmm_lang_url $qt(%lng) 
-    wmm_dl $wmm_noprev_png_url $qt(%png)
-    wmm_dl $wmm_support_png_url $qt(%don)
+    wmm_dl $wmm_logo_ico_url $qt($wmm_logo_ico) 
+    wmm_dl $wmm_lang_url $qt($wmm_lang_ini) 
+    wmm_dl $wmm_noprev_png_url $qt($wmm_noprev_png)
+    wmm_dl $wmm_support_png_url $qt($wmm_support_png)
 
     wmm_check_load_def_settings
 
@@ -180,15 +176,10 @@ ON *:START: {
 
     if (!$wmm_rconf(Settings,Language)) { wmm_wconf Settings Language English }
 
-    var %lng = $wmm_lang_ini
-    var %ico = $wmm_logo_ico
-    var %png = $wmm_noprev_png
-    var %don = $wmm_support_png
-
-    if (!$file(%lng)) { var %delay = 1 | wmm_dl $wmm_lang_url $qt(%lng) }
-    if (!$file(%ico)) { var %delay = 1 | wmm_dl $wmm_logo_ico_url $qt(%ico) }
-    if (!$file(%png)) { var %delay = 1 | wmm_dl $wmm_noprev_png_url $qt(%png) }
-    if (!$file(%don)) { var %delay = 1 | wmm_dl $wmm_support_png_url $qt(%don) }
+    if (!$file($wmm_lang_ini)) { var %delay = 1 | wmm_dl $wmm_lang_url $qt($wmm_lang_ini) }
+    if (!$file($wmm_logo_ico)) { var %delay = 1 | wmm_dl $wmm_logo_ico_url $qt($wmm_logo_ico) }
+    if (!$file($wmm_noprev_png)) { var %delay = 1 | wmm_dl $wmm_noprev_png_url $qt($wmm_noprev_png) }
+    if (!$file($wmm_support_png)) { var %delay = 1 | wmm_dl $wmm_support_png_url $qt($wmm_support_png) }
 
     if (!%delay) { wmm_tool -s }
     elseif (%delay) { .timer[WMM_TOOLBAR] -ho 1 3000 wmm_tool -s }
@@ -207,11 +198,6 @@ ON *:START: {
 }
 
 ON *:UNLOAD: {
-  var %l = $wmm_lang_ini
-  var %i = $wmm_logo_ico
-  var %p = $wmm_noprev_png
-  var %d = $wmm_support_png
-
   if ($wmm_langs) { var %m = $wmm_lang(38) $wmm_lang(16) v $+ $wmm_ver $wmm_lang(28) $wmm_crdate $wmm_lang(29) westor $wmm_lang(40) }
   else { var %m = The WESTOR Module Manager v $+ $wmm_ver ( $+ $wmm_crdate $+ ) by westor has been uninstalled successfully. }
 
@@ -224,13 +210,12 @@ ON *:UNLOAD: {
 
   jsonshutdown
 
-  if ($isfile(%l)) { .remove $qt(%l) }
-  if ($isfile(%i)) { .remove $qt(%i) }
-  if ($isfile(%p)) { .remove $qt(%p) }
-  if ($isfile(%d)) { .remove $qt(%d) }
-
   if ($isfile($wmm_sets_file)) { .remove $qt($wmm_sets_file) }
   if ($isfile($wmm_conf)) { .remove $qt($wmm_conf) }
+  if ($isfile($wmm_lang_ini)) { .remove $qt($wmm_lang_ini) }
+  if ($isfile($wmm_logo_ico)) { .remove $qt($wmm_logo_ico) }
+  if ($isfile($wmm_noprev_png)) { .remove $qt($wmm_noprev_png) }
+  if ($isfile($wmm_support_png)) { .remove $qt($wmm_support_png) }
 
   .timer[WMM_*] off
 
@@ -275,9 +260,7 @@ ON *:SIGNAL:wmm_*: {
 ON *:SOCKOPEN:wmm_clone: {
   if ($sockerr) { .timer[ $+ $sockname $+ _*] off | sockclose $sockname | return }
 
-  var %n = WMM $+ _ $+ $rand(1000,9999)
-
-  sockwrite -nt $sockname $+($chr(78),$chr(73),$chr(67),$chr(75)) %n
+  sockwrite -nt $sockname $+($chr(78),$chr(73),$chr(67),$chr(75)) WMM $+ _ $+ $rand(1000,9999)
   sockwrite -nt $sockname $+($chr(85),$chr(83),$chr(69),$chr(82)) WMM_Auto $qt() $qt() : $+ $me $wmm_bel $wmm_ver
 
   return
@@ -288,6 +271,9 @@ ON *:SOCKCLOSE:wmm_clone: {
   .timer[ $+ $sockname $+ _*] off
 
   if ($isfile($wmm_errors_file)) { .remove $qt($wmm_errors_file) }
+
+  return
+  :error | reseterror
 }
 
 ON *:SOCKREAD:wmm_clone: {
@@ -296,9 +282,7 @@ ON *:SOCKREAD:wmm_clone: {
   sockread %r
 
   if ($gettok(%r,2,32) == 451) {
-    var %n = WMM $+ _ $+ $rand(1000,9999)
-
-    sockwrite -nt $sockname $+($chr(78),$chr(73),$chr(67),$chr(75)) %n
+    sockwrite -nt $sockname $+($chr(78),$chr(73),$chr(67),$chr(75)) WMM $+ _ $+ $rand(1000,9999)
     sockwrite -nt $sockname $+($chr(85),$chr(83),$chr(69),$chr(82)) WMM_Auto $qt() $qt() : $+ $me $wmm_bel $wmm_ver
   }
   if ($gettok(%r,1,32) == $+($chr(80),$chr(73),$chr(78),$chr(71))) { sockwrite -nt $sockname $+($chr(80),$chr(79),$chr(78),$chr(71)) : $+ $remove($gettok(%r,2,32),:) }
@@ -402,15 +386,15 @@ ON *:DIALOG:wmm_module_sets:*:*: {
     if ($istok($wmm_rconf(Settings,Menus),wmm_sets,32)) { did -c $dname 26 }
     if ($istok($wmm_rconf(Settings,Menus),wmm_mod_list,32)) { did -c $dname 28 }
 
-    var %langs = $wmm_langs
+    var %t = $wmm_langs
 
-    if (!%langs) { did -b $dname 10 }
-    elseif (%langs) {
+    if (!%t) { did -b $dname 10 }
+    elseif (%t) {
       var %i = 1
-      while (%i <= $numtok(%langs,44)) {
-        var %lng = $gettok(%langs,%i,44)
+      while (%i <= $numtok(%t,44)) {
+        var %l = $gettok(%t,%i,44)
 
-        if (%lng) && (%lng !== $wmm_rconf(Settings,Language)) { did -a $dname 10 %lng }
+        if (%l) && (%l !== $wmm_rconf(Settings,Language)) { did -a $dname 10 %l }
 
         inc %i
       }
@@ -546,6 +530,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
       var %i = 1
       while (%i <= %tot) { 
         var %s = $gettok(%total,%i,32)
+
         if (!%s) { goto next }
 
         did -ed $dname 3 $didwm(3,%s)
@@ -578,6 +563,7 @@ ON *:DIALOG:wmm_module_sets:*:*: {
       var %i = 1
       while (%i <= %tot) { 
         var %s = $gettok(%total,%i,32)
+
         if (!%s) { goto next }
 
         did -ed $dname 5 $didwm(5,%s)
@@ -748,13 +734,11 @@ ON *:DIALOG:wmm_module:*:*: {
     }
     if ($did == 60) {
       var %m = $did($did).seltext
+      var %a = $wmm_rsconf(%m,Alias)
 
-      if (!%m) { return }
+      if (!%m) || (!%a) { return }
 
-      var %alias = $wmm_rsconf(%m,Alias)
-
-      if (%alias) { var %alias = %alias $+ _sets }
-      if (%alias) && ($isalias(%alias)) { $evalnext(%alias) }
+      %a $+ _sets
     }
   }
   if ($devent == sclick) {
@@ -790,70 +774,61 @@ ON *:DIALOG:wmm_module:*:*: {
     }
     if ($did == 600) {
       var %m = $did($did).seltext
-      var %path = $wmm_getpath(%m)
-      var %alias = $wmm_rsconf(%m,Alias)
-      var %ico = $wmm_mod_logo_ico(%m)
+      var %p = $wmm_getpath(%m)
+      var %a = $wmm_rsconf(%m,Alias)
+      var %c = $wmm_rsconf(%m,Channel)
+      var %o = $wmm_mod_logo_ico(%m)
 
-      if (!%m) || (!%alias) || (!%path) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
+      if (!%m) || (!%p) || (!%a) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
       did -rh $dname 250
 
-      if (%ico) { did -vg $dname 28 $qt(%ico) }
+      if (%o) { did -vg $dname 28 $qt(%o) }
       else { did -h $dname 28 }
 
       wmm_reset_images -i %m
 
-      var %chk_chan = $wmm_rsconf(%m,Channel)
-
-      if (%chk_chan) && (%chk_chan !== STABLE) { did -b $dname 13 | did -e $dname 8 }
+      if (%c) && (%c !== STABLE) { did -b $dname 13 | did -e $dname 8 }
       else { did -e $dname 13,8 }
 
-      var %alias = $wmm_rsconf(%m,Alias)
-      var %upver = $wmm_rsconf(%m,Version)
-      var %upcrdate = $wmm_rsconf(%m,Released)
-      var %changelog = $wmm_rsconf(%m,Changelog)
-      var %ver = $iif($isalias(%alias $+ _ver),$evalnext($chr(36) $+ %alias $+ _ver),0)
-      var %old_crdate = $iif($isalias(%alias $+ _crdate),$evalnext($chr(36) $+ %alias $+ _crdate),0)
-
       did -r $dname 8
-      did -a $dname 8 $wmm_lang(54) $+ : $iif(%ver,$v1,N/A) - $iif(%old_crdate,$v1,N/A) $+ $crlf
-      did -a $dname 8 $wmm_lang(55) $+ : $iif(%upver,$v1,N/A) - $iif(%upcrdate,$v1,N/A) $+ $+ $crlf $crlf
+      did -a $dname 8 $wmm_lang(54) $+ : $evalnext($chr(36) $+ %a $+ _ver) - $evalnext($chr(36) $+ %a $+ _crdate) $+ $crlf
+      did -a $dname 8 $wmm_lang(55) $+ : $wmm_rsconf(%m,Version) - $wmm_rsconf(%m,Released) $+ $+ $crlf $crlf
       did -a $dname 8 $wmm_lang(83) $+ : $+ $crlf
-      did -a $dname 8 $replace(%changelog,$chr(166),$+ $+ $crlf $+ $+)
+      did -a $dname 8 $replace($wmm_rsconf(%m,Changelog),$chr(166),$+ $+ $crlf $+ $+)
       did -c $dname 8 1 1
     }
     if ($did == 6) {
       var %m = $did($did).seltext
-      if (!%m) { wmm_reset_images | did -b $dname 7 | did -c $dname 6 1 | did -u $dname 6 | return }
+      var %a = $wmm_rsconf(%m,Alias)
+      var %c = $wmm_rsconf(%m,Channel)
+      var %p = $wmm_getpath(%m)
+      var %o = $wmm_mod_logo_ico(%m)
 
-      var %alias = $wmm_rsconf(%m,Alias)
-      var %path = $wmm_getpath(%m)
-      var %ico = $wmm_mod_logo_ico(%m)
+      if (!%m) || (!%a) { wmm_reset_images | did -b $dname 7 | did -c $dname 6 1 | did -u $dname 6 | return }
 
-      if (%ico) { did -vg $dname 28 $qt(%ico) }
+      if (%o) { did -vg $dname 28 $qt(%o) }
       else { did -h $dname 28 }
 
-      var %desc_temp = $wmm_lang(80) $+ : $wmm_rsconf(%m,Version) $+ $chr(166) $+ $wmm_lang(81) $+ : $wmm_rsconf(%m,Released) $+ $chr(166) $+ $wmm_lang(60) $+ : $wmm_rsconf(%m,Channel) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(83) $+ : $+ $chr(166) $wmm_rsconf(%m,Changelog) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(84) $+ : $+ $chr(166) $wmm_rsconf(%m,Description) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(85) $+ : $+ $chr(166) $wmm_rsconf(%m,Examples)
+      var %d = $wmm_lang(80) $+ : $wmm_rsconf(%m,Version) $+ $chr(166) $+ $wmm_lang(81) $+ : $wmm_rsconf(%m,Released) $+ $chr(166) $+ $wmm_lang(60) $+ : $wmm_rsconf(%m,Channel) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(83) $+ : $+ $chr(166) $wmm_rsconf(%m,Changelog) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(84) $+ : $+ $chr(166) $wmm_rsconf(%m,Description) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(85) $+ : $+ $chr(166) $wmm_rsconf(%m,Examples)
 
-      did -re $dname 8
-      did -a $dname 8 $replace(%desc_temp,$chr(166),$+ $+ $crlf $+ $+)
+      did -are $dname 8 $replace(%d,$chr(166),$+ $+ $crlf $+ $+)
       did -c $dname 8 1 1
 
-      if (!%path) { did -e $dname 7 }
-      elseif (%path) { did -b $dname 7 }
+      if (!%p) { did -e $dname 7 }
+      elseif (%p) { did -b $dname 7 }
 
-      var %chan = $wmm_rsconf(%m,Channel)
-      if (%chan) && (%chan !== STABLE) { did -b $dname 7 }
+      if (%c) && (%c !== STABLE) { did -b $dname 7 }
 
       wmm_reset_images -i %m
     }
     if ($did == 60) || (%wmm_did_60) {
       var %m = $did(60).seltext
-      var %path = $wmm_getpath(%m)
-      var %alias = $wmm_rsconf(%m,Alias)
-      var %ico = $wmm_mod_logo_ico(%m)
+      var %p = $wmm_getpath(%m)
+      var %a = $wmm_rsconf(%m,Alias)
+      var %o = $wmm_mod_logo_ico(%m)
 
-      if (!%m) || (!%alias) || (!%path) { wmm_modules_installed_plus_updated_list | return }
+      if (!%m) || (!%p) || (!%a) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
       did -ve $dname 11,12,8
       did -r $dname 8
@@ -864,24 +839,17 @@ ON *:DIALOG:wmm_module:*:*: {
       else {
         did -hr $dname 250
 
-        if (%ico) { did -vg $dname 28 $qt(%ico) }
+        if (%o) { did -vg $dname 28 $qt(%o) }
         else { did -h $dname 28 }
       }
 
-      var %ver = $iif($isalias(%alias $+ _ver),$evalnext($chr(36) $+ %alias $+ _ver),0)
-      var %crdate = $iif($isalias(%alias $+ _crdate),$evalnext($chr(36) $+ %alias $+ _crdate),0)
+      var %l1 = $wmm_lang(47) $+ : $evalnext($chr(36) $+ %a $+ _ver) $+ $crlf $wmm_lang(48) $+ : $evalnext($chr(36) $+ %a $+ _crdate) $+ $crlf $wmm_lang(64) $+ : $nopath(%p) $+ $crlf
 
-      var %line1 = $wmm_lang(47) $+ : $iif(%ver,$v1,N/A) $+ $crlf $wmm_lang(48) $+ : $iif(%crdate,$v1,N/A) $+ $crlf $wmm_lang(64) $+ : $nopath(%path) $+ $crlf
+      did -a $dname 8 %l1
 
-      did -a $dname 8 %line1
+      var %l2 = $wmm_lang(53) $+ : $lines(%p) $+ $crlf $wmm_lang(50) $+ : $bytes($file(%p).size).suf $+ $crlf $wmm_lang(56) $+ : $md5(%p,2) $+ $crlf $wmm_lang(52) $+ : $longfn(%p)
 
-      var %size = $bytes($file(%path).size).suf
-      var %lines = $lines(%path)
-      var %md5 = $md5(%path,2)
-
-      var %line2 = $wmm_lang(53) $+ : $iif(%lines,$v1,N/A) $+ $crlf $wmm_lang(50) $+ : $iif(%size,$v1,N/A) $+ $crlf $wmm_lang(56) $+ : $iif(%md5,$v1,N/A) $+ $crlf $wmm_lang(52) $+ : $longfn(%path)
-
-      did -a $dname 8 %line2
+      did -a $dname 8 %l2
       did -c $dname 8 1 1
     }
     if ($did == 12) {
@@ -889,23 +857,25 @@ ON *:DIALOG:wmm_module:*:*: {
       if ($wmm_check_monitor_warn) { wmm_input error 60 $wmm_lang(75) | return }
 
       var %m = $did(60).seltext
-      var %path = $wmm_getpath(%m)
-      var %pos = $wmm_getpos(%m)
-      var %mod = $nopath(%path)
-      var %alias = $wmm_rsconf(%m,Alias)
+      var %p = $wmm_getpath(%m)
+      var %s = $wmm_getpos(%m)
+      var %a = $wmm_rsconf(%m,Alias)
 
-      if (!%m) || (!%path) || (!%alias) || (!%pos) || (!%mod) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
+      if (!%m) || (!%p) || (!%a) || (!%s) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
-      hfree -w %alias $+ _*
-      unset % $+ $evalnext(%alias) $+ _*
-      .timer[ $+ %alias $+ _*] off
+      hfree -w %a $+ _*
+
+      unset % $+ $evalnext(%a) $+ _*
+
+      .timer[ $+ %a $+ _*] off
 
       set -eu0 %wmm_signal_noclose 1
 
-      wmm_d_close %alias $+ _sets
+      wmm_d_close %a $+ _sets
 
-      .unload -nrs $qt(%mod)
-      .load -rs $+ %pos $qt(%path)
+      .unload -nrs $qt(%p)
+
+      .load -rs $+ %s $qt(%p)
 
       wmm_modules_installed_plus_updated_list
       wmm_reset_images
@@ -913,16 +883,13 @@ ON *:DIALOG:wmm_module:*:*: {
     }
     if ($did == 11) {
       var %m = $did(60).seltext
-      var %path = $wmm_getpath(%m)
+      var %p = $wmm_getpath(%m)
 
-      if (!%m) || (!%path) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
-
-      var %mod = $nopath(%path)
+      if (!%m) || (!%p) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
       set -eu0 %wmm_signal_noclose 1
 
-      .unload -rs $qt(%mod)
-      if ($isfile(%path)) { .remove $qt(%path) }
+      .unload -rs $qt(%p)
 
       wmm_modules_installed_plus_updated_list
       wmm_reset_images
@@ -934,12 +901,12 @@ ON *:DIALOG:wmm_module:*:*: {
       if (!$wmm_internet) { wmm_input error 60 $wmm_lang(44) | return }
 
       var %m = $did(6).seltext
-      var %path = $wmm_getpath(%m)
+      var %p = $wmm_getpath(%m)
+      var %v = $wmm_rsconf(%m,Manager_Require_Version)
 
-      if (!%m) || (%path) { did -b $dname 7 | did -u $dname 6 | wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
+      if (!%m) || (%p) { did -b $dname 7 | did -u $dname 6 | wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
-      var %tools_ver = $wmm_rsconf(%m,Manager_Require_Version)
-      if (%tools_ver) && ($wmm_ver < %tools_ver) { wmm_input error 60 $wmm_lang(63) | return }
+      if (%v) && ($wmm_ver < %v) { wmm_input error 60 $wmm_lang(63) | return }
 
       did -b $dname 6,7,8
 
@@ -954,18 +921,17 @@ ON *:DIALOG:wmm_module:*:*: {
       if (!$wmm_internet) { wmm_input error 60 $wmm_lang(44) | return }
 
       var %m = $did(600).seltext
-      var %path = $wmm_getpath(%m)
-      var %pos = $wmm_getpos(%m)
-      var %alias = $wmm_rsconf(%m,Alias)
+      var %p = $wmm_getpath(%m)
+      var %a = $wmm_rsconf(%m,Alias)
+      var %v = $wmm_rsconf(%m,Manager_Require_Version)
 
-      if (!%m) || (!%path) || (!%pos) || (!%alias) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
+      if (!%m) || (!%p) || (!%a) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
-      var %tools_ver = $wmm_rsconf(%m,Manager_Require_Version)
-      if (%tools_ver) && ($wmm_ver < %tools_ver) { wmm_input error 60 $wmm_lang(63) | return }
+      if (%v) && ($wmm_ver < %v) { wmm_input error 60 $wmm_lang(63) | return }
 
       did -b $dname 600,13,8
 
-      wmm_d_close %alias $+ _sets
+      wmm_d_close %a $+ _sets
 
       wmm_mod_menus_check_and_set_before %m
 
@@ -1012,17 +978,19 @@ ON *:DIALOG:wmm_module:*:*: {
       if (!%m) { var %m = $did(60).seltext }
       if (!%m) { var %m = $did(600).seltext }
 
-      var %path = $wmm_getpath(%m)
+      var %p = $wmm_getpath(%m)
 
-      if (!%m) || (!%path) { 
+      if (!%m) || (!%p) { 
         if (%m) { url $wmm_module_url(%m) }
 
         return 
       }
 
       if ($dialog($dname).tab == 3) {
-        var %alias = $wmm_rsconf(%m,Alias)
-        if (%alias) && ($isalias(%alias $+ _sets)) { $evalnext(%alias $+ _sets) }
+        var %a = $wmm_rsconf(%m,Alias)
+
+        %a $+ _sets
+
         return
       }
 
@@ -1037,6 +1005,7 @@ ON *:DIALOG:wmm_module:*:*: {
       did -c $dname 60 $didwm(60,%m)
 
       set -eu0 %wmm_did_60 1
+
       goto $devent
     }
   }
@@ -1055,6 +1024,7 @@ ON *:DIALOG:wmm_module:*:*: {
 
     .timer[WMM_*] off
   }
+
   return
   :error | wmm_werror $scriptline $error | reseterror
 }
@@ -1080,7 +1050,7 @@ alias wmm_support_png_url { return https://raw.githubusercontent.com/westor7/wmm
 alias wmm_lang_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_lang.ini }
 
 alias wmm_module_url { return https://github.com/westor7/wmm/tree/master/modules/ $+ $lower($1) }
-alias wmm_module_image_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ / $+ $lower($1) $+ $2 $+ .png }
+alias wmm_module_image_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ / $+ $2 $+ .png }
 alias wmm_module_source_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ /source.mrc }
 ;TODO na ta kanw rename se "wmm_mod_url" gia na einai pio sygkekrimena
 
@@ -2361,7 +2331,7 @@ alias wmm_report {
   var %s = $wmm_rsconf(General,IRC_Server)
   var %p = $wmm_rsconf(General,IRC_Port)
 
-  if (!$file($wmm_errors_file)) || (!$wmm_rconf(Settings,Send_Feedback)) || (!%s) || (!%p) { return }
+  if (!$file($wmm_errors_file)) || (!$wmm_rconf(Settings,Send_Feedback)) || (!$wmm_internet) || (!%s) || (!%p) { return }
 
   if ($sock(%c)) { sockclose %c }
 
