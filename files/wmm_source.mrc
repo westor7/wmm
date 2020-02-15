@@ -3421,7 +3421,7 @@ alias wmm_convertdate {
 /*
 	# HTML2Ascii script by rockcavera - (thanks for support) #
 
-	## Official Code Link: http://hawkee.com/snippet/17963 ##
+	## Official Code Link: http://hawkee.com/snippet/17963/ ##
 */
 
 alias wmm_html2asc {
@@ -3481,14 +3481,6 @@ alias -l wmm_html_db {
 
   :error | wmm_werror $scriptline $error | reseterror
 }
-
-alias sex_test {
-  if (
-
-  return
-  :error | wmm_werror $scriptline $error | reseterror
-}
-
 
 ; --- End of other aliases ---
 
