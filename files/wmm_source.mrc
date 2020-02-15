@@ -129,15 +129,13 @@ dialog -l wmm_module {
 
 ON *:START: {
   if (!$starting) {
-    if ($wmm_check_version) { wmm_input error 60 $v1 | .unload -nrs $qt($script) | return }
-    if ($wmm_check_os) { wmm_input error 60 $v1 | .unload -nrs $qt($script) | return }
+    if ($wmm_check_version) { wmm_input error 60 $v1 | .unload -rs $qt($script) | return }
+    if ($wmm_check_os) { wmm_input error 60 $v1 | .unload -rs $qt($script) | return }
     if ($group(#wmm).fname !== $script) { wmm_input error 60 That project is already installed into this program client, you cannot have more than 1 at the same client installed! | .unload -nrs $qt($script) | return } 
 
     hfree -w WMM_LANG_*
 
     url $wmm_support_url
-
-    wmm_fix_extra_modules_installed
 
     wmm_dl $wmm_logo_ico_url $qt($wmm_logo_ico) 
     wmm_dl $wmm_lang_url $qt($wmm_lang_ini) 
@@ -152,6 +150,7 @@ ON *:START: {
       wmm_wconf Settings Update
 
       wmm_tool -s
+
       wmm_modules_check_unsupported
 
       if (%up == 1) { .timer[WMM_INSTALL_OK] -ho 1 1000 wmm_input ok 60 $!wmm_lang(43) $(|) wmm }
@@ -169,10 +168,9 @@ ON *:START: {
     }
   }
   elseif ($starting) {
-    if ($wmm_check_version) || ($wmm_check_os) || ($group(#wmm).fname !== $script) { .unload -nrs $qt($script) | return }
+    if ($wmm_check_version) || ($wmm_check_os) || ($group(#wmm).fname !== $script) { .unload -rs $qt($script) | return }
 
     jsonshutdown
-    wmm_fix_extra_modules_installed
 
     if (!$wmm_rconf(Settings,Language)) { wmm_wconf Settings Language English }
 
@@ -191,8 +189,8 @@ ON *:START: {
     if ($wmm_rconf(Settings,Auto_Update_Modules)) { .timer[WMM_CHECK_FOR_UPDATE_MODULES_SILENT] -ho 1 10000 wmm_modules_silent_update }
     if ($wmm_rconf(Settings,Auto_Update)) { .timer[WMM_CHECK_FOR_UPDATE_SILENT] -ho 1 5000 wmm_check_update -s }
     if ($wmm_errors) { .timer[WMM_REPORT_ERRORS] -ho 1 60000 wmm_report }
+  }
 
-  } 
   return
   :error | wmm_werror $scriptline $error | reseterror
 }
@@ -233,15 +231,6 @@ ON *:UNLOAD: {
 }
 
 CTCP *:VERSION:*: { .ctcpreply $nick VERSION ( $+ $wmm_bold($nick) $+ ): WESTOR Module Manager $wmm_under(v) $+ $wmm_bold($wmm_ver) Created by: $wmm_bold(westor) on: $wmm_bold($wmm_crdate) - Download it from: $wmm_bold($wmm_under($wmm_url)) }
-
-ON *:EXIT: {
-  jsonshutdown
-
-  wmm_fix_extra_modules_installed -e
-
-  return
-  :error | wmm_werror $scriptline $error | reseterror
-}
 
 ON *:CLOSE:@wmm_pic: { 
   if ($dialog(wmm_module)) { dialog -ve wmm_module wmm_module }
@@ -1081,6 +1070,7 @@ alias wmm {
   if ($isid) { return }
 
   var %d = wmm_module
+
   wmm_d_close wmm_module_sets
 
   if ($dialog(%d)) { wmm_tool -e | dialog -ve %d %d | return }
@@ -1091,27 +1081,18 @@ alias wmm {
   .timer[WMM_CHECK_FOR_UNSUPPORTED_MODULES] off
   .timer[WMM_CHECK_FOR_UPDATE_SILENT] off
   .timer[WMM_CHECK_BEFORE_OPEN_DIALOG] off
-  ; .timer[WMM_MOD_SILENT_UPDATE_*] off
-  ;TODO na to afereso? na dw ean xriazete prwta poythena
 
-  wmm_fix_extra_modules_installed
-
-  var %don = $wmm_support_png
-  var %ico = $wmm_logo_ico
-  var %png = $wmm_noprev_png
-  var %lng = $wmm_lang_ini
-
-  if (!$file(%lng)) || (!$file(%ico)) || (!$file(%png)) || (!$file(%don)) { 
+  if (!$file($wmm_lang_ini)) || (!$file($wmm_logo_ico)) || (!$file($wmm_noprev_png)) || (!$file($wmm_support_png)) {
     if (!$wmm_internet) { wmm_input error 60 There are missing some several required project files and you must be connected to internet in order to continue for downloading them! | return }
 
     .timer[WMM_CHECK_BEFORE_OPEN_DIALOG] -ho 1 5000 wmm_check_before_open %d
 
     wmm_input warn 3 Downloading some missing project required files...
 
-    wmm_dl $wmm_lang_url $qt(%lng)
-    wmm_dl $wmm_logo_ico_url $qt(%ico)
-    wmm_dl $wmm_noprev_png_url $qt(%png)
-    wmm_dl $wmm_support_png_url $qt(%don)
+    wmm_dl $wmm_lang_url $qt($wmm_lang_ini)
+    wmm_dl $wmm_logo_ico_url $qt($wmm_logo_ico)
+    wmm_dl $wmm_noprev_png_url $qt($wmm_noprev_png)
+    wmm_dl $wmm_support_png_url $qt($wmm_support_png)
 
     return
   }
@@ -1136,26 +1117,18 @@ alias wmm_sets {
   .timer[WMM_CHECK_FOR_UNSUPPORTED_MODULES] off
   .timer[WMM_CHECK_FOR_UPDATE_SILENT] off
   .timer[WMM_CHECK_BEFORE_OPEN_DIALOG] off
-  ; .timer[WMM_MOD_SILENT_UPDATE_*] off
 
-  wmm_fix_extra_modules_installed
-
-  var %don = $wmm_support_png
-  var %ico = $wmm_logo_ico
-  var %png = $wmm_noprev_png
-  var %lng = $wmm_lang_ini
-
-  if (!$file(%lng)) || (!$file(%ico)) || (!$file(%png)) || (!$file(%don)) { 
+  if (!$file($wmm_lang_ini)) || (!$file($wmm_logo_ico)) || (!$file($wmm_noprev_png)) || (!$file($wmm_support_png)) {
     if (!$wmm_internet) { wmm_input error 60 There are missing some several required project files and you must be connected to internet in order to continue for downloading them! | return }
 
     .timer[WMM_CHECK_BEFORE_OPEN_DIALOG] -ho 1 5000 wmm_check_before_open %d
 
     wmm_input warn 3 Downloading some missing project required files...
 
-    wmm_dl $wmm_lang_url $qt(%lng)
-    wmm_dl $wmm_logo_ico_url $qt(%ico)
-    wmm_dl $wmm_noprev_png_url $qt(%png)
-    wmm_dl $wmm_support_png_url $qt(%don)
+    wmm_dl $wmm_lang_url $qt($wmm_lang_ini)
+    wmm_dl $wmm_logo_ico_url $qt($wmm_logo_ico)
+    wmm_dl $wmm_noprev_png_url $qt($wmm_noprev_png)
+    wmm_dl $wmm_support_png_url $qt($wmm_support_png)
 
     return
   }
@@ -1171,15 +1144,10 @@ alias -l wmm_check_before_open {
 
   wmm_check_load_def_settings
 
-  var %lng = $wmm_lang_ini
-  var %don = $wmm_support_png
-  var %ico = $wmm_logo_ico
-  var %png = $wmm_noprev_png
-
-  if (!$file(%lng)) { wmm_input error 60 FATAL ERROR! @newline@ @newline@ $+ Error Code: CANNOT_FIND_LANGUAGE_FILE | return }
-  if (!$file(%don)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_SUPPORT_IMAGE_FILE | return }
-  if (!$file(%ico)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_LOGO_IMAGE_FILE | return }
-  if (!$file(%png)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_NOPREVIEW_IMAGE_FILE | return }
+  if (!$file($wmm_lang_ini)) { wmm_input error 60 FATAL ERROR! @newline@ @newline@ $+ Error Code: CANNOT_FIND_LANGUAGE_FILE | return }
+  if (!$file($wmm_support_png)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_SUPPORT_IMAGE_FILE | return }
+  if (!$file($wmm_logo_ico)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_LOGO_IMAGE_FILE | return }
+  if (!$file($wmm_noprev_png)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_NOPREVIEW_IMAGE_FILE | return }
 
   wmm_dl_sets -o $1
 
@@ -1189,9 +1157,13 @@ alias -l wmm_check_before_open {
 
 alias wmm_check_version {
   if (!$isid) { return }
+
   if (!$wmm_isadi) && ($version < 7.58) { return This mIRC client version that you are using does NOT support the specific project, please download and use the latest version that is available on the mIRC official website! }
   if ($wmm_isadi) && ($version < 3.7) { return This AdiIRC client version that you are using does NOT support the specific project, please download and use the latest version that is available on the AdiiRC official website! }
   if ($wmm_isadi) && ($mid($~dotnet,2,1) < 2) { return Your computer .NET version seems to be old, in order to work that project you must download and install the latest .NET Runtime from the web, check more at AdiIRC "https://goo.gl/bQfVof" official download page. }
+
+  if ($file($script).name !== WESTOR Module Manager) { return It seems that you are NOT using the offical project file because the file name missmatch from the website, you have to follow step by step the installation guide in website in order to use that project! }
+  if ($file($script).ext !== .mrc) { return It seems that you are NOT using the official project file because the file extention missmatch from the website, you have to follow step by step the installation guide in website in order use that project! }
 
   var %js1 = $group(#SReject/JSONForMirc/Log).fname
   var %js2 = $group(#wmm).fname
@@ -1209,7 +1181,7 @@ alias wmm_check_version {
 alias wmm_check_os {
   if (!$isid) { return }
 
-  if ($wmm_isadi) && ($bits == 64) { var %adi64 = 1 }
+  if ($wmm_isadi) && ($bits == 64) { var %a = 1 }
 
   var %1 = CheckOS_1
   var %2 = CheckOS_2
@@ -1235,19 +1207,18 @@ alias wmm_check_os {
   .comopen %4 Adodb.Stream
   if (!$com(%4)) || ($comerr) { return This project cannot be used into this computer, the function "Adodb.Stream" didn't passed the check, that project is available only on Windows operating systems. }
 
-  if (%adi64) { 
+  if (%a) { 
     .comopen %5 ScriptControl
     if (!$com(%5)) || ($comerr) { return This project cannot be used into this computer, the function "ScriptControl" didn't passed the check, that project is available only on Windows operating systems. }
 
-    var %dll = $envvar(windir) $+ \System32\tsc64.dll
+    var %f = $envvar(windir) $+ \System32\tsc64.dll
 
-    if (!$file(%dll)) { return It seems that missing an necessary DLL from your system while running under AdiIRC 64-bits, you have to install "tsc64.dll" from "http://j.mp/tsc_dll" website first then restart the client and then try to install the project again. }
-    if ($file(%dll).version < 1.1.0.1) { return It seems that the DLL "tsc64.dll" is outdated on your system, please update that dll to the latest version that is available on the website "http://j.mp/tsc_dll" and then restart the client and try again to install that project. }
+    if (!$file(%f)) { return It seems that missing an necessary DLL from your system while running under AdiIRC 64-bits, you have to install "tsc64.dll" from "http://j.mp/tsc_dll" website first then restart the client and then try to install the project again. }
+    if ($file(%f).version < 1.1.0.1) { return It seems that the DLL "tsc64.dll" is outdated on your system, please update that dll to the latest version that is available on the website "http://j.mp/tsc_dll" and then restart the client and try again to install that project. }
   }
 
   :error
-  if ($error) { wmm_werror $scriptline $error }
-  reseterror
+  if ($error) { wmm_werror $scriptline $error | reseterror }
 
   wmm_c_close %1
   wmm_c_close %2
@@ -1295,16 +1266,15 @@ alias wmm_check_monitor_warn {
 }
 
 alias wmm_lang {
-  var %f = $wmm_lang_ini
   var %lng = $wmm_rconf(Settings,Language)
 
   if (!%lng) { var %lng = English }
 
-  if (!$file(%f)) || (!$isid) || (!$1) || ($1 !isnum) { return 0 }
+  if (!$file($wmm_lang_ini)) || (!$isid) || (!$1) || ($1 !isnum) { return 0 }
 
   var %h = WMM_LANG_ $+ %lng
 
-  if (!$hget(%h)) && ($ini(%f,%lng)) { hmake %h 1000 | hload -i %h $qt(%f) %lng }
+  if (!$hget(%h)) && ($ini($wmm_lang_ini,%lng)) { hmake %h 1000 | hload -i %h $qt($wmm_lang_ini) %lng }
 
   var %r = $hget(%h,$1)
 
@@ -1316,62 +1286,29 @@ alias wmm_lang {
 }
 
 alias wmm_langs {
-  var %f = $wmm_lang_ini
-
-  if (!$isid) || (!$file(%f)) || (!$ini(%f,0)) { return 0 }
+  if (!$isid) || (!$file($wmm_lang_ini)) || (!$ini($wmm_lang_ini,0)) { return 0 }
 
   if (!$wmm_rconf(Settings,Language)) { wmm_wconf Settings Language English } 
 
-  var %t = $ini(%f,0)
+  var %t = $ini($wmm_lang_ini,0)
 
   var %i = 1
   while (%i <= %t) {
-    var %lng = $ini(%f,%i)
+    var %l = $ini($wmm_lang_ini,%i)
 
-    if (%lng) { var %langs = $addtok(%langs,%lng,44) }
+    if (%l) { var %s = $addtok(%s,%l,44) }
 
     inc %i
   }
 
-  if (%langs) { return %langs }
+  if (%s) { return %s }
   else { return 0 }
 
   return
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-alias -l wmm_fix_extra_modules_installed {
-
-  ; -e = it will fix any name or position errors related to WMM original state.
-
-  if (!$script(0)) { return }
-
-  if ($1) && ($1 == -e) {
-    var %name = $nopath($script)
-    var %org_name = WESTOR Module Manager.mrc
-    var %new_name = $nofile($script) $+ %org_name
-
-    if (%name !== %org_name) && ($read($script,1) == [script]) && (!$wmm_isadi) { var %name_ini = WESTOR Module Manager.ini | .rename -of $qt($script) $qt($nofile($script) $+ %name_ini) | .reload -rs1 $qt($nofile($script) $+ %name_ini) | .unload -nrs $qt($script) | return }
-    if (%name !== %org_name) { .rename -of $qt($script) $qt(%new_name) | .reload -rs1 $qt(%new_name) | .unload -nrs $qt($script) | return }
-
-    var %pos = $wmm_getpos($mid($nopath($script),0,-4))
-    if (%pos !== 1) { .reload -rs1 $qt($script) }
-  }
-
-  var %t = $script(0)
-  while (%t) {
-    var %s = $script(%t)
-    var %ext = $right($nopath(%s),4)
-    var %path = $wmm_getpath($mid($nopath(%s),0,-4))
-
-    if ($nopath(%s) !== $nopath($script)) && (%path) && (%ext) && (%ext !== .mrc) { .unload -rs $qt($nopath(%s)) }
-
-    dec %t
-  }
-
-  return
-  :error | wmm_werror $scriptline $error | reseterror
-}
+;TODO NA SYNEXISO NA DW TON YPOLOIPO KODIKA EAN THELEI CHANGES KAI FIXES
 
 alias -l wmm_reset_images {
 
