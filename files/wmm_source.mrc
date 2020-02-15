@@ -779,16 +779,14 @@ ON *:DIALOG:wmm_module:*:*: {
       var %c = $wmm_rsconf(%m,Channel)
       var %o = $wmm_mod_logo_ico(%m)
 
-      if (!%m) || (!%p) || (!%a) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
+      if (!%m) || (!%p) || (!%a) || (!%c) || (!%o) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
       did -rh $dname 250
-
-      if (%o) { did -vg $dname 28 $qt(%o) }
-      else { did -h $dname 28 }
+      did -vg $dname 28 $qt(%o)
 
       wmm_reset_images -i %m
 
-      if (%c) && (%c !== STABLE) { did -b $dname 13 | did -e $dname 8 }
+      if (%c !== STABLE) { did -b $dname 13 | did -e $dname 8 }
       else { did -e $dname 13,8 }
 
       did -r $dname 8
@@ -805,10 +803,9 @@ ON *:DIALOG:wmm_module:*:*: {
       var %p = $wmm_getpath(%m)
       var %o = $wmm_mod_logo_ico(%m)
 
-      if (!%m) || (!%a) { wmm_reset_images | did -b $dname 7 | did -c $dname 6 1 | did -u $dname 6 | return }
+      if (!%m) || (!%a) || (!%c) || (!%o) { wmm_reset_images | did -b $dname 7 | did -c $dname 6 1 | did -u $dname 6 | return }
 
-      if (%o) { did -vg $dname 28 $qt(%o) }
-      else { did -h $dname 28 }
+      did -vg $dname 28 $qt(%o)
 
       var %d = $wmm_lang(80) $+ : $wmm_rsconf(%m,Version) $+ $chr(166) $+ $wmm_lang(81) $+ : $wmm_rsconf(%m,Released) $+ $chr(166) $+ $wmm_lang(60) $+ : $wmm_rsconf(%m,Channel) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(83) $+ : $+ $chr(166) $wmm_rsconf(%m,Changelog) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(84) $+ : $+ $chr(166) $wmm_rsconf(%m,Description) $+ $chr(166) $+ $chr(166) $+ $wmm_lang(85) $+ : $+ $chr(166) $wmm_rsconf(%m,Examples)
 
@@ -818,7 +815,7 @@ ON *:DIALOG:wmm_module:*:*: {
       if (!%p) { did -e $dname 7 }
       elseif (%p) { did -b $dname 7 }
 
-      if (%c) && (%c !== STABLE) { did -b $dname 7 }
+      if (%c !== STABLE) { did -b $dname 7 }
 
       wmm_reset_images -i %m
     }
@@ -828,7 +825,7 @@ ON *:DIALOG:wmm_module:*:*: {
       var %a = $wmm_rsconf(%m,Alias)
       var %o = $wmm_mod_logo_ico(%m)
 
-      if (!%m) || (!%p) || (!%a) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
+      if (!%m) || (!%p) || (!%a) || (!%o) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
       did -ve $dname 11,12,8
       did -r $dname 8
@@ -836,12 +833,7 @@ ON *:DIALOG:wmm_module:*:*: {
       wmm_reset_images -i %m
 
       if ($didwm(600,%m)) { did -h $dname 28 | did -vra $dname 250 $wmm_lang(86) }
-      else {
-        did -hr $dname 250
-
-        if (%o) { did -vg $dname 28 $qt(%o) }
-        else { did -h $dname 28 }
-      }
+      else { did -hr $dname 250 | did -vg $dname 28 $qt(%o) }
 
       var %l1 = $wmm_lang(47) $+ : $evalnext($chr(36) $+ %a $+ _ver) $+ $crlf $wmm_lang(48) $+ : $evalnext($chr(36) $+ %a $+ _crdate) $+ $crlf $wmm_lang(64) $+ : $nopath(%p) $+ $crlf
 
@@ -925,9 +917,9 @@ ON *:DIALOG:wmm_module:*:*: {
       var %a = $wmm_rsconf(%m,Alias)
       var %v = $wmm_rsconf(%m,Manager_Require_Version)
 
-      if (!%m) || (!%p) || (!%a) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
+      if (!%m) || (!%p) || (!%a) || (!%v) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
-      if (%v) && ($wmm_ver < %v) { wmm_input error 60 $wmm_lang(63) | return }
+      if ($wmm_ver < %v) { wmm_input error 60 $wmm_lang(63) | return }
 
       did -b $dname 600,13,8
 
