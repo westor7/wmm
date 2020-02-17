@@ -1018,10 +1018,10 @@ alias wmm_crdate { return $remove($gettok($read($script,n,$iif($right($script,4)
 alias wmm_errors { return $lines($wmm_errors_file) }
 
 alias wmm_url { return https://github.com/westor7/wmm }
+alias wmm_source_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_source.mrc }
 alias wmm_support_url { return https://github.com/westor7/wmm#support--donate }
 alias wmm_modules_url { return https://github.com/westor7/wmm/tree/master/modules#available-modules }
 alias wmm_images_zip_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_modules_images.zip }
-
 alias wmm_sets_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_sets_v $+ $replace($wmm_ver,.,_) $+ .ini }
 alias wmm_logo_ico_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_logo.ico }
 alias wmm_noprev_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_no_preview.png }
@@ -1937,10 +1937,6 @@ alias -l wmm_modules_check_unsupported {
 }
 
 alias wmm_dl_sets {
-
-  ; -s = Downloads the sets.ini without display any error messages.
-  ; -o <dialog> = Opens the dialog after download succeed.
-
   if (!$1) || ($isid) { return }
 
   if ($1) && ($1 == -s) { var %s = 1 }
@@ -1963,123 +1959,81 @@ alias wmm_dl_sets {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-;TODO NA SYNEXISO NA DW TON YPOLOIPO KODIKA EAN THELEI CHANGES KAI FIXES
-
 alias -l wmm_dl_sets_init {
-  ; 1 = dialog (optional)
-  ; 2 = silent (optional)
-  ; 3 = id
-
   if (!$3) { return }
 
-  var %s = $urlget($3).state
-  var %f = $urlget($3).target
-
-  if (%s !== ok) {
+  if ($urlget($3).state !== ok) {
     if (!$2) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) SETS_FILE_DOWNLOADING_ERROR }
 
     return 
   }
 
-  if ($1) { 
+  if ($1) {
     if ($wmm_rconf(Settings,Update)) { wmm_tool -b | return }
 
     wmm_check_update $iif($1 == wmm_module,-m,-n)
 
     if (!$dialog($1)) && (!$wmm_rconf(Settings,Update)) { dialog -md $1 $1 }
-    ;  if (!$wmm_has_update) { dialog -md $1 $1 }
   }
-
-  return
-  :error | wmm_werror $scriptline $error | reseterror
-}
-
-alias wmm_has_update {
-
-  ; NOT READY, Na dw ean xriazete kapou, ean oxi boulo.
-
-  if (!$isid) { return }
-
-  var %ver = $wmm_rsconf(General,Latest_Project_Version)
-  var %chan = $wmm_rsconf(General,Latest_Project_Channel)
-
-  if (!$wmm_isadi) { var %client = mIRC | var %client_ver = $wmm_rsconf(General,Compatitable_ $+ %client $+ _Version) }
-  else { var %client = AdiIRC | var %client_ver = $wmm_rsconf(General,Compatitable_ $+ %client $+ _Version) }
-
-  if (%client_ver) && (%client_ver > $version) { return 1 }
-  if (%ver) && (%ver !== $wmm_ver) && (%chan == STABLE) { return 2 }
-
-  return 0
 
   return
   :error | wmm_werror $scriptline $error | reseterror
 }
 
 alias wmm_check_update {
-
-  ; -m = will flag that the update coming from WMM
-  ; -n = will flag that the update coming from WMM settings.
-  ; -s = will flag that the update coming from nowhere and it will executed as silent.
-
   if (!$1) || ($isid) { return }
 
-  if ($1) && ($1 == -s) { var %silent = 1 }
+  if ($1) && ($1 == -s) { var %s = 1 }
 
   var %d = wmm_module
   var %d2 = wmm_module_sets
 
-  var %ver = $wmm_rsconf(General,Latest_Project_Version)
-  var %chan = $wmm_rsconf(General,Latest_Project_Channel)
-  var %date = $wmm_rsconf(General,Latest_Project_Released)
-  var %url = $wmm_rsconf(General,Download_Source)
+  var %v = $wmm_rsconf(General,Latest_Version)
+  var %c = $wmm_rsconf(General,Latest_Channel)
+  var %d = $wmm_rsconf(General,Latest_Released)
+  var %l = $iif($wmm_isadi,AdiIRC,mIRC)
+  var %b = $wmm_rsconf(General,Compatitable_ $+ %l $+ _Version)
 
-  if (!$wmm_isadi) { var %client = mIRC | var %client_ver = $wmm_rsconf(General,Compatitable_ $+ %client $+ _Version) }
-  else { var %client = AdiIRC | var %client_ver = $wmm_rsconf(General,Compatitable_ $+ %client $+ _Version) }
+  if (!%v) || (!%c) || (!%d) || (!%b) { return }
 
-  if (%client_ver) && (%client_ver > $version) {
-    if (!%silent) { wmm_input error 60 $wmm_lang(41) %client $wmm_lang(42) }
+  if (%b > $version) {
+    if (!%s) { wmm_input error 60 $wmm_lang(41) %l $wmm_lang(42) }
 
-    url https:// $+ %client $+ .com
+    url https:// $+ %l $+ .com
 
     return
   }
 
-  if (%url) && (%ver) && (%ver !== $wmm_ver) && (%chan == STABLE) {
+  if (%v !== $wmm_ver) && (%c == STABLE) && (!%s) {
+    var %k = $input($wmm_lang(23) $iif(%c,$v1,N/A) $wmm_lang(24) %v ( $+ $iif(%d,$v1,N/A) $+ ) $wmm_lang(25) $+ . $crlf $crlf $+ $+ $wmm_lang(66) $crlf $crlf $+ $+ $wmm_lang(26),yuidbk90,$wmm_lang(16) $wmm_bel $wmm_lang(22))
 
-    if (!%silent) { 
-      var %ask = $input($wmm_lang(23) $iif(%chan,$v1,N/A) $wmm_lang(24) %ver ( $+ $iif(%date,$v1,N/A) $+ ) $wmm_lang(25) $+ . $crlf $crlf $+ $+ $wmm_lang(66) $crlf $crlf $+ $+ $wmm_lang(26),yuidbk90,$wmm_lang(16) $wmm_bel $wmm_lang(22))
+    if (!%k) {
+      if ($1) && ($1 == -m) { dialog -md %d %d }
+      if ($1) && ($1 == -n) { dialog -md %d2 %d2 }
 
-      if (!%ask) {
-        if ($1) && ($1 == -m) { dialog -md %d %d }
-        if ($1) && ($1 == -n) { dialog -md %d2 %d2 }
-
-        return 
-      }
-
+      return 
     }
 
-    if ($wmm_check_initial_warn) || ($wmm_check_monitor_warn) { url %url }
-    elseif (!$wmm_check_initial_warn) && (!$wmm_check_monitor_warn) { 
-      ;TODO mporei na thelei 'else' anti gia 'elseif'
+    if ($wmm_check_initial_warn) || ($wmm_check_monitor_warn) { url $wmm_source_url | return }
 
-      if ($1) && ($1 == -m) { wmm_wconf Settings Update 1 }
-      if ($1) && ($1 == -n) { wmm_wconf Settings Update 2 }
+    if ($1) && ($1 == -m) { wmm_wconf Settings Update 1 }
+    if ($1) && ($1 == -n) { wmm_wconf Settings Update 2 }
 
-      if (%silent) { wmm_wconf Settings Update 3 }
+    if (%s) { wmm_wconf Settings Update 3 }
 
-      wmm_tool -b
+    wmm_tool -b
 
-      if ($isfile($wmm_temp $+ WESTOR Module Manager.mrc)) { .remove $qt($wmm_temp $+ WESTOR Module Manager.mrc) }
-      ;TODO na bro kalytero tropo na to prosarmoso auto
+    if ($isfile($wmm_temp $+ WESTOR Module Manager.mrc)) { .remove $qt($wmm_temp $+ WESTOR Module Manager.mrc) }
+    ;TODO na bro kalytero tropo na to prosarmoso auto
 
-      noop $urlget(%url,gif,$qt($wmm_temp $+ WESTOR Module Manager.mrc),wmm_check_update_install)
-    }
-
+    noop $urlget($wmm_source_url,gif,$qt($wmm_temp $+ WESTOR Module Manager.mrc),wmm_check_update_install)
   }
 
   return
   :error | wmm_werror $scriptline $error | reseterror
 }
+
+;TODO NA SYNEXISO NA DW TON YPOLOIPO KODIKA EAN THELEI CHANGES KAI FIXES
 
 alias -l wmm_check_load_def_settings {
   if (!$wmm_rconf(Settings,Menus)) { wmm_wconf Settings Menus wmm wmm_sets }
