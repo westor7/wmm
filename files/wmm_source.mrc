@@ -764,11 +764,10 @@ ON *:DIALOG:wmm_module:*:*: {
     if ($did == 600) {
       var %m = $did($did).seltext
       var %p = $wmm_getpath(%m)
-      var %a = $wmm_rsconf(%m,Alias)
       var %c = $wmm_rsconf(%m,Channel)
       var %o = $wmm_mod_logo_ico(%m)
 
-      if (!%m) || (!%p) || (!%a) || (!%c) || (!%o) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
+      if (!%m) || (!%p) || (!%c) || (!%o) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
       did -rh $dname 250
       did -vg $dname 28 $qt(%o)
@@ -779,7 +778,7 @@ ON *:DIALOG:wmm_module:*:*: {
       else { did -e $dname 13,8 }
 
       did -r $dname 8
-      did -a $dname 8 $wmm_lang(54) $+ : $wmm_getversion(%m) - $evalnext($chr(36) $+ %a $+ _crdate) $+ $crlf
+      did -a $dname 8 $wmm_lang(54) $+ : $wmm_getversion(%m) - $wmm_getcrdate(%m) $+ $crlf
       did -a $dname 8 $wmm_lang(55) $+ : $wmm_rsconf(%m,Version) - $wmm_rsconf(%m,Released) $+ $+ $crlf $crlf
       did -a $dname 8 $wmm_lang(83) $+ : $+ $crlf
       did -a $dname 8 $replace($wmm_rsconf(%m,Changelog),$chr(166),$+ $+ $crlf $+ $+)
@@ -787,12 +786,11 @@ ON *:DIALOG:wmm_module:*:*: {
     }
     if ($did == 6) {
       var %m = $did($did).seltext
-      var %a = $wmm_rsconf(%m,Alias)
       var %c = $wmm_rsconf(%m,Channel)
       var %p = $wmm_getpath(%m)
       var %o = $wmm_mod_logo_ico(%m)
 
-      if (!%m) || (!%a) || (!%c) || (!%o) { wmm_reset_images | did -b $dname 7 | did -c $dname 6 1 | did -u $dname 6 | return }
+      if (!%m) || (!%c) || (!%o) { wmm_reset_images | did -b $dname 7 | did -c $dname 6 1 | did -u $dname 6 | return }
 
       did -vg $dname 28 $qt(%o)
 
@@ -811,10 +809,9 @@ ON *:DIALOG:wmm_module:*:*: {
     if ($did == 60) || (%wmm_did_60) {
       var %m = $did(60).seltext
       var %p = $wmm_getpath(%m)
-      var %a = $wmm_rsconf(%m,Alias)
       var %o = $wmm_mod_logo_ico(%m)
 
-      if (!%m) || (!%p) || (!%a) || (!%o) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
+      if (!%m) || (!%p) || (!%o) { wmm_reset_images | wmm_modules_installed_plus_updated_list | return }
 
       did -ve $dname 11,12,8
       did -r $dname 8
@@ -824,7 +821,7 @@ ON *:DIALOG:wmm_module:*:*: {
       if ($didwm(600,%m)) { did -h $dname 28 | did -vra $dname 250 $wmm_lang(86) }
       else { did -hr $dname 250 | did -vg $dname 28 $qt(%o) }
 
-      var %l1 = $wmm_lang(47) $+ : $wmm_getversion(%m) $+ $crlf $wmm_lang(48) $+ : $evalnext($chr(36) $+ %a $+ _crdate) $+ $crlf $wmm_lang(64) $+ : $nopath(%p) $+ $crlf
+      var %l1 = $wmm_lang(47) $+ : $wmm_getversion(%m) $+ $crlf $wmm_lang(48) $+ : $wmm_getcrdate(%m) $+ $crlf $wmm_lang(64) $+ : $nopath(%p) $+ $crlf
 
       did -a $dname 8 %l1
 
@@ -1680,7 +1677,6 @@ alias -l wmm_modules_installed_plus_updated_list {
 
     did -a %d 60 %m
 
-    ;var %a = $wmm_rsconf(%m,Alias)
     var %v = $wmm_getversion(%m)
     var %n = $wmm_rsconf(%m,Version)
 
