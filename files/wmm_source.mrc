@@ -129,9 +129,9 @@ dialog -l wmm_module {
 
 ON *:START: {
   if (!$starting) {
-    if ($wmm_check_version) { wmm_input error 60 $v1 | .unload -nrs $qt($script) | return }
-    if ($wmm_check_os) { wmm_input error 60 $v1 | .unload -nrs $qt($script) | return }
-    if ($group(#wmm).fname !== $script) { wmm_input error 60 That project is already installed into this program client, you cannot have more than 1 at the same client installed! | .unload -nrs $qt($script) | return } 
+    if ($wmm_check_version) { wmm_input error 60 $v1 | .unload -rs $qt($script) | return }
+    if ($wmm_check_os) { wmm_input error 60 $v1 | .unload -rs $qt($script) | return }
+    if ($group(#wmm).fname !== $script) { wmm_input error 60 That project is already installed into this program client, you cannot have more than 1 at the same client installed! | .unload -rs $qt($script) | return } 
 
     hfree -w WMM_LANG_*
 
@@ -1018,6 +1018,7 @@ alias wmm_ver { return $right($gettok($read($script,n,$iif($right($script,4) == 
 alias wmm_crdate { return $remove($gettok($read($script,n,$iif($right($script,4) == .ini && !$wmm_isadi,7,6)),5,32),$chr(40),$chr(41)) }
 ;TODO na afereso to support ean tyxon o allos kanei copy paste to source code kai to kanei save se .ini
 ;     na prostheso sto check ean brei  kapio module pou na exei .ini na to kanei unload amesws.
+alias wmm_errors { return $lines($wmm_errors_file) }
 
 alias wmm_url { return https://github.com/westor7/wmm }
 alias wmm_support_url { return https://github.com/westor7/wmm#support--donate }
@@ -1037,7 +1038,6 @@ alias wmm_module_source_url { return https://raw.githubusercontent.com/westor7/w
 
 alias wmm_sets_file { return $wmm_temp $+ wmm_modules.ini }
 alias wmm_errors_file { return $wmm_temp $+ wmm_errors.log }
-alias wmm_errors { return $lines($wmm_errors_file) }
 alias wmm_html_file { return $wmm_temp $+ wmm_html.db }
 alias wmm_images_zip_file { return $wmm_temp $+ wmm_modules_images.zip }
 
@@ -1579,26 +1579,27 @@ alias -l wmm_check_update_install {
   wmm_tool -c
 
   .unload -nrs $qt($script)
+  ;TODO na dw ean thelei -rs h -nrs analogos to on unload
 }
 
 alias -l wmm_modules_silent_update {
-  var %t = $ini($wmm_sets_file,0)
+  var %t = $wmm_modules
   var %u = $wmm_rconf(Settings,Auto_Update_Modules)
 
-  if (!%t) || (!%u) || (!$file($wmm_sets_file)) || ($dialog(wmm_module)) || ($dialog(wmm_module_sets)) || (!$wmm_internet) || ($wmm_check_initial_warn) || ($wmm_check_monitor_warn) { return }
+  if (!%t) || (!%u) || ($dialog(wmm_module)) || ($dialog(wmm_module_sets)) || (!$wmm_internet) || ($wmm_check_initial_warn) || ($wmm_check_monitor_warn) { return }
 
-  var %i = 3
-  while (%i <= %t) {
-    var %m = $ini($wmm_sets_file,%i)
+  var %i = 1
+  while (%i <= $numtok(%t,32)) {
+    var %m = $gettok(%t,%i,32)
     var %p = $wmm_getpath(%m)
 
     if (!%m) || (!%p) || (!$istok(%u,%m,32)) { goto next }
 
-    var %v = $wmm_rsconf(%m,Version)
+    var %n = $wmm_rsconf(%m,Version)
     var %c = $wmm_rsconf(%m,Channel)
     var %a = $wmm_rsconf(%m,Alias)
     var %r = $wmm_rsconf(%m,Manager_Require_Version)
-    var %n = $wmm_getversion(%m)
+    var %v = $wmm_getversion(%m)
     var %s = $wmm_getpos(%m)
 
     if (%v) && (%n) && (%r) && (%v !== %n) && ($wmm_ver >= %r) && (%c == STABLE) {
@@ -1629,7 +1630,7 @@ alias -l wmm_modules_list {
 
   if (!$file($wmm_sets_file)) || (!$ini($wmm_sets_file,0)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) RETRIEVING_MODULES_LIST | wmm_d_close %d | return }
 
-  filter -fkg $qt($wmm_sets_file) wmm_init_modules_tmp ^\[[^\]]+\]$
+  filter -fkg $qt($wmm_sets_file) wmm_modules_init_tmp ^\[[^\]]+\]$
 
   var %n = $wmm_rsconf(General,Latest_News)
 
@@ -1740,8 +1741,6 @@ alias -l wmm_dl_images_unzip {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-;TODO NA SYNEXISO NA DW TON YPOLOIPO KODIKA EAN THELEI CHANGES KAI FIXES
-
 alias -l wmm_tool {
 
   ; -s = start toolbar
@@ -1766,7 +1765,7 @@ alias -l wmm_tool {
     wmm_t_close wmm1
 
     toolbar -as wmm1
-    toolbar -ak $+ $iif($dialog(%d),1,0) wmm $wmm_lang(16) - ( $+ $wmm_lang(74) $+ )) $qt(%ico) $qt(/wmm_check_open) @wmm
+    toolbar -ak $+ $iif($dialog(%d),1,0) wmm $wmm_lang(16) - ( $+ $wmm_lang(74) $+ )) $qt($wmm_logo_ico) $qt(/wmm_check_open) @wmm
   }
 
   if (c isincs $1) { wmm_t_close wmm | wmm_t_close wmm1 }
@@ -1790,49 +1789,35 @@ alias -l wmm_check_open {
 
 alias -l wmm_modules_settings_list {
   var %d = wmm_module_sets
+  var %am = $wmm_rconf(Settings,Auto_Update_Modules)
 
   if (!$dialog(%d)) { return }
-
-  if ($wmm_installed(total)) {
-    var %tot_rem = $wmm_rsconf(General,Unsupported_Modules)
-    var %z = 1
-    while (%z <= $wmm_installed(total)) {
-      var %mod_rem = $gettok(%tot_rem,%z,32)
-      if ($wmm_getpath(%mod_rem)) { set -eu0 %wmm_signal_noclose 1 | .unload -rs $qt($wmm_getpath(%mod_rem)) }
-      inc %z
-    }
-  }
+  if (!$file($wmm_sets_file)) || (!$ini($wmm_sets_file,0)) { return }
 
   did -r %d 3
   did -b %d 3,4
 
-  var %am = $wmm_rconf(Settings,Auto_Update_Modules)
-
-  if (%am) {
+  if (!%am) { did -b %d 5,6 }
+  elseif (%am) {
     var %i = 1
     while (%i <= $numtok(%am,32)) {
       var %m = $gettok(%am,%i,32)
 
-      if (!%m) { goto next2 }
-      if (!$wmm_getpath(%m)) { wmm_wconf Settings Auto_Update_Modules $iif($remtok(%am,%m,1,32),$v1) | goto next2 }
+      if (!%m) { goto next }
+      if (!$wmm_getpath(%m)) { wmm_wconf Settings Auto_Update_Modules $iif($remtok(%am,%m,1,32),$v1) | goto next }
 
       did -a %d 5 %m
 
-      :next2
+      :next
       inc %i
     }
   }
-  else { did -b %d 5,6 }
 
-  var %t = $ini($wmm_sets_file,0)
+  filter -fkg $qt($wmm_sets_file) wmm_modules_init_tmp ^\[[^\]]+\]$
 
-  if (!%t) { return }
+  var %n = $wmm_rsconf(General,Latest_News)
 
-  filter -fkg $qt($wmm_sets_file) wmm_init_modules_tmp ^\[[^\]]+\]$
-
-  var %news = $wmm_rsconf(General,Latest_News)
-
-  if (%news) { var %news = $replace(%news,$chr(166),$+ $+ $crlf $+ $+) | did -ra %d 42 %news }
+  if (%n) { var %n = $replace(%n,$chr(166),$+ $+ $crlf $+ $+) | did -ra %d 42 %n }
   else { did -ra %d 42 $wmm_lang(58) }
 
   if ($did(%d,3).lines) { did -ra %d 7 $wmm_lang(67) ( $+ $did(%d,3).lines $+ ) | did -e %d 3 }
@@ -1845,20 +1830,17 @@ alias -l wmm_modules_settings_list {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-alias wmm_init_modules_tmp { 
+alias wmm_modules_init_tmp { 
   var %d = wmm_module
   var %d2 = wmm_module_sets
 
-  var %mod = $remove($1,[,])
+  var %m = $remove($1,[,])
 
-  if (%mod) && ($dialog(%d)) {
-    if (%mod !== General) && (%mod !== Tiny_Keys) { did -a %d 6 %mod }
-    return
-  }
+  if (!%m) { return }
 
-  if (%mod) && ($dialog(%d2)) {
-    if ($wmm_getpath(%mod)) && (!$didwm(%d2,5,%mod)) { did -a %d2 3 %mod }
-  }
+  if ($dialog(%d)) && ($istok($wmm_modules,%m,32)) { did -a %d 6 %m }
+
+  if ($dialog(%d2)) && ($wmm_getpath(%m)) && (!$didwm(%d2,5,%m)) { did -a %d2 3 %m }
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -1930,24 +1912,28 @@ alias -l wmm_pic {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
+;TODO NA SYNEXISO NA DW TON YPOLOIPO KODIKA EAN THELEI CHANGES KAI FIXES
+
 alias -l wmm_modules_check_unsupported {
   if ($dialog(wmm_module)) || ($dialog(wmm_module_sets)) { return }
 
-  var %t = $ini($wmm_sets_file,0)
+  var %t = $wmm_modules
 
-  var %i = 3
-  while (%i <= %t) {
-    var %mod = $ini($wmm_sets_file,%i)
-    var %path = $wmm_getpath(%mod)
+  if (!%t) { return }
 
-    if (!%mod) || (!%path) { goto next }
+  var %i = 1
+  while (%i <= $numtok(%t,32)) {
+    var %m = $gettok(%t,%i,32)
+    var %p = $wmm_getpath(%m)
 
-    var %ver = $wmm_rsconf(%mod,Version)
-    var %alias = $wmm_rsconf(%mod,Alias)
-    var %tools_ver = $wmm_rsconf(%mod,Manager_Require_Version)
-    var %iv = $iif($isalias(%alias $+ _ver),$evalnext($chr(36) $+ %alias $+ _ver),0)
+    if (!%m) || (!%p) { goto next }
 
-    if (%iv) && (%ver) && (%tools_ver) && (%ver == %iv) && ($wmm_ver < %tools_ver) { .unload -rs $qt(%path) }
+    var %n = $wmm_rsconf(%m,Version)
+    var %a = $wmm_rsconf(%m,Alias)
+    var %r = $wmm_rsconf(%m,Manager_Require_Version)
+    var %v = $evalnext($chr(36) $+ %a $+ _ver)
+
+    if (%n) && (%v) && (%r) && (%n == %v) && ($wmm_ver < %r) { .unload -rs $qt(%p) }
 
     :next
     inc %i
@@ -2359,7 +2345,7 @@ alias wmm_getpos {
 }
 
 alias -l wmm_tiny_key { 
-  var %t = $ini($wmm_sets_file,Tiny_Keys)
+  var %t = $ini($wmm_sets_file,Tiny_Keys,0)
 
   if (!%t) { return 0 }
 
@@ -2536,30 +2522,32 @@ alias wmm_ignore_cn_list {
 }
 
 alias wmm_modules {
+  if (!$isid) { return }
 
-  ;  $wmm_modules(name,total)
-  ;  Parameter required!
+  if ($1) && (!$istok(name total,$1,32)) { return }
 
-  ; Parameter:  name    = It will give all the available modules names.
-  ; Parameter:  total   = It will give all the total available modules number.
+  if ($1) { var %p = $1 }
+  else { var %p = name }
 
-  if (!$isid) || (!$1) { return }
-
+  var %n = General Tiny_Keys
   var %t = $ini($wmm_sets_file,0)
 
   if (!%t) { return 0 }
 
-  var %i = 3
+  var %i = 1
   while (%i <= %t) {
     var %m = $ini($wmm_sets_file,%i)
 
-    if ($1 == total) && (%m) { var %total = $calc(%total + 1) }
-    if ($1 == name) && (%m) { var %total = $addtok(%total,%m,32) }
+    if (!%m) || ($istok(%n,%m,32)) { goto next }
 
+    if (%p == total) { var %l = $calc(%l + 1) }
+    if (%p == name) { var %l = $addtok(%l,%m,32) }
+
+    :next
     inc %i
   }
 
-  if (%total) { return %total }
+  if (%l) { return %l }
   else { return 0 }
 
   return
