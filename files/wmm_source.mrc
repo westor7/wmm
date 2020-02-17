@@ -3,7 +3,7 @@
 ######################################
 
 	# WESTOR Module Manager #
-	 # v5.0 - (14/02/2020) #
+	 # v5.0 - (17/02/2020) #
 	  # Thanks Supporters #
 
 ######################################
@@ -779,7 +779,7 @@ ON *:DIALOG:wmm_module:*:*: {
       else { did -e $dname 13,8 }
 
       did -r $dname 8
-      did -a $dname 8 $wmm_lang(54) $+ : $evalnext($chr(36) $+ %a $+ _ver) - $evalnext($chr(36) $+ %a $+ _crdate) $+ $crlf
+      did -a $dname 8 $wmm_lang(54) $+ : $wmm_getversion(%m) - $evalnext($chr(36) $+ %a $+ _crdate) $+ $crlf
       did -a $dname 8 $wmm_lang(55) $+ : $wmm_rsconf(%m,Version) - $wmm_rsconf(%m,Released) $+ $+ $crlf $crlf
       did -a $dname 8 $wmm_lang(83) $+ : $+ $crlf
       did -a $dname 8 $replace($wmm_rsconf(%m,Changelog),$chr(166),$+ $+ $crlf $+ $+)
@@ -824,7 +824,7 @@ ON *:DIALOG:wmm_module:*:*: {
       if ($didwm(600,%m)) { did -h $dname 28 | did -vra $dname 250 $wmm_lang(86) }
       else { did -hr $dname 250 | did -vg $dname 28 $qt(%o) }
 
-      var %l1 = $wmm_lang(47) $+ : $evalnext($chr(36) $+ %a $+ _ver) $+ $crlf $wmm_lang(48) $+ : $evalnext($chr(36) $+ %a $+ _crdate) $+ $crlf $wmm_lang(64) $+ : $nopath(%p) $+ $crlf
+      var %l1 = $wmm_lang(47) $+ : $wmm_getversion(%m) $+ $crlf $wmm_lang(48) $+ : $evalnext($chr(36) $+ %a $+ _crdate) $+ $crlf $wmm_lang(64) $+ : $nopath(%p) $+ $crlf
 
       did -a $dname 8 %l1
 
@@ -1680,8 +1680,8 @@ alias -l wmm_modules_installed_plus_updated_list {
 
     did -a %d 60 %m
 
-    var %a = $wmm_rsconf(%m,Alias)
-    var %v = $evalnext($chr(36) $+ %a $+ _ver)
+    ;var %a = $wmm_rsconf(%m,Alias)
+    var %v = $wmm_getversion(%m)
     var %n = $wmm_rsconf(%m,Version)
 
     if (%v) && (%n) && (%v !== %n) { did -a %d 600 %m }
@@ -1912,8 +1912,6 @@ alias -l wmm_pic {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-;TODO NA SYNEXISO NA DW TON YPOLOIPO KODIKA EAN THELEI CHANGES KAI FIXES
-
 alias -l wmm_modules_check_unsupported {
   if ($dialog(wmm_module)) || ($dialog(wmm_module_sets)) { return }
 
@@ -1929,9 +1927,8 @@ alias -l wmm_modules_check_unsupported {
     if (!%m) || (!%p) { goto next }
 
     var %n = $wmm_rsconf(%m,Version)
-    var %a = $wmm_rsconf(%m,Alias)
     var %r = $wmm_rsconf(%m,Manager_Require_Version)
-    var %v = $evalnext($chr(36) $+ %a $+ _ver)
+    var %v = $wmm_getversion(%m)
 
     if (%n) && (%v) && (%r) && (%n == %v) && ($wmm_ver < %r) { .unload -rs $qt(%p) }
 
@@ -1969,6 +1966,8 @@ alias wmm_dl_sets {
   return
   :error | wmm_werror $scriptline $error | reseterror
 }
+
+;TODO NA SYNEXISO NA DW TON YPOLOIPO KODIKA EAN THELEI CHANGES KAI FIXES
 
 alias -l wmm_dl_sets_init {
   ; 1 = dialog (optional)
@@ -2307,6 +2306,31 @@ alias wmm_getversion {
   if (%v) { return %v }
 
   return 0
+
+  return
+  :error | wmm_werror $scriptline $error | reseterror
+}
+
+alias wmm_getcrdate {
+  if (!$1) || (!$isid) { return 0 }
+
+  var %p = $wmm_getpath($1)
+
+  if (!%p) { return 0 }
+
+  var %a = $wmm_rsconf($1,Alias)
+
+  if (!%a) { return 0 }
+  if (!$isalias(%a $+ _crdate)) { return 0 }
+
+  var %v = $evalnext($chr(36) $+ %a $+ _crdate)
+
+  if (%v) { return %v }
+
+  return 0
+
+  return
+  :error | wmm_werror $scriptline $error | reseterror
 }
 
 alias wmm_getpath {
