@@ -3,7 +3,7 @@
 ######################################
 
 	# WESTOR Module Manager #
-	 # v5.0 - (17/02/2020) #
+	 # v5.0 - (20/02/2020) #
 	  # Thanks Supporters #
 
 ######################################
@@ -2149,15 +2149,8 @@ alias wmm_rsconf {
 alias wmm_werror {
   if (!$1) && (!$2) || ($isid) { return }
 
-  if ($1 !isnum) { 
-    var %p = $group(# [ $+ [ $lower($1) ] $+ ] ).fname
-
-    if (!%p) { var %v = N/A }
-    elseif (%p) { var %v = $right($gettok($read(%p,n,6),3,32),3) }
-
-    write $qt($wmm_errors_file) ( $+ $date $time $+ ) $wmm_bel $+($chr(3),$iif($wmm_isadi,12,2)) $+ WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),6) $1 %v $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $2 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $3-
-  }
-  else { write $qt($wmm_errors_file) ( $+ $date $time $+ ) $wmm_bel $+ $+($chr(3),$iif($wmm_isadi,12,2)) WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $1 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $2- }
+  if ($1 isnum) { write $qt($wmm_errors_file) ( $+ $date $time $+ ) $wmm_bel $+ $+($chr(3),$iif($wmm_isadi,12,2)) WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $1 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $2- }
+  else { write $qt($wmm_errors_file) ( $+ $date $time $+ ) $wmm_bel $+($chr(3),$iif($wmm_isadi,12,2)) $+ WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),6) $1 $wmm_getversion($1) $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $2 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $3- }
 
   .timer[REPORT_ERRORS] -ho 1 3000 wmm_report
 
