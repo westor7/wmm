@@ -26,7 +26,7 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 
 - Simple and beautiful UI without any extra DLLs.
 - Fast and secure modules installations.
-- More than **30** modules are currently supported.
+- More than [30](https://github.com/westor7/wmm/tree/master/modules#available-modules) modules are currently supported.
 - Very easy modules management.
 - Auto update modules silently supported.
 - Screenshot modules images preview.
