@@ -24,13 +24,14 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 
 ### Features:
 
-- Simple and beautifull UI without any extra DLLs.
+- Simple and beautiful UI without any extra DLLs.
 - Fast and secure modules installations.
-- Very easy modules managment.
+- More than **30** modules are currently supported.
+- Very easy modules management.
 - Auto update modules silently supported.
-- Screenshot modules images prievew.
+- Screenshot modules images preview.
 - Latest project news field in the windows.
-- Mutli-language support included.
+- Multi-language support included.
 - Multi-client support *([AdiIRC](https://adiirc.com) 32/64bits + [mIRC](https://mirc.com) 32bits)*.
 - Full customizable settings and options.
 - Working and tested only under Windows 10 operating system.
@@ -41,7 +42,7 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 
 - Before you start the installation make sure that you are using the latest client online version.
 - Extract the downloaded file into any random direction.
-- Disable the **Initalization Warning** and **Monitor File Changes** options from your client Script Editor *(ALT+R ☛ Options)* menu *(if are enabled)*.
+- Disable the **Initialization Warning** and **Monitor File Changes** options from your client Script Editor *(ALT+R ☛ Options)* menu *(if are enabled)*.
 - Load the **WESTOR Module Manager.mrc** file from your Script Editor *(ALT +R ☛ File ☛ Load ☛ Select the file)* or via command from editbox ``/load -rs "FOLDER_DIRECTION\WMM\WESTOR Module Manager.mrc"``
 
 ------------
@@ -52,7 +53,7 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
   and improvements in the hole project you can do it with a small or big donation according your desire
   using one of the following currently supported methods:
   
-  (Thank you very much in advantage, also if you want your nickname or email or what ever personal information to be displayed here in Donators list, connect in my network from [here](https://j.mp/westor_chat) and contact me so i can add it.)
+  (Thank you very much in advantage, also if you want your nickname or email or what ever personal information to be displayed here in Donators list, connect in my network from [here](https://j.mp/westor_chat) and contact me to add.)
 
 - [PayPal](https://paypal.me/westor)
 - [BTC](https://raw.githubusercontent.com/westor7/wmm/master/images/btc_address.png)
