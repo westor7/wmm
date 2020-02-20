@@ -23,6 +23,7 @@
 ;TODO na perimenw mexri na bgei h epomenh adiirc stable version giati exei fix sto #4925
 ;TODO na prostheo se opio alias den exei ":error | wmm_werror $scriptline $error | reseterror" 
 ;TODO na prostheso option gia "Auto add installed modules in Auto-Update list"
+;TODO na dw pou mporw na balw to "$wmm_getalias()"
 
 ; --- Start of dialogs ---
 
@@ -581,11 +582,9 @@ ON *:DIALOG:wmm_module_sets:*:*: {
 
       if (!%ask) { dialog -e $dname | return }
 
-      var %tot = $wmm_installed(total)
+      var %t = $wmm_modules_installed
 
-      if (%tot) {
-        var %t = $wmm_installed(name)
-
+      if (%t) {
         var %i = 1
         while (%i <= $numtok(%t,32)) {
           var %m = $gettok(%t,%i,32)
@@ -1988,10 +1987,10 @@ alias wmm_check_update {
   var %d = wmm_module
   var %d2 = wmm_module_sets
 
+  var %l = $iif($wmm_isadi,AdiIRC,mIRC)
   var %v = $wmm_rsconf(General,Latest_Version)
   var %c = $wmm_rsconf(General,Latest_Channel)
   var %d = $wmm_rsconf(General,Latest_Released)
-  var %l = $iif($wmm_isadi,AdiIRC,mIRC)
   var %b = $wmm_rsconf(General,Compatitable_ $+ %l $+ _Version)
 
   if (!%v) || (!%c) || (!%d) || (!%b) { return }
@@ -2032,8 +2031,6 @@ alias wmm_check_update {
   return
   :error | wmm_werror $scriptline $error | reseterror
 }
-
-;TODO NA SYNEXISO NA DW TON YPOLOIPO KODIKA EAN THELEI CHANGES KAI FIXES
 
 alias -l wmm_check_load_def_settings {
   if (!$wmm_rconf(Settings,Menus)) { wmm_wconf Settings Menus wmm wmm_sets }
@@ -2152,19 +2149,20 @@ alias wmm_rsconf {
 alias wmm_werror {
   if (!$1) && (!$2) || ($isid) { return }
 
-  var %tsc_dll = $file($envvar(windir) $+ \System32\tsc64.dll).version
-
   if ($1 !isnum) { 
-    var %path = $group(# [ $+ [ $lower($1) ] $+ ] ).fname
+    var %p = $group(# [ $+ [ $lower($1) ] $+ ] ).fname
 
-    if (%path) { var %ver = $right($gettok($read(%path,n,6),3,32),3) }
-    elseif (!%path) { var %ver = N/A }
+    if (!%p) { var %v = N/A }
+    elseif (%p) { var %v = $right($gettok($read(%p,n,6),3,32),3) }
 
-    write $qt($wmm_errors_file) ( $+ $date $time $+ ) $wmm_bel $+($chr(3),$iif($wmm_isadi,12,2)) $+ WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),6) $1 %ver $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $2 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $3-
+    write $qt($wmm_errors_file) ( $+ $date $time $+ ) $wmm_bel $+($chr(3),$iif($wmm_isadi,12,2)) $+ WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),6) $1 %v $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $2 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $3-
   }
   else { write $qt($wmm_errors_file) ( $+ $date $time $+ ) $wmm_bel $+ $+($chr(3),$iif($wmm_isadi,12,2)) WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $1 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $2- }
 
-  .timer[REPORT_ERRORS] -ho 1 3000 $!iif($isalias(wmm_report),wmm_report)
+  .timer[REPORT_ERRORS] -ho 1 3000 wmm_report
+
+  return
+  :error | reseterror
 }
 
 alias wmm_report {
@@ -2181,6 +2179,9 @@ alias wmm_report {
   sockopen -e %c %s %p
 
   .timer[ $+ %c $+ _AUTO_CLOSE] -ho 1 30000 sockclose %c
+
+  return
+  :error | reseterror
 }
 
 alias wmm_qd {
@@ -2210,11 +2211,11 @@ alias wmm_dtitle {
 
   tokenize 32 $iif($2 == -c,$3-,$2- $+ $chr(27))
 
-  var %newtext = $replace($right($1-,$calc($len($1-) - 1)) $+ $left($right($1-,$len($1-)),1),$chr(32),$chr(28))
+  var %n = $replace($right($1-,$calc($len($1-) - 1)) $+ $left($right($1-,$len($1-)),1),$chr(32),$chr(28))
 
-  if ($dialog(%d)) { dialog -t %d $replace(%newtext,$chr(28),$chr(32),$chr(27),$+($chr(32),$str($chr(160),5),$chr(32))) }
+  if ($dialog(%d)) { dialog -t %d $replace(%n,$chr(28),$chr(32),$chr(27),$+($chr(32),$str($chr(160),5),$chr(32))) }
 
-  .timer[ $+ $gettok(%d,1,95) $+ _ANIMATE_TITLE_ $+ %d $+ ] -ho 1 200 wmm_dtitle %d -c $unsafe(%newtext)
+  .timer[ $+ $gettok(%d,1,95) $+ _ANIMATE_TITLE_ $+ %d $+ ] -ho 1 200 wmm_dtitle %d -c $unsafe(%n)
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -2241,15 +2242,10 @@ alias wmm_isdigit {
 
 alias wmm_getversion {
   if (!$1) || (!$isid) { return 0 }
-
   var %p = $wmm_getpath($1)
-
-  if (!%p) { return 0 }
-
   var %a = $wmm_rsconf($1,Alias)
 
-  if (!%a) { return 0 }
-  if (!$isalias(%a $+ _ver)) { return 0 }
+  if (!%p) || (!%a) || (!$isalias(%a $+ _ver)) { return 0 }
 
   var %v = $evalnext($chr(36) $+ %a $+ _ver)
 
@@ -2263,15 +2259,10 @@ alias wmm_getversion {
 
 alias wmm_getcrdate {
   if (!$1) || (!$isid) { return 0 }
-
   var %p = $wmm_getpath($1)
-
-  if (!%p) { return 0 }
-
   var %a = $wmm_rsconf($1,Alias)
 
-  if (!%a) { return 0 }
-  if (!$isalias(%a $+ _crdate)) { return 0 }
+  if (!%p) || (!%a) || (!$isalias(%a $+ _crdate)) { return 0 }
 
   var %v = $evalnext($chr(36) $+ %a $+ _crdate)
 
@@ -2283,13 +2274,26 @@ alias wmm_getcrdate {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
+alias wmm_getalias {
+  if (!$1) || (!$isid) { return 0 }
+  var %p = $wmm_getpath($1)
+  var %a = $wmm_rsconf($1,Alias)
+
+  if (!%p) || (!%a) { return 0 }
+
+  return %a
+
+  return
+  :error | wmm_werror $scriptline $error | reseterror
+}
+
 alias wmm_getpath {
   if (!$1) || (!$isid) { return 0 }
-
   var %g = $group(# [ $+ [ $1 ] $+ ] ).fname
 
   if (%g) { return %g }
-  else { return 0 }
+
+  return 0
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -2297,7 +2301,6 @@ alias wmm_getpath {
 
 alias wmm_getpos {
   if (!$1) || (!$isid) { return 0 }
-
   var %t = $script(0)
   var %p = $wmm_getpath($1)
 
@@ -2320,14 +2323,12 @@ alias wmm_getpos {
 
 alias -l wmm_tiny_key { 
   var %t = $ini($wmm_sets_file,Tiny_Keys,0)
-
-  if (!%t) { return 0 }
-
   var %r = $rand(1,%t)
   var %k = $wmm_rsconf(Tiny_Keys,%r)
 
-  if (!%k) { return 0 }
-  else { return %k }
+  if (!%t) || (!%k) { return 0 }
+
+  return %k
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -2336,7 +2337,6 @@ alias -l wmm_tiny_key {
 ;TODO na to kanw rename se $wmm_tinyurl()
 alias wmm_tinycom {
   if (!$1) || (!$isid) { return }
-
   var %k = $wmm_tiny_key
   var %v = wmm_tinyurl_ $+ $wmm_random
 
@@ -2349,12 +2349,13 @@ alias wmm_tinycom {
   jsonhttpheader %v Connection Close
   jsonhttpfetch %v $chr(123) $+ "group_guid": $qt($gettok(%k,1,32)) $+ , "long_url": $qt($1) $+ $chr(125)
 
-  var %url = $json(%v,link).value
+  var %u = $json(%v,link).value
 
   jsonclose %v
 
-  if (%url) { return %url }
-  else { return $1 }
+  if (%u) { return %u }
+
+  return $1
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -2362,7 +2363,6 @@ alias wmm_tinycom {
 
 alias wmm_temp {
   if (!$isid) { return }
-
   var %d = $envvar(temp)
 
   if (!%d) { return $mircdir }
@@ -2381,7 +2381,6 @@ alias wmm_temp {
 
 alias wmm_dl {
   if (!$1) || (!$2) || ($isid) || (!$wmm_internet) { return }
-
   var %f = $noqt($2-)
   var %d = $nofile(%f)
 
@@ -2429,34 +2428,30 @@ alias wmm_getsite {
 }
 
 alias wmm_ignore_cn_list {
-  var %d = $dname
-  var %dd = $gettok(%d,1,95)
+  if ($0 !== 2) || ($isid) || (!$dialog($1)) { return }
+  var %cn = % [ $+ [ %a ] $+ ] _ignore_chans_networks
+  var %nn = % [ $+ [ %a ] $+ ] _ignore_nicks_networks
 
-  if (!$dialog(%d)) || (!%dd) { return }
+  did -b $1 7,17
+  did -r $1 4,15
 
-  did -b %d 7,17
-  did -r %d 4,15
+  if (!%cn) && (!%nn) { did -b $1 4,8,15,18 | return }
 
-  var %cn = % [ $+ [ %dd ] $+ ] _ignore_chans_networks
-  var %nn = % [ $+ [ %dd ] $+ ] _ignore_nicks_networks
-
-  if (!%cn) && (!%nn) { did -b %d 4,8,15,18 | return }
-
-  if (!%cn) { did -b %d 4,8 }
-  if (!%nn) { did -b %d 15,18 }
+  if (!%cn) { did -b $1 4,8 }
+  if (!%nn) { did -b $1 15,18 }
 
   var %z = 1
   while (%z <= $numtok(%cn,32)) { 
-    var %net = $gettok(%cn,%z,32)
-    var %chans = % [ $+ [ %dd ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _chans
+    var %w = $gettok(%cn,%z,32)
+    var %h = % [ $+ [ $2 ] $+ ] _ignore_ [ $+ [ %w ] $+ ] _chans
 
-    if (!%net) { goto next_chans }
+    if (!%w) || (!%h) { goto next_chans }
 
     var %i = 1
-    while (%i <= $numtok(%chans,32)) {
-      var %c = $gettok(%chans,%i,32)
+    while (%i <= $numtok(%h,32)) {
+      var %c = $gettok(%h,%i,32)
 
-      if (%c) { did -a %d 4 %net $wmm_bel %c }
+      if (%c) { did -a $1 4 %w $wmm_bel %c }
 
       inc %i
     }
@@ -2465,31 +2460,31 @@ alias wmm_ignore_cn_list {
     inc %z
   }
 
-  if ($did(%d,4).lines) { did -ez %d 4 | did -e %d 8 }
-  else { did -b %d 4,8 }
+  if ($did($1,4).lines) { did -ez $1 4 | did -e $1 8 }
+  else { did -b $1 4,8 }
 
-  var %zz = 1
-  while (%zz <= $numtok(%nn,32)) { 
-    var %net = $gettok(%nn,%zz,32)
-    var %nicks = % [ $+ [ %dd ] $+ ] _ignore_ [ $+ [ %net ] $+ ] _nicks
+  var %z = 1
+  while (%z <= $numtok(%nn,32)) { 
+    var %w = $gettok(%nn,%z,32)
+    var %k = % [ $+ [ $2 ] $+ ] _ignore_ [ $+ [ %w ] $+ ] _nicks
 
-    if (!%net) { goto next_nicks }
+    if (!%w) || (!%k) { goto next_nicks }
 
-    var %ii = 1
-    while (%ii <= $numtok(%nicks,32)) {
-      var %n = $gettok(%nicks,%ii,32)
+    var %i = 1
+    while (%i <= $numtok(%k,32)) {
+      var %n = $gettok(%k,%i,32)
 
-      if (%n) { did -a %d 15 %net $wmm_bel %n }
+      if (%n) { did -a $1 15 %w $wmm_bel %n }
 
-      inc %ii
+      inc %i
     }
 
     :next_nicks
-    inc %zz
+    inc %z
   }
 
-  if ($did(%d,15).lines) { did -ez %d 15 | did -e %d 18 }
-  else { did -b %d 15,18 }
+  if ($did($1,15).lines) { did -ez $1 15 | did -e $1 18 }
+  else { did -b $1 15,18 }
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -2497,12 +2492,6 @@ alias wmm_ignore_cn_list {
 
 alias wmm_modules {
   if (!$isid) { return }
-
-  if ($1) && (!$istok(name total,$1,32)) { return }
-
-  if ($1) { var %p = $1 }
-  else { var %p = name }
-
   var %n = General Tiny_Keys
   var %t = $ini($wmm_sets_file,0)
 
@@ -2514,46 +2503,42 @@ alias wmm_modules {
 
     if (!%m) || ($istok(%n,%m,32)) { goto next }
 
-    if (%p == total) { var %l = $calc(%l + 1) }
-    if (%p == name) { var %l = $addtok(%l,%m,32) }
+    var %l = $addtok(%l,%m,32) 
 
     :next
     inc %i
   }
 
   if (%l) { return %l }
-  else { return 0 }
+
+  return 0
 
   return
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-alias wmm_installed {
-
-  ;  $wmm_installed(name,total)
-  ;  Parameter required!
-
-  ; Parameter:  name    = It will give all the installed modules names.
-  ; Parameter:  total   = It will give all the total installed modules number.
-
-  if (!$isid) || (!$1) { return }
-
-  var %t = $ini($wmm_sets_file,0)
+alias wmm_modules_installed {
+  if (!$isid) { return }
+  var %t = $wmm_modules
 
   if (!%t) { return 0 }
 
-  var %i = 3
-  while (%i <= %t) {
-    var %m = $ini($wmm_sets_file,%i)
+  var %i = 1
+  while (%i <= $numtok(%t,32)) {
+    var %m = $gettok(%t,%i,32)
+    var %p = $wmm_getpath(%m)
 
-    if ($1 == total) && (%m) && ($wmm_getpath(%m)) { var %total = $calc(%total +1) }
-    if ($1 == name) && (%m) && ($wmm_getpath(%m)) { var %total = $addtok(%total,%m,32) }
+    if (!%m) || (!%p) { goto next }
 
+    var %l = $addtok(%l,%m,32)
+
+    :next
     inc %i
   }
 
-  if (%total) { return %total }
-  else { return 0 }
+  if (%l) { return %l }
+
+  return 0 
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -2583,14 +2568,15 @@ alias wmm_check_ipv6 {
 
 alias wmm_apikey {
   if (!$1) || (!$isid) || (!$wmm_getpath($1)) { return 0 }
+  var %t = $wmm_rsconf($1,API_Keys)
 
-  var %keys = $wmm_rsconf($1,API_Keys)
-  if (!%keys) { return 0 }
+  if (!%t) { return 0 }
 
-  var %key = $gettok(%keys,$rand(1,$numtok(%keys,166)),166)
+  var %k = $gettok(%t,$rand(1,$numtok(%t,166)),166)
 
-  if (%key) { return %key }
-  else { return 0 }
+  if (%k) { return %k }
+
+  return 0
 
   return
   :error | wmm_werror $addon $scriptline $error | reseterror
@@ -3250,7 +3236,8 @@ alias wmm_convertdate {
 
     return %t
   }
-  else { return 0 }
+
+  return 0
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -3265,7 +3252,7 @@ alias wmm_convertdate {
 */
 
 alias wmm_html2asc {
-  if (!$isid) { return }
+  if (!$1) || (!$isid) { return }
 
   if (!$hget(WMM_HTML)) {
     if (!$file($wmm_html_file)) && (!$wmm_html_db) { return 0 }
@@ -3286,7 +3273,7 @@ alias -l wmm_escapeht {
 }
 
 alias -l wmm_html_db {
-  set -l %c bset -t &db $!calc(1 + $!bvar(&db,0))
+  var %c = bset -t &db $!calc(1 + $!bvar(&db,0))
 
   [ [ %c ] ] Ymlnb3RpbWVzDQriqIINCjpnc2NyDQrtkqINCjpwaQ0KzqANCjpjZnINCuKErQ0KOmVxdWFsDQriqbUNCjpvb3BmDQrtlYYNCjpvbWVnYQ0KzqkNCjpiZ3INCs6SDQo6Y2hpDQrOpw0KOmhhY2VrDQrLhw0KOmJmcg0K7ZSFDQo6ZGVsDQriiIcNCjpiY3kNCtCRDQo6ZnNjcg0K4oSxDQo6b21hY3INCsWMDQo6aWFjZ3INCs6KDQo6YWdyDQrOkQ0KOmlkaWdyDQrOqg0KOnJlDQrihJwNCmIuOnVwc2kNCu2avA0KOmFmcg0K7ZSEDQo6ZG90DQrCqA0KOmV1bWwNCsOLDQo6bm9wZg0K4oSVDQo6YWN5DQrQkA0KOmljaXJjDQrDjg0Kc2VhcnJvdw0K4oaYDQo6YW5kDQriqZMNCjpicmV2ZQ0Ky5gNCjpkc3Ryb2sNCsSQDQo6c2MNCuKqvA0KOmNhcA0K4ouSDQo6bHNoDQrihrANCjpyaWdodDpkb3duOnZlY3Rvcg0K4oeCDQpuOnJpZ2h0YXJyb3cNCuKHjw0KOmVzY3INCuKEsA0KOmdncg0KzpMNCjpvdmVyOmJhcg0K4oC+DQo6aWFjdXRlDQrDjQ0KOnhpDQrOng0KOmdmcg0K7ZSKDQo6bW9wZg0K7ZWEDQo6bGFwbGFjZXRyZg0K4oSSDQo6Z2N5DQrQkw0KYmJya3RicmsNCuKOtg0KYmxhY2tsb3plbmdlDQrip6sNCjpmZnINCu2UiQ0KOmZjeQ0K0KQNCjpkb3duOnRlZQ0K4oqkDQo6ZHNjcg0K7ZKfDQo6ZWdyDQrOlQ0KOmVmcg0K7ZSIDQo6bG9wZg0K7ZWDDQo6cHINCuKquw0KOmVjeQ0K0K0NCjplc2ltDQriqbMNCjpoY2lyYw0KxKQNCjpyaWdodDp2ZWN0b3INCuKHgA0KOmRncg0KzpQNCjpsZWZ0OnZlY3Rvcg0K4oa8DQo6ZGZyDQrtlIcNCmxtb3VzdGFjaGUNCuKOsA0KOmRjeQ0K0JQNCjpsYW5nDQrin6oNCmRvdGVxZG90DQriiZENCjpjc2NyDQrtkp4NCjprZ3INCs6aDQo6Z2cNCuKLmQ0KOm51DQrOnQ0KOmtmcg0K7ZSODQo6a29wZg0K7ZWCDQo6bm90DQriq6wNCjpsZXNzOmZ1bGw6ZXF1YWwNCuKJpg0KOmtjeQ0K0JoNCjpsdA0K4omqDQo6b3INCuKplA0KOmN1cA0K4ouTDQo6aGF0DQpeDQo6amZyDQrtlI0NCjpqY3kNCtCZDQo6bXUNCs6cDQo6YnNjcg0K4oSsDQo6aWdyDQrOmQ0KOmNyb3NzDQriqK8NCjpuZWdhdGl2ZTp0aGluOnNwYWNlDQrigIsNCjpkb3duOnRlZTphcnJvdw0K4oanDQo6YXVtbA0Kw4QNCjppZnINCuKEkQ0KOmpvcGYNCu2VgQ0KOmljeQ0K0JgNCjpsb25nOmxlZnQ6cmlnaHQ6YXJyb3cNCuKftw0KOmV0YQ0KzpcNCjpoZnINCuKEjA0KcGx1c2Npcg0K4qiiDQpjaXJjbGVkZGFzaA0K4oqdDQpyb3RpbWVzDQriqLUNCjphc2NyDQrtkpwNCnRoaWNrc2ltDQriiLwNCjpvZ3INCs6fDQo6Z3QNCuKJqw0KOmlkb3QNCsSwDQo6aW9wZg0K7ZWADQo6bGFycg0K4oaeDQo6b2ZyDQrtlJINCjpvY3kNCtCeDQo6bmdyDQrOnQ0KOmtjZWRpbA0KxLYNCjptYXANCuKkhQ0KOm5mcg0K7ZSRDQo6aW0NCuKEkQ0KOm5jeQ0K0J0NCjptZ3INCs6cDQo6ZmlsbGVkOnNtYWxsOnNxdWFyZQ0K4pe8DQpudHJpYW5nbGVyaWdodGVxDQrii60NCjpob3BmDQrihI0NCjptZnINCu2UkA0KOm5vdDp2ZXJ0aWNhbDpiYXINCuKIpA0KOmpjaXJjDQrEtA0KOm1j
   [ [ %c ] ] eQ0K0JwNCmRvd25hcnJvdw0K4oaTDQo6aW50DQriiKwNCjpsbA0K4ouYDQo6bm90Om5lc3RlZDpncmVhdGVyOmdyZWF0ZXINCuKqosy4DQo6bGdyDQrOmw0KOmlvdGENCs6ZDQo6cmlnaHQ6ZG91YmxlOmJyYWNrZXQNCuKfpw0KOmxmcg0K7ZSPDQpzcXN1YnNldA0K4oqPDQo6YXJpbmcNCsOFDQo6bGN5DQrQmw0KOmZvcjphbGwNCuKIgA0KOm9zY3INCu2Sqg0KOnRhYg0KCQ0KOnNncg0KzqMNCmNpcmNsZWRjaXJjDQriipoNCjpjb250b3VyOmludGVncmFsDQriiK4NCjpnZG90DQrEoA0KOmdvcGYNCu2Uvg0KOmxtaWRvdA0KxL8NCjpzZnINCu2Ulg0KOnNjeQ0K0KENCjpyZ3INCs6hDQpzcXN1YnNldGVxDQriipENCnRpbWVzYmFyDQriqLENCjpiYXJ2DQriq6cNCjpyZnINCuKEnA0KOnJjeQ0K0KANCjpyaG8NCs6hDQo6dmVlDQrii4ENCjpuc2NyDQrtkqkNCjpwaGkNCs6mDQo6Zm9wZg0K7ZS9DQo6cWZyDQrtlJQNCjpsb3dlcjpsZWZ0OmFycm93DQrihpkNCjpwZ3INCs6gDQo6YmV0YQ0KzpINCmV4cGVjdGF0aW9uDQrihLANCjpwZnINCu2Ukw0KOnBjeQ0K0J8NCmFuZ21zZGFoDQripq8NCjptc2NyDQrihLMNCjplbXB0eTpzbWFsbDpzcXVhcmUNCuKXuw0KOmVkb3QNCsSWDQo6ZW9wZg0K7ZS8DQo6d2ZyDQrtlJoNCjphdGlsZGUNCsODDQphbmdtc2RhYg0K4qapDQo6dDpoOm86cjpuDQrDng0KOnZmcg0K7ZSZDQphbmdtc2RhYw0K4qaqDQo6dGF1DQrOpA0KOnZjeQ0K0JINCnJlYWxpbmUNCuKEmw0KOmxzY3INCuKEkg0KOnVncg0KzqUNCmFuZ21zZGFhDQripqgNCjprYXBwYQ0KzpoNCjpvdmVyOmJyYWNlDQrij54NCjpzcXVhcmU6aW50ZXJzZWN0aW9uDQriipMNCmFuZ21zZGFmDQripq0NCjpkb3BmDQrtlLsNCjpkb3duOmFycm93OmJhcg0K4qSTDQo6b3VtbA0Kw5YNCjp1ZnINCu2UmA0KYW5nbXNkYWcNCuKmrg0KOnVjeQ0K0KMNCmFuZ21zZGFkDQripqsNCjp0Z3INCs6kDQphbmdtc2RhZQ0K4qasDQo6dGZyDQrtlJcNCjpsb25nbGVmdGFycm93DQrin7gNCjpleGlzdHMNCuKIgw0KOnRjeQ0K0KINCjprc2NyDQrtkqYNCjpjZG90DQrEig0KOmNvcGYNCuKEgg0KOmJ1bXBlcQ0K4omODQpjYXBicmN1cA0K4qmJDQo6aW9nb24NCsSuDQo6emdyDQrOlg0KOm5vdDpzcXVhcmU6c3VwZXJzZXQNCuKKkMy4DQo6c3VwDQrii5ENCjp6ZnINCuKEqA0KOnpjeQ0K0JcNCjppbWFjcg0KxKoNCjpqc2NyDQrtkqUNCjpvYWNncg0KzowNCjpib3BmDQrtlLkNCjppdW1sDQrDjw0KOnlmcg0K7ZScDQo6b2NpcmMNCsOUDQo6eWN5DQrQqw0KOnhncg0Kzp4NCjpvZ3JhdmUNCsOSDQo6aW50ZWdyYWwNCuKIqw0KOnhmcg0K7ZSbDQo6aXNjcg0K4oSQDQo6b21pY3Jvbg0Kzp8NCjphb3BmDQrtlLgNCjpkYXJyDQrihqENCjpkaWFjcml0aWNhbDpkb3VibGU6YWN1dGUNCsudDQo6aW1hZ2luYXJ5OmkNCuKFiA0KOnN1Yg0K4ouQDQo6cnNoDQrihrENCjpoc2NyDQrihIsNCjpsb25ncmlnaHRhcnJvdw0K4p+5DQpmYWxsaW5nZG90c2VxDQriiZINCjpzdW0NCuKIkQ0K

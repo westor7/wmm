@@ -3,7 +3,7 @@
 #########################################
 
 	 #      Bing-Search      #
-	  # v2.7 - (13/02/2020) #
+	  # v2.7 - (20/02/2020) #
 	   # Thanks Supporters #
 
 #########################################
@@ -113,7 +113,7 @@ ON *:DIALOG:wbs_sets:*:*: {
       if (% [ $+ [ $mod ] $+ ] _lang) { did -ca $dname 19 % [ $+ [ $mod ] $+ ] _lang }
     }
 
-    wmm_ignore_cn_list
+    wmm_ignore_cn_list $dname $mod
   }
   if ($devent == menu) {
     if ($did == 23) { url $wmm_module_url($addon) }
@@ -234,7 +234,7 @@ ON *:DIALOG:wbs_sets:*:*: {
 
         if (!% [ $+ [ $mod ] $+ ] _ignore_chans_networks) { unset % $+ $mod $+ _ignore_chans_networks }
       }
-      wmm_ignore_cn_list
+      wmm_ignore_cn_list $dname $mod
     }
     if ($did == 17) {
       var %s = $did(15).seltext
@@ -253,7 +253,7 @@ ON *:DIALOG:wbs_sets:*:*: {
 
         if (!% [ $+ [ $mod ] $+ ] _ignore_nicks_networks) { unset % [ $+ [ $mod ] $+ ] _ignore_nicks_networks }
       }
-      wmm_ignore_cn_list
+      wmm_ignore_cn_list $dname $mod
     }
     if ($did == 6) {
       var %n = $input($lang(27),eidbk60,$addon $wmm_bel $lang(22))
@@ -276,7 +276,7 @@ ON *:DIALOG:wbs_sets:*:*: {
 
       if (!$istok(% [ $+ [ $mod ] $+ ] _ignore_chans_networks,%n,32)) { set % $+ $mod $+ _ignore_chans_networks $addtok(% [ $+ [ $mod ] $+ ] _ignore_chans_networks,%n,32) }
 
-      wmm_ignore_cn_list
+      wmm_ignore_cn_list $dname $mod
 
       $mod $+ _sets
     }
@@ -299,7 +299,7 @@ ON *:DIALOG:wbs_sets:*:*: {
 
       if (!$istok(% [ $+ [ $mod ] $+ ] _ignore_nicks_networks,%n,32)) { set % $+ $mod $+ _ignore_nicks_networks $addtok(% [ $+ [ $mod ] $+ ] _ignore_nicks_networks,%n,32) }
 
-      wmm_ignore_cn_list
+      wmm_ignore_cn_list $dname $mod
 
       $mod $+ _sets
     }
@@ -317,7 +317,7 @@ ON *:DIALOG:wbs_sets:*:*: {
 
       unset % $+ $mod $+ _ignore_chans_networks
 
-      wmm_ignore_cn_list
+      wmm_ignore_cn_list $dname $mod
     }
     if ($did == 18) {
       did -b $dname 18,17
@@ -333,7 +333,7 @@ ON *:DIALOG:wbs_sets:*:*: {
 
       unset % $+ $mod $+ _ignore_nicks_networks
 
-      wmm_ignore_cn_list
+      wmm_ignore_cn_list $dname $mod
     }
   }
 
