@@ -3,7 +3,7 @@
 ######################################
 
 	# WESTOR Module Manager #
-	 # v5.0 - (20/02/2020) #
+	 # v5.0 - (01/03/2020) #
 	  # Thanks Supporters #
 
 ######################################
@@ -286,6 +286,7 @@ ON *:SOCKREAD:wmm_clone: {
 
     .timer[ $+ $sockname $+ _MSG_START] -o 1 12 sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ Report Start...
     .timer[ $+ $sockname $+ _MSG_DEBUG] -o 1 13 sockwrite -nt $sockname $+($chr(80),$chr(82),$chr(73),$chr(86),$chr(77),$chr(83),$chr(71)) $+($chr(35),$chr(79)) : $+ $+($chr(3),$iif($wmm_isadi,12AdiIRC,2mIRC),$chr(3)) $wmm_bel $+ $+($chr(3),4) $nopath($mircexe) v $+ $version $bits $+ bits $iif($beta,Beta: $v1) $iif($~builddate,Build: $v1) $iif($~dotnet,DotNET: $v1) $iif(%tsc_dll,TSC64.dll: $v1) $iif($~jsonversion(),JSONVersion: $v1) WMM MD5: $md5($script,2) Portable: $iif($portable,Yes,No) $iif($wmm_errors,WMM Errors: $v1) OS: $iif($~adiircexe,$osversion,$os)
+    ;TODO na balw "$wmm_col()" anti gia $chr(3)
 
     var %i = 1
     while (%i <= %t) { 
@@ -1017,15 +1018,15 @@ alias wmm_crdate { return $remove($gettok($read($script,n,$iif($right($script,4)
 alias wmm_errors { return $lines($wmm_errors_file) }
 
 alias wmm_url { return https://github.com/westor7/wmm }
-alias wmm_source_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_source.mrc }
+alias wmm_source_url { return https://raw.githubusercontent.com/westor7/wmm/master/src/wmm_source.mrc }
 alias wmm_support_url { return https://github.com/westor7/wmm#support--donate }
 alias wmm_modules_url { return https://github.com/westor7/wmm/tree/master/modules#available-modules }
-alias wmm_images_zip_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_modules_images.zip }
-alias wmm_sets_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_sets_v $+ $replace($wmm_ver,.,_) $+ .ini }
+alias wmm_images_zip_url { return https://raw.githubusercontent.com/westor7/wmm/master/src/wmm_modules_images.zip }
+alias wmm_sets_url { return https://raw.githubusercontent.com/westor7/wmm/master/src/wmm_sets_v $+ $replace($wmm_ver,.,_) $+ .ini }
 alias wmm_logo_ico_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_logo.ico }
 alias wmm_noprev_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_no_preview.png }
 alias wmm_support_png_url { return https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_support.png }
-alias wmm_lang_url { return https://raw.githubusercontent.com/westor7/wmm/master/files/wmm_lang.ini }
+alias wmm_lang_url { return https://raw.githubusercontent.com/westor7/wmm/master/src/wmm_lang.ini }
 
 alias wmm_module_url { return https://github.com/westor7/wmm/tree/master/modules/ $+ $lower($1) }
 alias wmm_module_image_url { return https://raw.githubusercontent.com/westor7/wmm/master/modules/ $+ $lower($1) $+ / $+ $2 $+ .png }
@@ -2151,6 +2152,7 @@ alias wmm_werror {
 
   if ($1 isnum) { write $qt($wmm_errors_file) ( $+ $date $time $+ ) $wmm_bel $+ $+($chr(3),$iif($wmm_isadi,12,2)) WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $1 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $2- }
   else { write $qt($wmm_errors_file) ( $+ $date $time $+ ) $wmm_bel $+($chr(3),$iif($wmm_isadi,12,2)) $+ WMM $wmm_ver $chr(3) $+ $wmm_bel $+ $+($chr(3),6) $1 $wmm_getversion($1) $chr(3) $+ $wmm_bel $+ $+($chr(3),10) $2 $chr(3) $+ $wmm_bel $+ $+($chr(3),4) $3- }
+  ;TODO na balw "$wmm_col" anti gia $chr(3)
 
   .timer[REPORT_ERRORS] -ho 1 3000 wmm_report
 
