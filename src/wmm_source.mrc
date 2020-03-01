@@ -184,6 +184,7 @@ ON *:START: {
     elseif (%delay) { .timer[WMM_TOOLBAR] -ho 1 3000 wmm_tool -s }
 
     wmm_dl_sets -s
+    wmm_dl_images
 
     .timer[WMM_CHECK_FOR_UNSUPPORTED_MODULES] -ho 1 3000 wmm_modules_check_unsupported
 
@@ -1312,8 +1313,9 @@ alias -l wmm_reset_images {
   var %d = wmm_module
 
   if (!$dialog(%d)) { return }
+  if (!$file($wmm_noprev_png)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_NOPREVIEW_IMAGE_FILE | wmm_d_close %d | return }
 
-  if ($1) && ($2) && ($1 == -i) {
+  if ($1) && ($1 == -i) && ($2) {
     var %g = $wmm_temp $+ $2 $+ 1.png $+ $chr(166) $+ $wmm_temp $+ $2 $+ 2.png $+ $chr(166) $+ $wmm_temp $+ $2 $+ 3.png
 
     var %i = 1
@@ -1327,11 +1329,7 @@ alias -l wmm_reset_images {
         var %f = $wmm_temp $+ $nopath($gettok(%g,%i,166))
 
         if ($file(%f)) { did -g %d %id $qt(%f) }
-        else { 
-          if (!$file($wmm_noprev_png)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) MISSING_NOPREVIEW_IMAGE_FILE_FOR_ $+ %i $+ _ITEM | wmm_d_close %d | return }
-
-          did -g %d %id $qt($wmm_noprev_png)
-        }
+        else { did -g %d %id $qt($wmm_noprev_png) }
       }
 
       inc %i
@@ -1340,9 +1338,7 @@ alias -l wmm_reset_images {
   }
 
   did -h %d 28
-
-  if (!$file($wmm_noprev_png)) { wmm_input error 60 $wmm_lang(17) @newline@ @newline@ $+ $wmm_lang(18) CANNOT_FIND_NOPREVIEW_IMAGE_FILE | wmm_d_close %d }
-  else { did -g %d 14,15,16 $qt($wmm_noprev_png) }
+  did -g %d 14,15,16 $qt($wmm_noprev_png)
 
   return
   :error | wmm_werror $scriptline $error | reseterror
@@ -1647,7 +1643,7 @@ alias -l wmm_modules_list {
     if ($did(%d,2) !== %r) { did -ra %d 2 %r }
   }
 
-  .timer[WMM_DOWNLOAD_IMAGES] -ho 1 1000 wmm_dl_images_now
+  .timer[WMM_DOWNLOAD_IMAGES] -ho 1 1000 wmm_dl_images
 
   wmm_modules_installed_plus_updated_list
 
@@ -1715,7 +1711,7 @@ alias -l wmm_modules_installed_plus_updated_list {
   :error | wmm_werror $scriptline $error | reseterror
 }
 
-alias -l wmm_dl_images_now {
+alias -l wmm_dl_images {
   if (!$wmm_internet) { return }
 
   if ($isfile($wmm_images_zip_file)) { .remove $qt($wmm_images_zip_file) }
