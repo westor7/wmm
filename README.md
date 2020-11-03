@@ -10,7 +10,7 @@
 		src="https://img.shields.io/badge/Donate-PayPal-blue.svg"></a>
 	<a href="https://raw.githubusercontent.com/westor7/wmm/master/images/btc_address.png"><img
 		src="https://img.shields.io/badge/Donate-BTC-orange.svg"></a>
-	<a href="https://j.mp/westor_chat"><img
+	<a href="https://kiwiirc.com/nextclient/irc.chathub.org:+6697?nick=mSL-??&theme=nightswatch&channel=#mSL"><img
 		src="https://img.shields.io/badge/Contact-IRC-brightgreen.svg"></a>
 </p>
 
