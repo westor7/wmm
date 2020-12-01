@@ -1157,7 +1157,7 @@ alias wmm_check_version {
   if (!$isid) { return }
 
   if (!$wmm_isadi) && ($version < 7.58) { return This mIRC client version that you are using does NOT support the specific project, please download and use the latest version that is available on the mIRC official website! }
-  if ($wmm_isadi) && ($version < 3.7) { return This AdiIRC client version that you are using does NOT support the specific project, please download and use the latest version that is available on the AdiiRC official website! }
+  if ($wmm_isadi) && ($version < 3.9) { return This AdiIRC client version that you are using does NOT support the specific project, please download and use the latest version that is available on the AdiiRC official website! }
   if ($wmm_isadi) && ($mid($~dotnet,2,1) < 2) { return Your computer .NET version seems to be old, in order to work that project you must download and install the latest .NET Runtime from the web, check more at AdiIRC "https://goo.gl/bQfVof" official download page. }
 
   if ($file($script).name !== WESTOR Module Manager) { return It seems that you are NOT using the offical project file because the file name missmatch from the website, you have to follow step by step the installation guide in website in order to use that project! }
