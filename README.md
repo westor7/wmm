@@ -58,6 +58,9 @@ This is a project written on mSL *(mIRC Scripting Language)* that allows you to 
 - [PayPal](https://paypal.me/westor)
 - [BTC](https://raw.githubusercontent.com/westor7/wmm/master/images/btc_address.png)
 
+<div id="coinwidget" data-icon="true" data-type="primary" data-wallet="39KyFFvjXED5kwicyV3ujM1tzWMC1CPZtt" />
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ivandiazwm/coinwidget@0.1.1/builds/full.js" charset="utf-8"></script>
+
 ------------
 
 ### Especially Thanks:
