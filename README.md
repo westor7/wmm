@@ -1,14 +1,14 @@
 <h1 align="center">
 	<img
-		width="300"
+		width="150"
 		alt="WESTOR Module Manager"
 		src="https://raw.githubusercontent.com/westor7/wmm/master/images/wmm_180x180.png">
 </h1>
 
 <p align="center">
-	<a href="https://paypal.me/westor"><img
+	<a href="https://github.com/westor7/wmm/wiki/Donations"><img
 		src="https://img.shields.io/badge/Donate-PayPal-blue.svg"></a>
-	<a href="https://raw.githubusercontent.com/westor7/wmm/master/images/btc_address.png"><img
+	<a href="https://github.com/westor7/wmm/wiki/Donations"><img
 		src="https://img.shields.io/badge/Donate-BTC-orange.svg"></a>
 	<a href="https://kiwiirc.com/nextclient/irc.chathub.org:+6697?nick=mSL-??&theme=nightswatch&channel=#mSL"><img
 		src="https://img.shields.io/badge/Contact-IRC-brightgreen.svg"></a>
